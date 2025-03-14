@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | EduPrado.me</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-dashboard">
+    <header class="admin-header">
+        <div class="header-content">
+            <img src="../images/logo.png" alt="EduPrado.me Logo" class="admin-logo">
+            <nav class="admin-nav">
+                <button class="btn btn-primary" onclick="showModal()">Novo Post</button>
+                <button class="btn btn-secondary" onclick="logout()">Sair</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="admin-main">
+        <h1>Gerenciar Posts</h1>
+        <div class="posts-container" id="posts-list">
+            <!-- Posts serão carregados dinamicamente aqui -->
+        </div>
+    </main>
+
+    <div id="post-modal" class="modal">
+        <div class="modal-content">
+            <h2>Editar Post</h2>
+            <form id="post-form">
+                <div class="form-group">
+                    <label for="post-title">Título</label>
+                    <input type="text" id="post-title" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="post-description">Descrição</label>
+                    <textarea id="post-description" name="description" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="post-content">Conteúdo</label>
+                    <textarea id="post-content" name="content" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="post-tags">Tags (pressione Enter para adicionar)</label>
+                    <input type="text" id="post-tags" name="tags">
+                    <div id="tag-container" class="tag-container"></div>
+                </div>
+                <div class="form-group">
+                    <label>Imagem do Post</label>
+                    <div class="image-upload-container">
+                        <input type="file" id="post-image" name="image" accept="image/*">
+                        <img id="image-preview" src="/images/blog/default.jpg" alt="Preview da imagem">
+                        <div class="upload-text">
+                            <p>Arraste uma imagem ou clique para selecionar</p>
+                            <p class="upload-hint">Tamanho recomendado: 1200x630px</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html> 
