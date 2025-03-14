@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: eduprado-backend
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: UPLOAD_DIR
+        value: /data/images/blog
+      - key: MAX_FILE_SIZE
+        value: 5242880
+      - key: ALLOWED_ORIGINS
+        value: https://edu-prado.github.io 
