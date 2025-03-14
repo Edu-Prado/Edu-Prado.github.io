@@ -9,7 +9,7 @@ async function login(username, password) {
     try {
         // Aqui você faria a chamada para o backend
         // Por enquanto, vamos simular com uma senha hardcoded
-        if (username === 'admin' && password === 'admin123') {
+        if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
             localStorage.setItem('adminLoggedIn', 'true');
             window.location.href = 'dashboard.html';
         } else {
