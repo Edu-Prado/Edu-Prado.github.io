@@ -8,35 +8,21 @@ const fs = require('fs').promises;
 
 const app = express();
 const port = process.env.PORT || 3000;
+const uploadDir = process.env.UPLOAD_DIR || path.join(__dirname, 'uploads', 'images', 'blog');
 
 // Logging middleware
 app.use((req, res, next) => {
     console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+    console.log('Headers:', req.headers);
     next();
 });
 
 // Configuração do CORS
-const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
-console.log('Origens permitidas:', allowedOrigins);
-
-app.use(cors({
-    origin: function(origin, callback) {
-        console.log('Origem da requisição:', origin);
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            console.log('Origem bloqueada:', origin);
-            callback(new Error('Origem não permitida pelo CORS'));
-        }
-    },
-    methods: ['GET', 'POST', 'DELETE'],
-    allowedHeaders: ['Content-Type']
-}));
+app.use(cors());
 
 app.use(express.json());
 
 // Verificar e criar diretórios necessários
-const uploadDir = path.resolve(process.env.UPLOAD_DIR);
 const dataDir = path.join(path.dirname(uploadDir), 'data');
 console.log('Diretório de uploads:', uploadDir);
 console.log('Diretório de dados:', dataDir);
@@ -51,25 +37,26 @@ Promise.all([
 });
 
 // Servir arquivos estáticos
-app.use('/images', express.static(uploadDir));
+app.use('/images/blog', express.static(uploadDir));
 app.use(express.static(__dirname));
 
 // Configuração do Multer para upload de arquivos
-const storage = multer.memoryStorage();
-const upload = multer({
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        console.log('Destino do upload:', uploadDir);
+        cb(null, uploadDir);
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        console.log('Nome do arquivo:', file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({ 
     storage: storage,
     limits: {
-        fileSize: parseInt(process.env.MAX_FILE_SIZE) || 5242880 // 5MB
-    },
-    fileFilter: (req, file, cb) => {
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-        console.log('Tipo do arquivo:', file.mimetype);
-        if (allowedTypes.includes(file.mimetype)) {
-            cb(null, true);
-        } else {
-            console.log('Tipo de arquivo não suportado:', file.mimetype);
-            cb(new Error('Tipo de arquivo não suportado. Use JPEG, PNG ou WebP.'));
-        }
+        fileSize: parseInt(process.env.MAX_FILE_SIZE) || 5 * 1024 * 1024 // 5MB default
     }
 });
 
@@ -132,47 +119,35 @@ app.delete('/api/posts/:id', async (req, res) => {
 });
 
 // Rota para upload de imagem
-app.post('/api/upload', upload.single('image'), async (req, res) => {
+app.post('/api/upload', upload.single('image'), (req, res) => {
+    console.log('Recebendo requisição de upload:', {
+        headers: req.headers,
+        file: req.file,
+        body: req.body
+    });
+
     try {
         if (!req.file) {
-            console.log('Nenhum arquivo enviado');
-            return res.status(400).json({ error: 'Nenhum arquivo enviado' });
+            console.error('Nenhum arquivo recebido');
+            return res.status(400).json({ error: 'Nenhum arquivo recebido' });
         }
 
-        const timestamp = Date.now();
-        const originalName = req.file.originalname;
-        const fileName = `${timestamp}-${originalName}`;
-        const outputPath = path.join(uploadDir, fileName);
+        console.log('Arquivo recebido com sucesso:', req.file);
+        const imageUrl = `/images/blog/${req.file.filename}`;
+        console.log('URL da imagem:', imageUrl);
 
-        console.log('Processando upload:', {
-            originalName,
-            fileName,
-            outputPath,
-            fileSize: req.file.size,
-            mimeType: req.file.mimetype
-        });
-
-        // Criar diretório se não existir
-        await fs.mkdir(uploadDir, { recursive: true });
-
-        // Processar e otimizar a imagem
-        await sharp(req.file.buffer)
-            .resize(1200, 630, {
-                fit: 'cover',
-                position: 'center'
-            })
-            .webp({ quality: 80 })
-            .toFile(outputPath);
-
-        console.log('Upload concluído:', fileName);
-
-        res.json({
-            success: true,
-            imagePath: `/images/${fileName}`
+        res.json({ 
+            message: 'Upload realizado com sucesso',
+            imageUrl: imageUrl,
+            file: req.file
         });
     } catch (error) {
-        console.error('Erro no upload:', error);
-        res.status(500).json({ error: `Erro ao processar o upload da imagem: ${error.message}` });
+        console.error('Erro durante o upload:', error);
+        res.status(500).json({ 
+            error: 'Erro ao fazer upload da imagem',
+            details: error.message,
+            stack: error.stack
+        });
     }
 });
 
@@ -200,25 +175,25 @@ app.get('/api/health', (req, res) => {
         env: {
             uploadDir,
             dataDir,
-            allowedOrigins,
+            allowedOrigins: '*',
             port
         }
     });
 });
 
-// Error handling middleware
+// Tratamento de erros global
 app.use((err, req, res, next) => {
-    console.error('Erro não tratado:', err);
-    res.status(500).json({ error: `Erro interno do servidor: ${err.message}` });
+    console.error('Erro na aplicação:', err);
+    res.status(500).json({ 
+        error: 'Erro interno do servidor',
+        details: err.message,
+        stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
 });
 
 app.listen(port, () => {
     console.log(`Servidor rodando na porta ${port}`);
-    console.log('Ambiente:', {
-        NODE_ENV: process.env.NODE_ENV,
-        uploadDir,
-        dataDir,
-        allowedOrigins,
-        port
-    });
+    console.log('Configurações:');
+    console.log('- Upload dir:', uploadDir);
+    console.log('- Max file size:', process.env.MAX_FILE_SIZE || '5MB');
 }); 
