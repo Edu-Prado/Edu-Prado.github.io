@@ -4,6 +4,10 @@ const ADMIN_CREDENTIALS = {
     password: 'admin03012010'
 };
 
+const API_URL = window.location.hostname === 'localhost' 
+    ? 'http://localhost:3000'
+    : 'https://eduprado-backend.onrender.com';
+
 // Gerenciamento de autenticação
 async function login(username, password) {
     try {
@@ -229,15 +233,18 @@ async function uploadImage(file) {
     formData.append('image', file);
 
     try {
-        const timestamp = new Date().getTime();
-        const fileName = `${timestamp}-${file.name}`;
-        const imagePath = `/images/blog/${fileName}`;
-        
-        // Em produção, aqui você faria o upload para um servidor
-        // Por enquanto, vamos apenas simular o sucesso
-        console.log('Simulando upload da imagem:', imagePath);
-        
-        return imagePath;
+        const response = await fetch(`${API_URL}/api/upload`, {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Erro ao fazer upload da imagem');
+        }
+
+        const data = await response.json();
+        return data.imagePath;
     } catch (error) {
         console.error('Erro ao fazer upload da imagem:', error);
         throw error;

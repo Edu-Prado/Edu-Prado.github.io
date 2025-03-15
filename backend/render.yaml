@@ -7,10 +7,10 @@ services:
     startCommand: npm start
     envVars:
       - key: PORT
-        value: 10000
-      - key: UPLOAD_DIR
-        value: /data/images/blog
+        value: 3000
+      - key: ALLOWED_ORIGINS
+        value: https://eduprado.me
       - key: MAX_FILE_SIZE
         value: 5242880
-      - key: ALLOWED_ORIGINS
-        value: https://edu-prado.github.io 
+      - key: UPLOAD_DIR
+        value: /opt/render/project/src/public/images/blog 

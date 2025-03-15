@@ -10,18 +10,17 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Configuração do CORS
-const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
 app.use(cors({
-    origin: function(origin, callback) {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Origem não permitida pelo CORS'));
-        }
-    }
+    origin: process.env.ALLOWED_ORIGINS.split(','),
+    methods: ['GET', 'POST', 'DELETE'],
+    allowedHeaders: ['Content-Type']
 }));
 
 app.use(express.json());
+
+// Servir arquivos estáticos
+app.use('/images', express.static(path.join(__dirname, '..', 'public', 'images')));
+app.use(express.static(__dirname));
 
 // Configuração do Multer para upload de arquivos
 const storage = multer.memoryStorage();
@@ -84,6 +83,11 @@ app.delete('/api/images/:filename', async (req, res) => {
         console.error('Erro ao excluir imagem:', error);
         res.status(500).json({ error: 'Erro ao excluir a imagem' });
     }
+});
+
+// Rota de teste
+app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok', message: 'Servidor funcionando!' });
 });
 
 app.listen(port, () => {
