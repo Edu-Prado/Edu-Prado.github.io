@@ -34,13 +34,20 @@ app.use(cors({
 
 app.use(express.json());
 
-// Verificar e criar diretório de uploads
+// Verificar e criar diretórios necessários
 const uploadDir = path.resolve(process.env.UPLOAD_DIR);
+const dataDir = path.join(__dirname, 'data');
 console.log('Diretório de uploads:', uploadDir);
+console.log('Diretório de dados:', dataDir);
 
-fs.mkdir(uploadDir, { recursive: true })
-    .then(() => console.log('Diretório de uploads criado/verificado'))
-    .catch(err => console.error('Erro ao criar diretório de uploads:', err));
+Promise.all([
+    fs.mkdir(uploadDir, { recursive: true }),
+    fs.mkdir(dataDir, { recursive: true })
+]).then(() => {
+    console.log('Diretórios criados/verificados');
+}).catch(err => {
+    console.error('Erro ao criar diretórios:', err);
+});
 
 // Servir arquivos estáticos
 app.use('/images', express.static(path.join(__dirname, '..', 'public', 'images')));
@@ -61,6 +68,64 @@ const upload = multer({
             console.log('Tipo de arquivo não suportado:', file.mimetype);
             cb(new Error('Tipo de arquivo não suportado. Use JPEG, PNG ou WebP.'));
         }
+    }
+});
+
+// Função auxiliar para ler/salvar posts
+async function readPosts() {
+    try {
+        const data = await fs.readFile(path.join(dataDir, 'posts.json'), 'utf8');
+        return JSON.parse(data);
+    } catch (error) {
+        return [];
+    }
+}
+
+async function savePosts(posts) {
+    await fs.writeFile(
+        path.join(dataDir, 'posts.json'),
+        JSON.stringify(posts, null, 2),
+        'utf8'
+    );
+}
+
+// Rotas para o blog
+app.get('/api/posts', async (req, res) => {
+    try {
+        const posts = await readPosts();
+        res.json(posts);
+    } catch (error) {
+        console.error('Erro ao ler posts:', error);
+        res.status(500).json({ error: 'Erro ao ler posts' });
+    }
+});
+
+app.post('/api/posts', async (req, res) => {
+    try {
+        const posts = await readPosts();
+        const newPost = {
+            id: Date.now().toString(),
+            ...req.body,
+            createdAt: new Date().toISOString()
+        };
+        posts.unshift(newPost);
+        await savePosts(posts);
+        res.status(201).json(newPost);
+    } catch (error) {
+        console.error('Erro ao criar post:', error);
+        res.status(500).json({ error: 'Erro ao criar post' });
+    }
+});
+
+app.delete('/api/posts/:id', async (req, res) => {
+    try {
+        const posts = await readPosts();
+        const filteredPosts = posts.filter(post => post.id !== req.params.id);
+        await savePosts(filteredPosts);
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Erro ao excluir post:', error);
+        res.status(500).json({ error: 'Erro ao excluir post' });
     }
 });
 

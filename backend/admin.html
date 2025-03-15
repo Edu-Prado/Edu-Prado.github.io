@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administração do Blog - EduPrado</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            min-height: 200px;
+            resize: vertical;
+        }
+        .image-upload {
+            border: 2px dashed #ddd;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .image-upload:hover {
+            border-color: #999;
+        }
+        .preview-image {
+            max-width: 300px;
+            margin-top: 10px;
+            display: none;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Nova Postagem no Blog</h1>
+        
+        <div id="success" class="success"></div>
+        <div id="error" class="error"></div>
+
+        <form id="postForm">
+            <div class="form-group">
+                <label for="title">Título</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Descrição Curta</label>
+                <input type="text" id="description" name="description" required>
+            </div>
+
+            <div class="form-group">
+                <label>Imagem de Capa</label>
+                <div class="image-upload" id="imageUpload">
+                    <p>Clique ou arraste uma imagem aqui</p>
+                    <input type="file" id="image" accept="image/*" style="display: none;" required>
+                    <img id="preview" class="preview-image">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="content">Conteúdo (HTML)</label>
+                <textarea id="content" name="content" required></textarea>
+            </div>
+
+            <button type="submit">Publicar</button>
+        </form>
+    </div>
+
+    <script>
+        const BACKEND_URL = 'https://eduprado-backend.onrender.com';
+        
+        // Configuração do upload de imagem
+        const imageUpload = document.getElementById('imageUpload');
+        const imageInput = document.getElementById('image');
+        const preview = document.getElementById('preview');
+        
+        imageUpload.addEventListener('click', () => imageInput.click());
+        
+        imageUpload.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            imageUpload.style.borderColor = '#007bff';
+        });
+        
+        imageUpload.addEventListener('dragleave', () => {
+            imageUpload.style.borderColor = '#ddd';
+        });
+        
+        imageUpload.addEventListener('drop', (e) => {
+            e.preventDefault();
+            imageUpload.style.borderColor = '#ddd';
+            
+            if (e.dataTransfer.files.length) {
+                imageInput.files = e.dataTransfer.files;
+                showPreview(e.dataTransfer.files[0]);
+            }
+        });
+        
+        imageInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                showPreview(e.target.files[0]);
+            }
+        });
+        
+        function showPreview(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // Manipulação do formulário
+        document.getElementById('postForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const successDiv = document.getElementById('success');
+            const errorDiv = document.getElementById('error');
+            successDiv.style.display = 'none';
+            errorDiv.style.display = 'none';
+            
+            try {
+                // Primeiro faz o upload da imagem
+                const formData = new FormData();
+                formData.append('image', imageInput.files[0]);
+                
+                const uploadResponse = await fetch(`${BACKEND_URL}/api/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!uploadResponse.ok) {
+                    throw new Error('Erro ao fazer upload da imagem');
+                }
+                
+                const uploadData = await uploadResponse.json();
+                
+                // Depois cria a postagem
+                const postData = {
+                    title: document.getElementById('title').value,
+                    description: document.getElementById('description').value,
+                    content: document.getElementById('content').value,
+                    image: uploadData.imagePath,
+                    date: new Date().toISOString()
+                };
+                
+                const postResponse = await fetch(`${BACKEND_URL}/api/posts`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(postData)
+                });
+                
+                if (!postResponse.ok) {
+                    throw new Error('Erro ao criar a postagem');
+                }
+                
+                successDiv.textContent = 'Postagem criada com sucesso!';
+                successDiv.style.display = 'block';
+                document.getElementById('postForm').reset();
+                preview.style.display = 'none';
+                
+            } catch (error) {
+                errorDiv.textContent = `Erro: ${error.message}`;
+                errorDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html> 
