@@ -57,28 +57,45 @@ function displayPosts(posts, replace = true) {
 }
 
 // Event Listeners
-document.addEventListener('DOMContentLoaded', () => {
-    loadPosts();
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        // Carregar posts do backend
+        const response = await fetch('https://eduprado-backend.onrender.com/api/posts');
+        const posts = await response.json();
 
-    // Pesquisa
-    const searchInput = document.getElementById('blog-search');
-    let searchTimeout;
+        // Encontrar o container do blog
+        const blogGrid = document.querySelector('.blog-grid');
+        if (!blogGrid) return;
 
-    searchInput.addEventListener('input', (e) => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-            currentPage = 1;
-            const filteredPosts = filterPosts(e.target.value);
-            displayPosts(filteredPosts);
-        }, 300);
-    });
+        // Limpar o conteúdo existente
+        blogGrid.innerHTML = '';
 
-    // Carregar mais posts
-    document.getElementById('load-more').addEventListener('click', () => {
-        currentPage++;
-        const filteredPosts = filterPosts(document.getElementById('blog-search').value);
-        displayPosts(filteredPosts, false);
-    });
+        // Adicionar os posts
+        posts.forEach(post => {
+            const article = document.createElement('article');
+            article.className = 'blog-card reveal';
+            article.innerHTML = `
+                <img src="${post.imageUrl}" alt="${post.title}" class="blog-img">
+                <div class="blog-content">
+                    <h3>${post.title}</h3>
+                    <p>${post.excerpt || post.content.substring(0, 150)}...</p>
+                    <a href="#" class="read-more" data-id="${post.id}">Ler mais</a>
+                </div>
+            `;
+            blogGrid.appendChild(article);
+        });
+
+        // Se não houver posts, mostrar mensagem
+        if (posts.length === 0) {
+            blogGrid.innerHTML = '<p class="no-posts">Nenhuma postagem encontrada.</p>';
+        }
+    } catch (error) {
+        console.error('Erro ao carregar posts:', error);
+        const blogGrid = document.querySelector('.blog-grid');
+        if (blogGrid) {
+            blogGrid.innerHTML = '<p class="error">Erro ao carregar as postagens. Por favor, tente novamente mais tarde.</p>';
+        }
+    }
 });
 
 // Função para atualizar a página inicial
