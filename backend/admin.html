@@ -183,7 +183,8 @@
                 });
                 
                 if (!uploadResponse.ok) {
-                    throw new Error('Erro ao fazer upload da imagem');
+                    const errorData = await uploadResponse.json();
+                    throw new Error(errorData.error || 'Erro ao fazer upload da imagem');
                 }
                 
                 const uploadData = await uploadResponse.json();
@@ -206,7 +207,8 @@
                 });
                 
                 if (!postResponse.ok) {
-                    throw new Error('Erro ao criar a postagem');
+                    const errorData = await postResponse.json();
+                    throw new Error(errorData.error || 'Erro ao criar a postagem');
                 }
                 
                 successDiv.textContent = 'Postagem criada com sucesso!';

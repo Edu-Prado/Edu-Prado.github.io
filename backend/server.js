@@ -21,6 +21,7 @@ console.log('Origens permitidas:', allowedOrigins);
 
 app.use(cors({
     origin: function(origin, callback) {
+        console.log('Origem da requisição:', origin);
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
@@ -36,7 +37,7 @@ app.use(express.json());
 
 // Verificar e criar diretórios necessários
 const uploadDir = path.resolve(process.env.UPLOAD_DIR);
-const dataDir = path.join(__dirname, 'data');
+const dataDir = path.join(path.dirname(uploadDir), 'data');
 console.log('Diretório de uploads:', uploadDir);
 console.log('Diretório de dados:', dataDir);
 
@@ -50,7 +51,7 @@ Promise.all([
 });
 
 // Servir arquivos estáticos
-app.use('/images', express.static(path.join(__dirname, '..', 'public', 'images')));
+app.use('/images', express.static(uploadDir));
 app.use(express.static(__dirname));
 
 // Configuração do Multer para upload de arquivos
@@ -62,6 +63,7 @@ const upload = multer({
     },
     fileFilter: (req, file, cb) => {
         const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        console.log('Tipo do arquivo:', file.mimetype);
         if (allowedTypes.includes(file.mimetype)) {
             cb(null, true);
         } else {
@@ -145,7 +147,9 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
         console.log('Processando upload:', {
             originalName,
             fileName,
-            outputPath
+            outputPath,
+            fileSize: req.file.size,
+            mimeType: req.file.mimetype
         });
 
         // Criar diretório se não existir
@@ -164,11 +168,11 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
 
         res.json({
             success: true,
-            imagePath: `/images/blog/${fileName}`
+            imagePath: `/images/${fileName}`
         });
     } catch (error) {
         console.error('Erro no upload:', error);
-        res.status(500).json({ error: 'Erro ao processar o upload da imagem' });
+        res.status(500).json({ error: `Erro ao processar o upload da imagem: ${error.message}` });
     }
 });
 
@@ -195,6 +199,7 @@ app.get('/api/health', (req, res) => {
         message: 'Servidor funcionando!',
         env: {
             uploadDir,
+            dataDir,
             allowedOrigins,
             port
         }
@@ -204,7 +209,7 @@ app.get('/api/health', (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error('Erro não tratado:', err);
-    res.status(500).json({ error: 'Erro interno do servidor' });
+    res.status(500).json({ error: `Erro interno do servidor: ${err.message}` });
 });
 
 app.listen(port, () => {
@@ -212,6 +217,7 @@ app.listen(port, () => {
     console.log('Ambiente:', {
         NODE_ENV: process.env.NODE_ENV,
         uploadDir,
+        dataDir,
         allowedOrigins,
         port
     });

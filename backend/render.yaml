@@ -3,16 +3,18 @@ services:
     name: eduprado-backend
     env: node
     rootDir: backend
-    buildCommand: |
-      npm install
-      mkdir -p /opt/render/project/src/public/images/blog
+    buildCommand: npm install
     startCommand: npm start
     envVars:
       - key: PORT
         value: 3000
       - key: ALLOWED_ORIGINS
-        value: https://eduprado.me
+        value: http://localhost:3000,https://eduprado.me,https://eduprado-backend.onrender.com
       - key: MAX_FILE_SIZE
         value: 5242880
       - key: UPLOAD_DIR
-        value: /opt/render/project/src/public/images/blog 
+        value: /data/images/blog
+    disk:
+      name: data
+      mountPath: /data
+      sizeGB: 1 
