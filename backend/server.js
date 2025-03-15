@@ -9,14 +9,38 @@ const fs = require('fs').promises;
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Logging middleware
+app.use((req, res, next) => {
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+    next();
+});
+
 // Configuração do CORS
+const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
+console.log('Origens permitidas:', allowedOrigins);
+
 app.use(cors({
-    origin: process.env.ALLOWED_ORIGINS.split(','),
+    origin: function(origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            console.log('Origem bloqueada:', origin);
+            callback(new Error('Origem não permitida pelo CORS'));
+        }
+    },
     methods: ['GET', 'POST', 'DELETE'],
     allowedHeaders: ['Content-Type']
 }));
 
 app.use(express.json());
+
+// Verificar e criar diretório de uploads
+const uploadDir = path.resolve(process.env.UPLOAD_DIR);
+console.log('Diretório de uploads:', uploadDir);
+
+fs.mkdir(uploadDir, { recursive: true })
+    .then(() => console.log('Diretório de uploads criado/verificado'))
+    .catch(err => console.error('Erro ao criar diretório de uploads:', err));
 
 // Servir arquivos estáticos
 app.use('/images', express.static(path.join(__dirname, '..', 'public', 'images')));
@@ -34,6 +58,7 @@ const upload = multer({
         if (allowedTypes.includes(file.mimetype)) {
             cb(null, true);
         } else {
+            console.log('Tipo de arquivo não suportado:', file.mimetype);
             cb(new Error('Tipo de arquivo não suportado. Use JPEG, PNG ou WebP.'));
         }
     }
@@ -43,16 +68,23 @@ const upload = multer({
 app.post('/api/upload', upload.single('image'), async (req, res) => {
     try {
         if (!req.file) {
+            console.log('Nenhum arquivo enviado');
             return res.status(400).json({ error: 'Nenhum arquivo enviado' });
         }
 
         const timestamp = Date.now();
         const originalName = req.file.originalname;
         const fileName = `${timestamp}-${originalName}`;
-        const outputPath = path.join(process.env.UPLOAD_DIR, fileName);
+        const outputPath = path.join(uploadDir, fileName);
+
+        console.log('Processando upload:', {
+            originalName,
+            fileName,
+            outputPath
+        });
 
         // Criar diretório se não existir
-        await fs.mkdir(process.env.UPLOAD_DIR, { recursive: true });
+        await fs.mkdir(uploadDir, { recursive: true });
 
         // Processar e otimizar a imagem
         await sharp(req.file.buffer)
@@ -62,6 +94,8 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
             })
             .webp({ quality: 80 })
             .toFile(outputPath);
+
+        console.log('Upload concluído:', fileName);
 
         res.json({
             success: true,
@@ -76,8 +110,12 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
 // Rota para excluir imagem
 app.delete('/api/images/:filename', async (req, res) => {
     try {
-        const filePath = path.join(process.env.UPLOAD_DIR, req.params.filename);
+        const filePath = path.join(uploadDir, req.params.filename);
+        console.log('Tentando excluir arquivo:', filePath);
+        
         await fs.unlink(filePath);
+        console.log('Arquivo excluído com sucesso:', filePath);
+        
         res.json({ success: true });
     } catch (error) {
         console.error('Erro ao excluir imagem:', error);
@@ -87,9 +125,29 @@ app.delete('/api/images/:filename', async (req, res) => {
 
 // Rota de teste
 app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', message: 'Servidor funcionando!' });
+    res.json({ 
+        status: 'ok', 
+        message: 'Servidor funcionando!',
+        env: {
+            uploadDir,
+            allowedOrigins,
+            port
+        }
+    });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error('Erro não tratado:', err);
+    res.status(500).json({ error: 'Erro interno do servidor' });
 });
 
 app.listen(port, () => {
     console.log(`Servidor rodando na porta ${port}`);
+    console.log('Ambiente:', {
+        NODE_ENV: process.env.NODE_ENV,
+        uploadDir,
+        allowedOrigins,
+        port
+    });
 }); 
