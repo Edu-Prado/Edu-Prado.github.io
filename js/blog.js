@@ -181,7 +181,7 @@ function displayPosts(posts) {
             const postId = post.id || '';
             
             // Define uma imagem padrão caso não exista imageUrl
-            let imageUrl = 'https://via.placeholder.com/400x300?text=Post+sem+imagem';
+            let imageUrl = 'https://placehold.co/400x300/e9ecef/495057?text=Post+sem+imagem';
             if (post.imageUrl) {
                 imageUrl = post.imageUrl.startsWith('http') 
                     ? post.imageUrl 
@@ -202,7 +202,7 @@ function displayPosts(posts) {
                     <div class="blog-image">
                         <img src="${imageUrl}" 
                              alt="${title}"
-                             onerror="this.src='https://via.placeholder.com/400x300?text=Post+sem+imagem'; this.onerror=null;">
+                             onerror="this.src='https://placehold.co/400x300/e9ecef/495057?text=Erro+ao+carregar+imagem'; this.onerror=null;">
                     </div>
                     <div class="blog-content">
                         <h3>${title}</h3>
