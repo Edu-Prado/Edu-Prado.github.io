@@ -8,15 +8,19 @@ const path = require('path');
 
 const app = express();
 const port = process.env.PORT || 3000;
-const uploadDir = process.env.UPLOAD_DIR || path.join(__dirname, 'uploads', 'images', 'blog');
-const dataDir = process.env.DATA_DIR || path.join(__dirname, 'data', 'blog');
+const uploadDir = process.env.UPLOAD_DIR || path.join(__dirname, '..', 'data', 'images', 'blog');
+const dataDir = process.env.DATA_DIR || path.join(__dirname, '..', 'data', 'blog');
 
 // Logging middleware aprimorado
 app.use((req, res, next) => {
     const start = Date.now();
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-    console.log('Headers:', JSON.stringify(req.headers, null, 2));
-    console.log('Body:', req.body);
+    if (Object.keys(req.headers).length > 0) {
+        console.log('Headers:', JSON.stringify(req.headers, null, 2));
+    }
+    if (req.body && Object.keys(req.body).length > 0) {
+        console.log('Body:', JSON.stringify(req.body, null, 2));
+    }
     
     res.on('finish', () => {
         const duration = Date.now() - start;
@@ -31,22 +35,28 @@ app.use(cors({
     origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
+    credentials: true,
+    optionsSuccessStatus: 200
 }));
 
 app.use(express.json());
 
 // Verificar e criar diretórios necessários
-console.log('[Config] Diretório de uploads:', uploadDir);
-console.log('[Config] Diretório de dados:', dataDir);
+console.log('[Config] Iniciando verificação de diretórios...');
+console.log('[Config] Diretório de uploads:', path.resolve(uploadDir));
+console.log('[Config] Diretório de dados:', path.resolve(dataDir));
 
 Promise.all([
     fs.mkdir(uploadDir, { recursive: true }),
     fs.mkdir(dataDir, { recursive: true })
 ]).then(() => {
     console.log('[Config] Diretórios criados/verificados com sucesso');
+    console.log('[Config] Estrutura final:');
+    console.log('- Upload dir:', path.resolve(uploadDir));
+    console.log('- Data dir:', path.resolve(dataDir));
 }).catch(err => {
     console.error('[Config] Erro ao criar diretórios:', err);
+    console.error('[Config] Stack:', err.stack);
 });
 
 // Servir arquivos estáticos
