@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Iniciando carregamento dos posts...');
+    console.log('[Blog] Iniciando carregamento dos posts...');
     
     // Configura dimensões personalizadas para análise de blog
     gtag('set', {
@@ -64,58 +64,122 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function loadPosts() {
     try {
-        console.log('Fazendo requisição para o backend...');
-        const response = await fetch('https://eduprado-backend.onrender.com/api/posts');
-        console.log('Resposta do backend:', response);
+        console.log('[Blog] Iniciando requisição para o backend...');
+        console.log('[Blog] URL:', 'https://eduprado-backend.onrender.com/api/posts');
+        
+        const response = await fetch('https://eduprado-backend.onrender.com/api/posts', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            mode: 'cors'
+        });
+        
+        console.log('[Blog] Status da resposta:', response.status);
+        console.log('[Blog] Headers da resposta:', response.headers);
         
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            const errorText = await response.text();
+            console.error('[Blog] Erro na resposta:', {
+                status: response.status,
+                statusText: response.statusText,
+                body: errorText
+            });
+            throw new Error(`Erro HTTP: ${response.status} - ${errorText}`);
         }
         
         const posts = await response.json();
-        console.log('Posts recebidos:', posts);
+        console.log('[Blog] Posts recebidos:', posts);
+        
+        if (!Array.isArray(posts)) {
+            console.error('[Blog] Formato inválido de posts:', posts);
+            throw new Error('Formato inválido de posts recebidos');
+        }
         
         displayPosts(posts);
     } catch (error) {
-        console.error('Erro ao carregar posts:', error);
+        console.error('[Blog] Erro ao carregar posts:', error);
+        gtag('event', 'error', {
+            'event_category': 'Blog',
+            'event_label': 'Load Posts Error',
+            'error_message': error.message
+        });
+        
         const blogGrid = document.querySelector('.blog-grid');
         if (blogGrid) {
-            blogGrid.innerHTML = '<p class="error-message">Erro ao carregar os posts. Por favor, tente novamente mais tarde.</p>';
+            blogGrid.innerHTML = `
+                <div class="error-message">
+                    <p>Erro ao carregar os posts. Por favor, tente novamente mais tarde.</p>
+                    <p class="error-details">Detalhes: ${error.message}</p>
+                    <button onclick="loadPosts()" class="btn btn-primary">Tentar novamente</button>
+                </div>
+            `;
         }
     }
 }
 
 function displayPosts(posts) {
-    console.log('Iniciando exibição dos posts...');
+    console.log('[Blog] Iniciando exibição dos posts...');
     const blogGrid = document.querySelector('.blog-grid');
     if (!blogGrid) {
-        console.error('Container do blog não encontrado!');
+        console.error('[Blog] Container do blog não encontrado!');
         return;
     }
 
-    console.log('Total de posts:', posts.length);
-    const postsToShow = posts.slice(0, 3);
-    console.log('Posts que serão exibidos:', postsToShow);
-    
-    blogGrid.innerHTML = postsToShow.map(post => {
-        console.log('Processando post:', post);
-        return `
-            <div class="blog-card reveal">
-                <div class="blog-image">
-                    <img src="https://eduprado-backend.onrender.com${post.imageUrl}" alt="${post.title}">
-                </div>
-                <div class="blog-content">
-                    <h3>${post.title}</h3>
-                    <p>${post.excerpt || post.content.substring(0, 150)}...</p>
-                    <div class="blog-meta">
-                        <span class="date">${new Date(post.createdAt).toLocaleDateString('pt-BR')}</span>
-                        <span class="category">${post.category}</span>
-                    </div>
-                    <a href="post.html?id=${post._id}" class="btn btn-secondary">Ler mais</a>
-                </div>
+    if (posts.length === 0) {
+        console.log('[Blog] Nenhum post encontrado');
+        blogGrid.innerHTML = `
+            <div class="no-posts-message">
+                <p>Nenhum post encontrado.</p>
             </div>
         `;
-    }).join('');
+        return;
+    }
+
+    console.log('[Blog] Total de posts:', posts.length);
+    const postsToShow = posts.slice(0, 3);
+    console.log('[Blog] Posts que serão exibidos:', postsToShow);
     
-    console.log('Posts carregados com sucesso!');
+    try {
+        blogGrid.innerHTML = postsToShow.map(post => {
+            console.log('[Blog] Processando post:', post);
+            return `
+                <div class="blog-card reveal">
+                    <div class="blog-image">
+                        <img src="https://eduprado-backend.onrender.com${post.imageUrl}" 
+                             alt="${post.title}"
+                             onerror="this.src='images/placeholder.jpg'; this.onerror=null;">
+                    </div>
+                    <div class="blog-content">
+                        <h3>${post.title || 'Sem título'}</h3>
+                        <p>${post.excerpt || post.content?.substring(0, 150) || 'Sem conteúdo'}...</p>
+                        <div class="blog-meta">
+                            <span class="date">${new Date(post.createdAt).toLocaleDateString('pt-BR')}</span>
+                            <span class="category">${post.category || 'Geral'}</span>
+                        </div>
+                        <a href="post.html?id=${post._id}" class="btn btn-secondary">Ler mais</a>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        console.log('[Blog] Posts carregados com sucesso!');
+        
+        // Rastreia sucesso no carregamento
+        gtag('event', 'posts_loaded', {
+            'event_category': 'Blog',
+            'event_label': 'Posts Loaded',
+            'value': posts.length
+        });
+    } catch (error) {
+        console.error('[Blog] Erro ao renderizar posts:', error);
+        blogGrid.innerHTML = `
+            <div class="error-message">
+                <p>Erro ao exibir os posts. Por favor, tente novamente mais tarde.</p>
+                <p class="error-details">Detalhes: ${error.message}</p>
+                <button onclick="loadPosts()" class="btn btn-primary">Tentar novamente</button>
+            </div>
+        `;
+    }
 } 

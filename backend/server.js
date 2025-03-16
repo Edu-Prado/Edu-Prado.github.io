@@ -10,15 +10,28 @@ const app = express();
 const port = process.env.PORT || 3000;
 const uploadDir = process.env.UPLOAD_DIR || path.join(__dirname, 'uploads', 'images', 'blog');
 
-// Logging middleware
+// Logging middleware aprimorado
 app.use((req, res, next) => {
-    console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
-    console.log('Headers:', req.headers);
+    const start = Date.now();
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    console.log('Headers:', JSON.stringify(req.headers, null, 2));
+    console.log('Body:', req.body);
+    
+    res.on('finish', () => {
+        const duration = Date.now() - start;
+        console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} - Status: ${res.statusCode} - Duration: ${duration}ms`);
+    });
+    
     next();
 });
 
-// Configuração do CORS
-app.use(cors());
+// Configuração do CORS mais permissiva
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+}));
 
 app.use(express.json());
 
@@ -154,23 +167,26 @@ app.delete('/api/posts/:id', async (req, res) => {
     }
 });
 
-// Rota para upload de imagem
+// Rota para upload de imagem atualizada
 app.post('/api/upload', upload.single('image'), (req, res) => {
-    console.log('Recebendo requisição de upload:', {
-        headers: req.headers,
-        file: req.file,
-        body: req.body
-    });
+    console.log('[Upload] Iniciando processamento do upload');
+    console.log('[Upload] Headers:', JSON.stringify(req.headers, null, 2));
+    console.log('[Upload] File:', req.file);
+    console.log('[Upload] Body:', req.body);
 
     try {
         if (!req.file) {
-            console.error('Nenhum arquivo recebido');
-            return res.status(400).json({ error: 'Nenhum arquivo recebido' });
+            console.error('[Upload] Erro: Nenhum arquivo recebido');
+            return res.status(400).json({ 
+                error: 'Nenhum arquivo recebido',
+                requestHeaders: req.headers,
+                requestBody: req.body
+            });
         }
 
-        console.log('Arquivo recebido com sucesso:', req.file);
+        console.log('[Upload] Arquivo recebido com sucesso:', req.file);
         const imageUrl = `/images/blog/${req.file.filename}`;
-        console.log('URL da imagem:', imageUrl);
+        console.log('[Upload] URL da imagem gerada:', imageUrl);
 
         res.json({ 
             message: 'Upload realizado com sucesso',
@@ -178,11 +194,16 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
             file: req.file
         });
     } catch (error) {
-        console.error('Erro durante o upload:', error);
+        console.error('[Upload] Erro durante o upload:', error);
         res.status(500).json({ 
             error: 'Erro ao fazer upload da imagem',
             details: error.message,
-            stack: error.stack
+            stack: error.stack,
+            requestInfo: {
+                headers: req.headers,
+                body: req.body,
+                file: req.file
+            }
         });
     }
 });
