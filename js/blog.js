@@ -1,18 +1,27 @@
 document.addEventListener('DOMContentLoaded', () => {
     console.log('[Blog] Iniciando carregamento dos posts...');
     
-    // Configura dimensões personalizadas para análise de blog
-    gtag('set', {
-        'page_type': 'blog',
-        'user_type': 'visitor'
-    });
+    // Função auxiliar para verificar se o Google Analytics está disponível
+    const trackEvent = (eventName, params) => {
+        if (typeof gtag === 'function') {
+            gtag('event', eventName, params);
+        }
+    };
 
-    // Rastreia visualização da página do blog
-    gtag('event', 'page_view', {
-        'page_title': 'Blog Home',
-        'page_location': window.location.href,
-        'page_path': window.location.pathname
-    });
+    // Configura dimensões personalizadas para análise de blog (se GA disponível)
+    if (typeof gtag === 'function') {
+        gtag('set', {
+            'page_type': 'blog',
+            'user_type': 'visitor'
+        });
+
+        // Rastreia visualização da página do blog
+        trackEvent('page_view', {
+            'page_title': 'Blog Home',
+            'page_location': window.location.href,
+            'page_path': window.location.pathname
+        });
+    }
 
     loadPosts();
 
@@ -25,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const postCategory = postCard.querySelector('.category').textContent;
             
             // Rastreia clique no post com informações detalhadas
-            gtag('event', 'post_click', {
+            trackEvent('post_click', {
                 'event_category': 'Blog',
                 'event_label': postTitle,
                 'post_category': postCategory,
@@ -38,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let startTime = Date.now();
     window.addEventListener('beforeunload', () => {
         const timeSpent = Math.round((Date.now() - startTime) / 1000);
-        gtag('event', 'time_spent', {
+        trackEvent('time_spent', {
             'event_category': 'Blog',
             'event_label': 'Reading Time',
             'value': timeSpent
@@ -52,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (scrollPercent > maxScroll) {
             maxScroll = scrollPercent;
             if (maxScroll >= 25 && maxScroll % 25 === 0) { // Rastreia a cada 25% de rolagem
-                gtag('event', 'scroll_depth', {
+                trackEvent('scroll_depth', {
                     'event_category': 'Blog',
                     'event_label': 'Scroll Depth',
                     'value': maxScroll
