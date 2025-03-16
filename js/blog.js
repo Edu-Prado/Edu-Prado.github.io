@@ -205,7 +205,7 @@ function displayPosts(posts) {
             });
             
             return `
-                <div class="blog-card reveal">
+                <div class="blog-card">
                     <div class="blog-image">
                         <img src="${imageUrl}" 
                              alt="${title}"
