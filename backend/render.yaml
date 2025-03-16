@@ -2,12 +2,11 @@ services:
   - type: web
     name: eduprado-backend
     env: node
-    rootDir: backend
-    buildCommand: |
-      npm install
-      mkdir -p /data/images/blog
+    buildCommand: npm install
+    startCommand: |
       mkdir -p /data/blog
-    startCommand: node server.js
+      mkdir -p /data/images/blog
+      node server.js
     envVars:
       - key: DATA_DIR
         value: /data/blog

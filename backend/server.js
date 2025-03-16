@@ -7,56 +7,186 @@ const fs = require('fs').promises;
 const path = require('path');
 
 const app = express();
-const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
+const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
+const POSTS_FILE = path.join(DATA_DIR, 'posts.json');
 const uploadDir = process.env.UPLOAD_DIR || path.join(__dirname, '..', 'data', 'images', 'blog');
-const dataDir = process.env.DATA_DIR || path.join(__dirname, '..', 'data', 'blog');
 
-// Logging middleware aprimorado
-app.use((req, res, next) => {
-    const start = Date.now();
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-    if (Object.keys(req.headers).length > 0) {
-        console.log('Headers:', JSON.stringify(req.headers, null, 2));
-    }
-    if (req.body && Object.keys(req.body).length > 0) {
-        console.log('Body:', JSON.stringify(req.body, null, 2));
-    }
-    
-    res.on('finish', () => {
-        const duration = Date.now() - start;
-        console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} - Status: ${res.statusCode} - Duration: ${duration}ms`);
-    });
-    
-    next();
-});
-
-// Configuração do CORS mais permissiva
-app.use(cors({
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
-    optionsSuccessStatus: 200
-}));
-
+// Middleware
+app.use(cors());
 app.use(express.json());
 
-// Verificar e criar diretórios necessários
-console.log('[Config] Iniciando verificação de diretórios...');
-console.log('[Config] Diretório de uploads:', path.resolve(uploadDir));
-console.log('[Config] Diretório de dados:', path.resolve(dataDir));
+// Logs personalizados
+const logger = {
+    info: (message, data = {}) => {
+        console.log(`[INFO] ${message}`, data);
+    },
+    error: (message, error) => {
+        console.error(`[ERROR] ${message}`, error);
+    }
+};
 
-Promise.all([
-    fs.mkdir(uploadDir, { recursive: true }),
-    fs.mkdir(dataDir, { recursive: true })
-]).then(() => {
-    console.log('[Config] Diretórios criados/verificados com sucesso');
-    console.log('[Config] Estrutura final:');
-    console.log('- Upload dir:', path.resolve(uploadDir));
-    console.log('- Data dir:', path.resolve(dataDir));
-}).catch(err => {
-    console.error('[Config] Erro ao criar diretórios:', err);
-    console.error('[Config] Stack:', err.stack);
+// Garante que o diretório de dados existe
+async function ensureDataDir() {
+    try {
+        await fs.mkdir(DATA_DIR, { recursive: true });
+        logger.info(`Diretório de dados criado/verificado: ${DATA_DIR}`);
+    } catch (error) {
+        logger.error('Erro ao criar diretório de dados:', error);
+        throw error;
+    }
+}
+
+// Carrega os posts do arquivo
+async function loadPosts() {
+    try {
+        await ensureDataDir();
+        
+        try {
+            const data = await fs.readFile(POSTS_FILE, 'utf8');
+            logger.info('Posts carregados com sucesso');
+            return JSON.parse(data);
+        } catch (error) {
+            if (error.code === 'ENOENT') {
+                logger.info('Arquivo de posts não encontrado, criando novo...');
+                await fs.writeFile(POSTS_FILE, '[]');
+                return [];
+            }
+            throw error;
+        }
+    } catch (error) {
+        logger.error('Erro ao carregar posts:', error);
+        throw error;
+    }
+}
+
+// Salva os posts no arquivo
+async function savePosts(posts) {
+    try {
+        await ensureDataDir();
+        await fs.writeFile(POSTS_FILE, JSON.stringify(posts, null, 2));
+        logger.info('Posts salvos com sucesso');
+    } catch (error) {
+        logger.error('Erro ao salvar posts:', error);
+        throw error;
+    }
+}
+
+// Rotas
+app.get('/api/posts', async (req, res) => {
+    try {
+        const posts = await loadPosts();
+        logger.info(`Retornando ${posts.length} posts`);
+        res.json(posts);
+    } catch (error) {
+        logger.error('Erro ao buscar posts:', error);
+        res.status(500).json({ error: 'Erro ao buscar posts' });
+    }
+});
+
+app.get('/api/posts/:id', async (req, res) => {
+    try {
+        const posts = await loadPosts();
+        const post = posts.find(p => p.id === req.params.id);
+        
+        if (!post) {
+            logger.info(`Post não encontrado: ${req.params.id}`);
+            return res.status(404).json({ error: 'Post não encontrado' });
+        }
+        
+        logger.info(`Post encontrado: ${post.title}`);
+        res.json(post);
+    } catch (error) {
+        logger.error('Erro ao buscar post:', error);
+        res.status(500).json({ error: 'Erro ao buscar post' });
+    }
+});
+
+app.post('/api/posts', async (req, res) => {
+    try {
+        const { title, description, content, category } = req.body;
+        
+        if (!title || !content) {
+            return res.status(400).json({ error: 'Título e conteúdo são obrigatórios' });
+        }
+        
+        const posts = await loadPosts();
+        const newPost = {
+            id: Date.now().toString(),
+            title,
+            description,
+            content,
+            category: category || 'Geral',
+            createdAt: new Date().toISOString()
+        };
+        
+        posts.push(newPost);
+        await savePosts(posts);
+        
+        logger.info('Novo post criado:', { title: newPost.title });
+        res.status(201).json(newPost);
+    } catch (error) {
+        logger.error('Erro ao criar post:', error);
+        res.status(500).json({ error: 'Erro ao criar post' });
+    }
+});
+
+app.put('/api/posts/:id', async (req, res) => {
+    try {
+        const { title, description, content, category } = req.body;
+        
+        if (!title || !content) {
+            return res.status(400).json({ error: 'Título e conteúdo são obrigatórios' });
+        }
+        
+        const posts = await loadPosts();
+        const index = posts.findIndex(p => p.id === req.params.id);
+        
+        if (index === -1) {
+            logger.info(`Post não encontrado para atualização: ${req.params.id}`);
+            return res.status(404).json({ error: 'Post não encontrado' });
+        }
+        
+        const updatedPost = {
+            ...posts[index],
+            title,
+            description,
+            content,
+            category: category || posts[index].category,
+            updatedAt: new Date().toISOString()
+        };
+        
+        posts[index] = updatedPost;
+        await savePosts(posts);
+        
+        logger.info('Post atualizado:', { title: updatedPost.title });
+        res.json(updatedPost);
+    } catch (error) {
+        logger.error('Erro ao atualizar post:', error);
+        res.status(500).json({ error: 'Erro ao atualizar post' });
+    }
+});
+
+app.delete('/api/posts/:id', async (req, res) => {
+    try {
+        const posts = await loadPosts();
+        const index = posts.findIndex(p => p.id === req.params.id);
+        
+        if (index === -1) {
+            logger.info(`Post não encontrado para exclusão: ${req.params.id}`);
+            return res.status(404).json({ error: 'Post não encontrado' });
+        }
+        
+        const deletedPost = posts[index];
+        posts.splice(index, 1);
+        await savePosts(posts);
+        
+        logger.info('Post excluído:', { title: deletedPost.title });
+        res.json({ message: 'Post excluído com sucesso' });
+    } catch (error) {
+        logger.error('Erro ao excluir post:', error);
+        res.status(500).json({ error: 'Erro ao excluir post' });
+    }
 });
 
 // Servir arquivos estáticos
@@ -80,150 +210,6 @@ const upload = multer({
     storage: storage,
     limits: {
         fileSize: parseInt(process.env.MAX_FILE_SIZE) || 5 * 1024 * 1024 // 5MB default
-    }
-});
-
-// Função auxiliar para ler/salvar posts
-async function readPosts() {
-    try {
-        console.log('[Posts] Tentando ler posts do arquivo...');
-        const filePath = path.join(dataDir, 'posts.json');
-        console.log('[Posts] Caminho absoluto do arquivo:', path.resolve(filePath));
-        
-        try {
-            await fs.access(filePath);
-            console.log('[Posts] Arquivo de posts existe');
-            const stats = await fs.stat(filePath);
-            console.log('[Posts] Tamanho do arquivo:', stats.size, 'bytes');
-        } catch (error) {
-            console.log('[Posts] Arquivo de posts não existe, criando novo...');
-            await fs.writeFile(filePath, '[]', 'utf8');
-            console.log('[Posts] Arquivo vazio criado com sucesso');
-            return [];
-        }
-        
-        const data = await fs.readFile(filePath, 'utf8');
-        console.log('[Posts] Conteúdo bruto do arquivo:', data);
-        
-        const posts = JSON.parse(data);
-        console.log('[Posts] Total de posts lidos:', posts.length);
-        posts.forEach((post, index) => {
-            console.log(`[Posts] Post ${index + 1}:`, {
-                id: post.id,
-                title: post.title,
-                imageUrl: post.imageUrl,
-                createdAt: post.createdAt
-            });
-        });
-        
-        return posts;
-    } catch (error) {
-        console.error('[Posts] Erro ao ler posts:', error);
-        return [];
-    }
-}
-
-async function savePosts(posts) {
-    try {
-        console.log('[Posts] Iniciando salvamento de posts...');
-        const filePath = path.join(dataDir, 'posts.json');
-        console.log('[Posts] Caminho absoluto do arquivo:', path.resolve(filePath));
-        console.log('[Posts] Total de posts a salvar:', posts.length);
-        
-        // Verifica se o diretório existe
-        try {
-            await fs.access(path.dirname(filePath));
-            console.log('[Posts] Diretório de posts existe');
-        } catch (error) {
-            console.log('[Posts] Criando diretório de posts...');
-            await fs.mkdir(path.dirname(filePath), { recursive: true });
-        }
-        
-        // Formata o JSON para melhor legibilidade
-        const jsonContent = JSON.stringify(posts, null, 2);
-        console.log('[Posts] Conteúdo a ser salvo:', jsonContent);
-        
-        await fs.writeFile(filePath, jsonContent, 'utf8');
-        
-        // Verifica se o arquivo foi salvo corretamente
-        const savedContent = await fs.readFile(filePath, 'utf8');
-        const savedPosts = JSON.parse(savedContent);
-        console.log('[Posts] Verificação após salvamento:', {
-            postsCount: savedPosts.length,
-            fileSize: savedContent.length,
-            firstPost: savedPosts[0] ? {
-                id: savedPosts[0].id,
-                title: savedPosts[0].title
-            } : null
-        });
-        
-        console.log('[Posts] Posts salvos com sucesso!');
-    } catch (error) {
-        console.error('[Posts] Erro ao salvar posts:', error);
-        throw error;
-    }
-}
-
-// Rotas para o blog
-app.get('/api/posts', async (req, res) => {
-    try {
-        console.log('[API] Recebendo requisição GET /api/posts');
-        console.log('[API] Headers:', req.headers);
-        
-        const posts = await readPosts();
-        console.log('[API] Total de posts encontrados:', posts.length);
-        
-        res.json(posts);
-        console.log('[API] Resposta enviada com sucesso');
-    } catch (error) {
-        console.error('[API] Erro ao ler posts:', error);
-        res.status(500).json({ 
-            error: 'Erro ao ler posts',
-            details: error.message,
-            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
-        });
-    }
-});
-
-app.post('/api/posts', async (req, res) => {
-    try {
-        console.log('[API] Recebendo requisição POST /api/posts');
-        console.log('[API] Headers:', req.headers);
-        console.log('[API] Dados recebidos:', req.body);
-        
-        const posts = await readPosts();
-        const newPost = {
-            id: Date.now().toString(),
-            ...req.body,
-            createdAt: new Date().toISOString()
-        };
-        
-        console.log('[API] Novo post criado:', newPost);
-        posts.unshift(newPost);
-        
-        await savePosts(posts);
-        console.log('[API] Post adicionado com sucesso');
-        
-        res.status(201).json(newPost);
-    } catch (error) {
-        console.error('[API] Erro ao criar post:', error);
-        res.status(500).json({ 
-            error: 'Erro ao criar post',
-            details: error.message,
-            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
-        });
-    }
-});
-
-app.delete('/api/posts/:id', async (req, res) => {
-    try {
-        const posts = await readPosts();
-        const filteredPosts = posts.filter(post => post.id !== req.params.id);
-        await savePosts(filteredPosts);
-        res.json({ success: true });
-    } catch (error) {
-        console.error('Erro ao excluir post:', error);
-        res.status(500).json({ error: 'Erro ao excluir post' });
     }
 });
 
@@ -291,9 +277,9 @@ app.get('/api/health', (req, res) => {
         message: 'Servidor funcionando!',
         env: {
             uploadDir,
-            dataDir,
+            dataDir: DATA_DIR,
             allowedOrigins: '*',
-            port
+            port: PORT
         }
     });
 });
@@ -308,8 +294,9 @@ app.use((err, req, res, next) => {
     });
 });
 
-app.listen(port, () => {
-    console.log(`Servidor rodando na porta ${port}`);
+// Inicia o servidor
+app.listen(PORT, () => {
+    logger.info(`Servidor rodando na porta ${PORT}`);
     console.log('Configurações:');
     console.log('- Upload dir:', uploadDir);
     console.log('- Max file size:', process.env.MAX_FILE_SIZE || '5MB');
