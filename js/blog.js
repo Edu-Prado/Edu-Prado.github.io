@@ -146,7 +146,7 @@ function displayPosts(posts) {
         return;
     }
 
-    if (posts.length === 0) {
+    if (!Array.isArray(posts) || posts.length === 0) {
         console.log('[Blog] Nenhum post encontrado');
         blogGrid.innerHTML = `
             <div class="no-posts-message">
@@ -165,28 +165,45 @@ function displayPosts(posts) {
         blogGrid.innerHTML = postsToShow.map(post => {
             console.log('[Blog] Processando post:', post);
             
-            // Verifica se a URL da imagem já é completa
-            const imageUrl = post.imageUrl.startsWith('http') 
-                ? post.imageUrl 
-                : `https://eduprado-backend.onrender.com${post.imageUrl}`;
+            // Verifica se o post e suas propriedades existem
+            if (!post) {
+                console.error('[Blog] Post inválido:', post);
+                return '';
+            }
+            
+            // Define uma imagem padrão caso não exista imageUrl
+            let imageUrl = 'images/placeholder.jpg';
+            if (post.imageUrl) {
+                imageUrl = post.imageUrl.startsWith('http') 
+                    ? post.imageUrl 
+                    : `https://eduprado-backend.onrender.com${post.imageUrl}`;
+            }
             
             console.log('[Blog] URL da imagem:', imageUrl);
+            
+            // Sanitiza os dados do post para evitar undefined
+            const title = post.title || 'Sem título';
+            const content = post.excerpt || post.content || 'Sem conteúdo';
+            const excerpt = content.substring(0, 150) + '...';
+            const category = post.category || 'Geral';
+            const date = post.createdAt ? new Date(post.createdAt).toLocaleDateString('pt-BR') : 'Data não disponível';
+            const postId = post.id || '';
             
             return `
                 <div class="blog-card reveal">
                     <div class="blog-image">
                         <img src="${imageUrl}" 
-                             alt="${post.title}"
+                             alt="${title}"
                              onerror="this.src='images/placeholder.jpg'; this.onerror=null;">
                     </div>
                     <div class="blog-content">
-                        <h3>${post.title || 'Sem título'}</h3>
-                        <p>${post.excerpt || post.content?.substring(0, 150) || 'Sem conteúdo'}...</p>
+                        <h3>${title}</h3>
+                        <p>${excerpt}</p>
                         <div class="blog-meta">
-                            <span class="date">${new Date(post.createdAt).toLocaleDateString('pt-BR')}</span>
-                            <span class="category">${post.category || 'Geral'}</span>
+                            <span class="date">${date}</span>
+                            <span class="category">${category}</span>
                         </div>
-                        <a href="post.html?id=${post.id}" class="btn btn-secondary">Ler mais</a>
+                        ${postId ? `<a href="post.html?id=${postId}" class="btn btn-secondary">Ler mais</a>` : ''}
                     </div>
                 </div>
             `;
@@ -194,8 +211,8 @@ function displayPosts(posts) {
         
         console.log('[Blog] Posts carregados com sucesso!');
         
-        // Rastreia sucesso no carregamento
-        gtag('event', 'posts_loaded', {
+        // Rastreia sucesso no carregamento usando a função auxiliar
+        trackEvent('posts_loaded', {
             'event_category': 'Blog',
             'event_label': 'Posts Loaded',
             'value': posts.length
