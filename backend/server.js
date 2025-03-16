@@ -2,9 +2,9 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
-const path = require('path');
 const sharp = require('sharp');
 const fs = require('fs').promises;
+const path = require('path');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -63,25 +63,53 @@ const upload = multer({
 // Função auxiliar para ler/salvar posts
 async function readPosts() {
     try {
-        const data = await fs.readFile(path.join(dataDir, 'posts.json'), 'utf8');
+        console.log('Tentando ler posts do arquivo...');
+        const filePath = path.join(dataDir, 'posts.json');
+        console.log('Caminho do arquivo:', filePath);
+        
+        try {
+            await fs.access(filePath);
+            console.log('Arquivo de posts existe');
+        } catch (error) {
+            console.log('Arquivo de posts não existe, criando novo...');
+            await fs.writeFile(filePath, '[]', 'utf8');
+            return [];
+        }
+        
+        const data = await fs.readFile(filePath, 'utf8');
+        console.log('Conteúdo do arquivo:', data);
         return JSON.parse(data);
     } catch (error) {
+        console.error('Erro ao ler posts:', error);
         return [];
     }
 }
 
 async function savePosts(posts) {
-    await fs.writeFile(
-        path.join(dataDir, 'posts.json'),
-        JSON.stringify(posts, null, 2),
-        'utf8'
-    );
+    try {
+        console.log('Salvando posts...');
+        const filePath = path.join(dataDir, 'posts.json');
+        console.log('Caminho do arquivo:', filePath);
+        console.log('Conteúdo a ser salvo:', JSON.stringify(posts, null, 2));
+        
+        await fs.writeFile(
+            filePath,
+            JSON.stringify(posts, null, 2),
+            'utf8'
+        );
+        console.log('Posts salvos com sucesso!');
+    } catch (error) {
+        console.error('Erro ao salvar posts:', error);
+        throw error;
+    }
 }
 
 // Rotas para o blog
 app.get('/api/posts', async (req, res) => {
     try {
+        console.log('Recebendo requisição GET /api/posts');
         const posts = await readPosts();
+        console.log('Posts encontrados:', posts);
         res.json(posts);
     } catch (error) {
         console.error('Erro ao ler posts:', error);
@@ -91,18 +119,26 @@ app.get('/api/posts', async (req, res) => {
 
 app.post('/api/posts', async (req, res) => {
     try {
+        console.log('Recebendo requisição POST /api/posts');
+        console.log('Dados recebidos:', req.body);
+        
         const posts = await readPosts();
         const newPost = {
             id: Date.now().toString(),
             ...req.body,
             createdAt: new Date().toISOString()
         };
+        
+        console.log('Novo post:', newPost);
         posts.unshift(newPost);
+        
         await savePosts(posts);
+        console.log('Post criado com sucesso!');
+        
         res.status(201).json(newPost);
     } catch (error) {
         console.error('Erro ao criar post:', error);
-        res.status(500).json({ error: 'Erro ao criar post' });
+        res.status(500).json({ error: 'Erro ao criar post', details: error.message });
     }
 });
 
