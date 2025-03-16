@@ -65,9 +65,10 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadPosts() {
     try {
         console.log('[Blog] Iniciando requisição para o backend...');
-        console.log('[Blog] URL:', 'https://eduprado-backend.onrender.com/api/posts');
+        const backendUrl = 'https://eduprado-backend.onrender.com/api/posts';
+        console.log('[Blog] URL:', backendUrl);
         
-        const response = await fetch('https://eduprado-backend.onrender.com/api/posts', {
+        const response = await fetch(backendUrl, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -77,7 +78,7 @@ async function loadPosts() {
         });
         
         console.log('[Blog] Status da resposta:', response.status);
-        console.log('[Blog] Headers da resposta:', response.headers);
+        console.log('[Blog] Headers da resposta:', Object.fromEntries(response.headers.entries()));
         
         if (!response.ok) {
             const errorText = await response.text();
@@ -89,8 +90,17 @@ async function loadPosts() {
             throw new Error(`Erro HTTP: ${response.status} - ${errorText}`);
         }
         
-        const posts = await response.json();
-        console.log('[Blog] Posts recebidos:', posts);
+        const responseText = await response.text();
+        console.log('[Blog] Resposta bruta:', responseText);
+        
+        let posts;
+        try {
+            posts = JSON.parse(responseText);
+            console.log('[Blog] Posts parseados:', posts);
+        } catch (parseError) {
+            console.error('[Blog] Erro ao fazer parse da resposta:', parseError);
+            throw new Error('Erro ao processar resposta do servidor');
+        }
         
         if (!Array.isArray(posts)) {
             console.error('[Blog] Formato inválido de posts:', posts);
@@ -132,6 +142,7 @@ function displayPosts(posts) {
         blogGrid.innerHTML = `
             <div class="no-posts-message">
                 <p>Nenhum post encontrado.</p>
+                <p>Seja o primeiro a criar um post!</p>
             </div>
         `;
         return;
@@ -144,10 +155,18 @@ function displayPosts(posts) {
     try {
         blogGrid.innerHTML = postsToShow.map(post => {
             console.log('[Blog] Processando post:', post);
+            
+            // Verifica se a URL da imagem já é completa
+            const imageUrl = post.imageUrl.startsWith('http') 
+                ? post.imageUrl 
+                : `https://eduprado-backend.onrender.com${post.imageUrl}`;
+            
+            console.log('[Blog] URL da imagem:', imageUrl);
+            
             return `
                 <div class="blog-card reveal">
                     <div class="blog-image">
-                        <img src="https://eduprado-backend.onrender.com${post.imageUrl}" 
+                        <img src="${imageUrl}" 
                              alt="${post.title}"
                              onerror="this.src='images/placeholder.jpg'; this.onerror=null;">
                     </div>
@@ -158,7 +177,7 @@ function displayPosts(posts) {
                             <span class="date">${new Date(post.createdAt).toLocaleDateString('pt-BR')}</span>
                             <span class="category">${post.category || 'Geral'}</span>
                         </div>
-                        <a href="post.html?id=${post._id}" class="btn btn-secondary">Ler mais</a>
+                        <a href="post.html?id=${post.id}" class="btn btn-secondary">Ler mais</a>
                     </div>
                 </div>
             `;
