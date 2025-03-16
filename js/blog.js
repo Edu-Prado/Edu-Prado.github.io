@@ -9,7 +9,12 @@ function trackEvent(eventName, params) {
     }
 }
 
+console.log('[Blog] Script carregado, aguardando DOMContentLoaded...');
+
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('[Blog] DOMContentLoaded disparado');
+    console.log('[Blog] Verificando elementos da página...');
+    console.log('[Blog] blog-grid:', document.querySelector('.blog-grid'));
     console.log('[Blog] Iniciando carregamento dos posts...');
     
     // Configura dimensões personalizadas para análise de blog (se GA disponível)
@@ -145,6 +150,8 @@ async function loadPosts() {
 function displayPosts(posts) {
     console.log('[Blog] Iniciando exibição dos posts...');
     const blogGrid = document.querySelector('.blog-grid');
+    console.log('[Blog] Elemento blog-grid:', blogGrid);
+    
     if (!blogGrid) {
         console.error('[Blog] Container do blog não encontrado!');
         return;
@@ -166,7 +173,7 @@ function displayPosts(posts) {
     console.log('[Blog] Posts que serão exibidos:', postsToShow);
     
     try {
-        blogGrid.innerHTML = postsToShow.map(post => {
+        const htmlContent = postsToShow.map(post => {
             if (!post) {
                 console.error('[Blog] Post inválido:', post);
                 return '';
@@ -216,6 +223,10 @@ function displayPosts(posts) {
                 </div>
             `;
         }).join('');
+
+        console.log('[Blog] HTML gerado:', htmlContent);
+        blogGrid.innerHTML = htmlContent;
+        console.log('[Blog] HTML atualizado:', blogGrid.innerHTML);
         
         console.log('[Blog] Posts carregados com sucesso!');
         
