@@ -9,31 +9,44 @@ const path = require('path');
 const app = express();
 const port = process.env.PORT || 3000;
 const uploadDir = process.env.UPLOAD_DIR || path.join(__dirname, 'uploads', 'images', 'blog');
+const dataDir = process.env.DATA_DIR || path.join(__dirname, 'data', 'blog');
 
-// Logging middleware
+// Logging middleware aprimorado
 app.use((req, res, next) => {
-    console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
-    console.log('Headers:', req.headers);
+    const start = Date.now();
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    console.log('Headers:', JSON.stringify(req.headers, null, 2));
+    console.log('Body:', req.body);
+    
+    res.on('finish', () => {
+        const duration = Date.now() - start;
+        console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} - Status: ${res.statusCode} - Duration: ${duration}ms`);
+    });
+    
     next();
 });
 
-// Configuração do CORS
-app.use(cors());
+// Configuração do CORS mais permissiva
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+}));
 
 app.use(express.json());
 
 // Verificar e criar diretórios necessários
-const dataDir = path.join(path.dirname(uploadDir), 'data');
-console.log('Diretório de uploads:', uploadDir);
-console.log('Diretório de dados:', dataDir);
+console.log('[Config] Diretório de uploads:', uploadDir);
+console.log('[Config] Diretório de dados:', dataDir);
 
 Promise.all([
     fs.mkdir(uploadDir, { recursive: true }),
     fs.mkdir(dataDir, { recursive: true })
 ]).then(() => {
-    console.log('Diretórios criados/verificados');
+    console.log('[Config] Diretórios criados/verificados com sucesso');
 }).catch(err => {
-    console.error('Erro ao criar diretórios:', err);
+    console.error('[Config] Erro ao criar diretórios:', err);
 });
 
 // Servir arquivos estáticos
@@ -63,43 +76,80 @@ const upload = multer({
 // Função auxiliar para ler/salvar posts
 async function readPosts() {
     try {
-        console.log('Tentando ler posts do arquivo...');
+        console.log('[Posts] Tentando ler posts do arquivo...');
         const filePath = path.join(dataDir, 'posts.json');
-        console.log('Caminho do arquivo:', filePath);
+        console.log('[Posts] Caminho absoluto do arquivo:', path.resolve(filePath));
         
         try {
             await fs.access(filePath);
-            console.log('Arquivo de posts existe');
+            console.log('[Posts] Arquivo de posts existe');
+            const stats = await fs.stat(filePath);
+            console.log('[Posts] Tamanho do arquivo:', stats.size, 'bytes');
         } catch (error) {
-            console.log('Arquivo de posts não existe, criando novo...');
+            console.log('[Posts] Arquivo de posts não existe, criando novo...');
             await fs.writeFile(filePath, '[]', 'utf8');
+            console.log('[Posts] Arquivo vazio criado com sucesso');
             return [];
         }
         
         const data = await fs.readFile(filePath, 'utf8');
-        console.log('Conteúdo do arquivo:', data);
-        return JSON.parse(data);
+        console.log('[Posts] Conteúdo bruto do arquivo:', data);
+        
+        const posts = JSON.parse(data);
+        console.log('[Posts] Total de posts lidos:', posts.length);
+        posts.forEach((post, index) => {
+            console.log(`[Posts] Post ${index + 1}:`, {
+                id: post.id,
+                title: post.title,
+                imageUrl: post.imageUrl,
+                createdAt: post.createdAt
+            });
+        });
+        
+        return posts;
     } catch (error) {
-        console.error('Erro ao ler posts:', error);
+        console.error('[Posts] Erro ao ler posts:', error);
         return [];
     }
 }
 
 async function savePosts(posts) {
     try {
-        console.log('Salvando posts...');
+        console.log('[Posts] Iniciando salvamento de posts...');
         const filePath = path.join(dataDir, 'posts.json');
-        console.log('Caminho do arquivo:', filePath);
-        console.log('Conteúdo a ser salvo:', JSON.stringify(posts, null, 2));
+        console.log('[Posts] Caminho absoluto do arquivo:', path.resolve(filePath));
+        console.log('[Posts] Total de posts a salvar:', posts.length);
         
-        await fs.writeFile(
-            filePath,
-            JSON.stringify(posts, null, 2),
-            'utf8'
-        );
-        console.log('Posts salvos com sucesso!');
+        // Verifica se o diretório existe
+        try {
+            await fs.access(path.dirname(filePath));
+            console.log('[Posts] Diretório de posts existe');
+        } catch (error) {
+            console.log('[Posts] Criando diretório de posts...');
+            await fs.mkdir(path.dirname(filePath), { recursive: true });
+        }
+        
+        // Formata o JSON para melhor legibilidade
+        const jsonContent = JSON.stringify(posts, null, 2);
+        console.log('[Posts] Conteúdo a ser salvo:', jsonContent);
+        
+        await fs.writeFile(filePath, jsonContent, 'utf8');
+        
+        // Verifica se o arquivo foi salvo corretamente
+        const savedContent = await fs.readFile(filePath, 'utf8');
+        const savedPosts = JSON.parse(savedContent);
+        console.log('[Posts] Verificação após salvamento:', {
+            postsCount: savedPosts.length,
+            fileSize: savedContent.length,
+            firstPost: savedPosts[0] ? {
+                id: savedPosts[0].id,
+                title: savedPosts[0].title
+            } : null
+        });
+        
+        console.log('[Posts] Posts salvos com sucesso!');
     } catch (error) {
-        console.error('Erro ao salvar posts:', error);
+        console.error('[Posts] Erro ao salvar posts:', error);
         throw error;
     }
 }
@@ -107,20 +157,29 @@ async function savePosts(posts) {
 // Rotas para o blog
 app.get('/api/posts', async (req, res) => {
     try {
-        console.log('Recebendo requisição GET /api/posts');
+        console.log('[API] Recebendo requisição GET /api/posts');
+        console.log('[API] Headers:', req.headers);
+        
         const posts = await readPosts();
-        console.log('Posts encontrados:', posts);
+        console.log('[API] Total de posts encontrados:', posts.length);
+        
         res.json(posts);
+        console.log('[API] Resposta enviada com sucesso');
     } catch (error) {
-        console.error('Erro ao ler posts:', error);
-        res.status(500).json({ error: 'Erro ao ler posts' });
+        console.error('[API] Erro ao ler posts:', error);
+        res.status(500).json({ 
+            error: 'Erro ao ler posts',
+            details: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
     }
 });
 
 app.post('/api/posts', async (req, res) => {
     try {
-        console.log('Recebendo requisição POST /api/posts');
-        console.log('Dados recebidos:', req.body);
+        console.log('[API] Recebendo requisição POST /api/posts');
+        console.log('[API] Headers:', req.headers);
+        console.log('[API] Dados recebidos:', req.body);
         
         const posts = await readPosts();
         const newPost = {
@@ -129,16 +188,20 @@ app.post('/api/posts', async (req, res) => {
             createdAt: new Date().toISOString()
         };
         
-        console.log('Novo post:', newPost);
+        console.log('[API] Novo post criado:', newPost);
         posts.unshift(newPost);
         
         await savePosts(posts);
-        console.log('Post criado com sucesso!');
+        console.log('[API] Post adicionado com sucesso');
         
         res.status(201).json(newPost);
     } catch (error) {
-        console.error('Erro ao criar post:', error);
-        res.status(500).json({ error: 'Erro ao criar post', details: error.message });
+        console.error('[API] Erro ao criar post:', error);
+        res.status(500).json({ 
+            error: 'Erro ao criar post',
+            details: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
     }
 });
 
@@ -154,23 +217,26 @@ app.delete('/api/posts/:id', async (req, res) => {
     }
 });
 
-// Rota para upload de imagem
+// Rota para upload de imagem atualizada
 app.post('/api/upload', upload.single('image'), (req, res) => {
-    console.log('Recebendo requisição de upload:', {
-        headers: req.headers,
-        file: req.file,
-        body: req.body
-    });
+    console.log('[Upload] Iniciando processamento do upload');
+    console.log('[Upload] Headers:', JSON.stringify(req.headers, null, 2));
+    console.log('[Upload] File:', req.file);
+    console.log('[Upload] Body:', req.body);
 
     try {
         if (!req.file) {
-            console.error('Nenhum arquivo recebido');
-            return res.status(400).json({ error: 'Nenhum arquivo recebido' });
+            console.error('[Upload] Erro: Nenhum arquivo recebido');
+            return res.status(400).json({ 
+                error: 'Nenhum arquivo recebido',
+                requestHeaders: req.headers,
+                requestBody: req.body
+            });
         }
 
-        console.log('Arquivo recebido com sucesso:', req.file);
+        console.log('[Upload] Arquivo recebido com sucesso:', req.file);
         const imageUrl = `/images/blog/${req.file.filename}`;
-        console.log('URL da imagem:', imageUrl);
+        console.log('[Upload] URL da imagem gerada:', imageUrl);
 
         res.json({ 
             message: 'Upload realizado com sucesso',
@@ -178,11 +244,16 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
             file: req.file
         });
     } catch (error) {
-        console.error('Erro durante o upload:', error);
+        console.error('[Upload] Erro durante o upload:', error);
         res.status(500).json({ 
             error: 'Erro ao fazer upload da imagem',
             details: error.message,
-            stack: error.stack
+            stack: error.stack,
+            requestInfo: {
+                headers: req.headers,
+                body: req.body,
+                file: req.file
+            }
         });
     }
 });
