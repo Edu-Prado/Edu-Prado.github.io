@@ -1,13 +1,17 @@
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('[Blog] Iniciando carregamento dos posts...');
-    
-    // Função auxiliar para verificar se o Google Analytics está disponível
-    const trackEvent = (eventName, params) => {
+// Função auxiliar para verificar se o Google Analytics está disponível
+function trackEvent(eventName, params) {
+    try {
         if (typeof gtag === 'function') {
             gtag('event', eventName, params);
         }
-    };
+    } catch (error) {
+        console.warn('[Analytics] Erro ao rastrear evento:', error);
+    }
+}
 
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('[Blog] Iniciando carregamento dos posts...');
+    
     // Configura dimensões personalizadas para análise de blog (se GA disponível)
     if (typeof gtag === 'function') {
         gtag('set', {
@@ -177,7 +181,7 @@ function displayPosts(posts) {
             const postId = post.id || '';
             
             // Define uma imagem padrão caso não exista imageUrl
-            let imageUrl = 'images/placeholder.jpg';
+            let imageUrl = 'https://via.placeholder.com/400x300?text=Post+sem+imagem';
             if (post.imageUrl) {
                 imageUrl = post.imageUrl.startsWith('http') 
                     ? post.imageUrl 
@@ -198,7 +202,7 @@ function displayPosts(posts) {
                     <div class="blog-image">
                         <img src="${imageUrl}" 
                              alt="${title}"
-                             onerror="this.src='images/placeholder.jpg'; this.onerror=null;">
+                             onerror="this.src='https://via.placeholder.com/400x300?text=Post+sem+imagem'; this.onerror=null;">
                     </div>
                     <div class="blog-content">
                         <h3>${title}</h3>
