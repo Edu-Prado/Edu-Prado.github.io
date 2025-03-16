@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const scrollPercent = Math.round((window.scrollY + window.innerHeight) / document.documentElement.scrollHeight * 100);
         if (scrollPercent > maxScroll) {
             maxScroll = scrollPercent;
-            if (maxScroll >= 25 && maxScroll % 25 === 0) { // Rastreia a cada 25% de rolagem
+            if (maxScroll >= 25 && maxScroll % 25 === 0) {
                 trackEvent('scroll_depth', {
                     'event_category': 'Blog',
                     'event_label': 'Scroll Depth',
@@ -119,7 +119,7 @@ async function loadPosts() {
         displayPosts(posts);
     } catch (error) {
         console.error('[Blog] Erro ao carregar posts:', error);
-        gtag('event', 'error', {
+        trackEvent('error', {
             'event_category': 'Blog',
             'event_label': 'Load Posts Error',
             'error_message': error.message
@@ -163,13 +163,18 @@ function displayPosts(posts) {
     
     try {
         blogGrid.innerHTML = postsToShow.map(post => {
-            console.log('[Blog] Processando post:', post);
-            
-            // Verifica se o post e suas propriedades existem
             if (!post) {
                 console.error('[Blog] Post inválido:', post);
                 return '';
             }
+            
+            // Sanitiza os dados do post para evitar undefined
+            const title = post.title || 'Sem título';
+            const content = post.excerpt || post.content || 'Sem conteúdo';
+            const excerpt = content.substring(0, 150) + '...';
+            const category = post.category || 'Geral';
+            const date = post.createdAt ? new Date(post.createdAt).toLocaleDateString('pt-BR') : 'Data não disponível';
+            const postId = post.id || '';
             
             // Define uma imagem padrão caso não exista imageUrl
             let imageUrl = 'images/placeholder.jpg';
@@ -179,15 +184,14 @@ function displayPosts(posts) {
                     : `https://eduprado-backend.onrender.com${post.imageUrl}`;
             }
             
-            console.log('[Blog] URL da imagem:', imageUrl);
-            
-            // Sanitiza os dados do post para evitar undefined
-            const title = post.title || 'Sem título';
-            const content = post.excerpt || post.content || 'Sem conteúdo';
-            const excerpt = content.substring(0, 150) + '...';
-            const category = post.category || 'Geral';
-            const date = post.createdAt ? new Date(post.createdAt).toLocaleDateString('pt-BR') : 'Data não disponível';
-            const postId = post.id || '';
+            console.log('[Blog] Processando post:', {
+                title,
+                excerpt: excerpt.substring(0, 50) + '...',
+                imageUrl,
+                category,
+                date,
+                postId
+            });
             
             return `
                 <div class="blog-card reveal">
@@ -211,7 +215,6 @@ function displayPosts(posts) {
         
         console.log('[Blog] Posts carregados com sucesso!');
         
-        // Rastreia sucesso no carregamento usando a função auxiliar
         trackEvent('posts_loaded', {
             'event_category': 'Blog',
             'event_label': 'Posts Loaded',
