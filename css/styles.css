@@ -432,6 +432,38 @@ body {
     font-size: 1rem;
 }
 
+/* Newsletter Messages */
+.newsletter-message {
+    text-align: center;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 0.5rem;
+    animation: slideDown 0.3s ease-out;
+}
+
+.newsletter-message.success-message {
+    background: #d1fae5;
+    color: #059669;
+    border: 1px solid #a7f3d0;
+}
+
+.newsletter-message.error-message {
+    background: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
 /* Footer */
 .footer {
     padding: 4rem 0 2rem;
