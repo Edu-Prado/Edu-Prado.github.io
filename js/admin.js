@@ -211,7 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 title: document.getElementById('post-title').value,
                 category: document.getElementById('post-category').value,
                 content: document.getElementById('post-content').value,
-                imageUrl: document.getElementById('post-image').value
+                image_url: document.getElementById('post-image').value
             };
 
             console.log('Dados do post:', post);
