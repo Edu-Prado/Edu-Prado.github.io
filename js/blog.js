@@ -1,3 +1,5 @@
+const API_URL = 'https://eduprado-backend.onrender.com/api';
+
 // Função auxiliar para verificar se o Google Analytics está disponível
 function trackEvent(eventName, params) {
     try {
@@ -86,45 +88,43 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Função para carregar os posts do localStorage
-function loadPosts() {
-    return JSON.parse(localStorage.getItem('blog_posts') || '[]');
+// Função para carregar os posts da API
+async function loadPosts() {
+    try {
+        const response = await fetch(`${API_URL}/posts`);
+        if (!response.ok) throw new Error('Erro ao carregar posts');
+        return await response.json();
+    } catch (error) {
+        console.error('Erro ao carregar posts:', error);
+        return [];
+    }
 }
 
-// Função para exibir os posts
+// Função para exibir os posts na página
 function displayPosts(posts) {
-    const blogGrid = document.querySelector('.blog-grid');
-    if (!blogGrid) return;
-    
-    if (posts.length === 0) {
-        blogGrid.innerHTML = '<p class="text-center">Nenhum post encontrado.</p>';
-        return;
-    }
-    
-    blogGrid.innerHTML = posts.map(post => `
-        <div class="blog-card">
-            <div class="blog-image">
-                <img src="${post.imageUrl || 'images/blog/default.jpg'}" alt="${post.title}">
-            </div>
+    const blogContainer = document.querySelector('.blog-container');
+    if (!blogContainer) return;
+
+    blogContainer.innerHTML = posts.map(post => `
+        <div class="blog-post">
+            <img src="${post.image_url || 'images/blog-placeholder.jpg'}" alt="${post.title}">
             <div class="blog-content">
-                <div class="blog-meta">
-                    <span class="blog-category">${post.category}</span>
-                    <span class="blog-date">${new Date(post.date).toLocaleDateString('pt-BR')}</span>
-                </div>
                 <h3>${post.title}</h3>
-                <p>${post.content.substring(0, 150)}...</p>
-                <a href="post.html?id=${post.id}" class="read-more">Ler mais</a>
+                <p class="category">${post.category}</p>
+                <p class="date">${new Date(post.created_at).toLocaleDateString('pt-BR')}</p>
+                <p class="excerpt">${post.content.substring(0, 150)}...</p>
+                <a href="post.html?id=${post.id}" class="btn btn-primary">Ler mais</a>
             </div>
         </div>
     `).join('');
 }
 
-// Função para carregar e exibir os posts
-function initializeBlog() {
-    const posts = loadPosts();
+// Função para inicializar o blog
+async function initializeBlog() {
+    const posts = await loadPosts();
     displayPosts(posts);
 
-    // Adicionar listener para o campo de pesquisa
+    // Adicionar listener para o campo de busca
     const searchInput = document.querySelector('.search-input');
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
