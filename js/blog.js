@@ -145,16 +145,26 @@ async function displayPosts() {
         return;
     }
 
-    blogGrid.innerHTML = posts.map(post => `
+    // Ordena os posts por data (mais recentes primeiro)
+    const sortedPosts = posts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    
+    // Limita a 6 posts mais recentes
+    const recentPosts = sortedPosts.slice(0, 6);
+
+    blogGrid.innerHTML = recentPosts.map(post => `
         <article class="post-card">
-            <img src="${isValidImageUrl(post.image_url) ? post.image_url : 'images/blog-placeholder.jpg'}" 
-                 alt="${post.title}" 
-                 class="post-image"
-                 onerror="this.src='images/blog-placeholder.jpg'">
+            <div class="post-image-container">
+                <img src="${isValidImageUrl(post.image_url) ? post.image_url : 'images/blog-placeholder.jpg'}" 
+                     alt="${post.title}" 
+                     class="post-image"
+                     onerror="this.src='images/blog-placeholder.jpg'">
+            </div>
             <div class="post-content">
                 <h2>${post.title}</h2>
-                <p class="post-category">${post.category}</p>
-                <p class="post-date">${formatDate(post.created_at)}</p>
+                <div class="post-meta">
+                    <span class="post-category">${post.category}</span>
+                    <span class="post-date">${formatDate(post.created_at)}</span>
+                </div>
                 <p class="post-excerpt">${post.content.substring(0, 150)}...</p>
                 <a href="post.html?id=${post.id}" class="btn btn-primary">Ler mais</a>
             </div>
@@ -188,14 +198,18 @@ function displayFilteredPosts(posts) {
 
     blogGrid.innerHTML = posts.map(post => `
         <article class="post-card">
-            <img src="${isValidImageUrl(post.image_url) ? post.image_url : 'images/blog-placeholder.jpg'}" 
-                 alt="${post.title}" 
-                 class="post-image"
-                 onerror="this.src='images/blog-placeholder.jpg'">
+            <div class="post-image-container">
+                <img src="${isValidImageUrl(post.image_url) ? post.image_url : 'images/blog-placeholder.jpg'}" 
+                     alt="${post.title}" 
+                     class="post-image"
+                     onerror="this.src='images/blog-placeholder.jpg'">
+            </div>
             <div class="post-content">
                 <h2>${post.title}</h2>
-                <p class="post-category">${post.category}</p>
-                <p class="post-date">${formatDate(post.created_at)}</p>
+                <div class="post-meta">
+                    <span class="post-category">${post.category}</span>
+                    <span class="post-date">${formatDate(post.created_at)}</span>
+                </div>
                 <p class="post-excerpt">${post.content.substring(0, 150)}...</p>
                 <a href="post.html?id=${post.id}" class="btn btn-primary">Ler mais</a>
             </div>
