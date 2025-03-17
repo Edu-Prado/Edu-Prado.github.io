@@ -88,12 +88,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Função para carregar os posts da API
+// Função para carregar os posts
 async function loadPosts() {
     try {
+        console.log('Carregando posts do blog...');
         const response = await fetch(`${API_URL}/posts`);
-        if (!response.ok) throw new Error('Erro ao carregar posts');
-        return await response.json();
+        if (!response.ok) {
+            throw new Error('Erro ao carregar posts');
+        }
+        const posts = await response.json();
+        console.log('Posts carregados:', posts);
+        return posts;
     } catch (error) {
         console.error('Erro ao carregar posts:', error);
         return [];
@@ -101,28 +106,33 @@ async function loadPosts() {
 }
 
 // Função para exibir os posts na página
-function displayPosts(posts) {
-    const blogContainer = document.querySelector('.blog-container');
-    if (!blogContainer) return;
+async function displayPosts() {
+    console.log('Exibindo posts...');
+    const posts = await loadPosts();
+    const blogGrid = document.querySelector('.blog-grid');
+    
+    if (!blogGrid) {
+        console.error('Elemento blog-grid não encontrado');
+        return;
+    }
 
-    blogContainer.innerHTML = posts.map(post => `
-        <div class="blog-post">
-            <img src="${post.image_url || 'images/blog-placeholder.jpg'}" alt="${post.title}">
-            <div class="blog-content">
-                <h3>${post.title}</h3>
-                <p class="category">${post.category}</p>
-                <p class="date">${new Date(post.created_at).toLocaleDateString('pt-BR')}</p>
-                <p class="excerpt">${post.content.substring(0, 150)}...</p>
+    if (posts.length === 0) {
+        blogGrid.innerHTML = '<p>Nenhum post encontrado.</p>';
+        return;
+    }
+
+    blogGrid.innerHTML = posts.map(post => `
+        <article class="post-card">
+            <img src="${post.image_url || 'images/default-post.jpg'}" alt="${post.title}" class="post-image">
+            <div class="post-content">
+                <h2>${post.title}</h2>
+                <p class="post-category">${post.category}</p>
+                <p class="post-date">${new Date(post.created_at).toLocaleDateString('pt-BR')}</p>
+                <p class="post-excerpt">${post.content.substring(0, 150)}...</p>
                 <a href="post.html?id=${post.id}" class="btn btn-primary">Ler mais</a>
             </div>
-        </div>
+        </article>
     `).join('');
-}
-
-// Função para inicializar o blog
-async function initializeBlog() {
-    const posts = await loadPosts();
-    displayPosts(posts);
 
     // Adicionar listener para o campo de busca
     const searchInput = document.querySelector('.search-input');
@@ -134,7 +144,37 @@ async function initializeBlog() {
                 post.category.toLowerCase().includes(searchTerm) ||
                 post.content.toLowerCase().includes(searchTerm)
             );
-            displayPosts(filteredPosts);
+            displayFilteredPosts(filteredPosts);
         });
     }
+}
+
+// Função para exibir posts filtrados
+function displayFilteredPosts(posts) {
+    const blogGrid = document.querySelector('.blog-grid');
+    if (!blogGrid) return;
+
+    if (posts.length === 0) {
+        blogGrid.innerHTML = '<p>Nenhum post encontrado.</p>';
+        return;
+    }
+
+    blogGrid.innerHTML = posts.map(post => `
+        <article class="post-card">
+            <img src="${post.image_url || 'images/default-post.jpg'}" alt="${post.title}" class="post-image">
+            <div class="post-content">
+                <h2>${post.title}</h2>
+                <p class="post-category">${post.category}</p>
+                <p class="post-date">${new Date(post.created_at).toLocaleDateString('pt-BR')}</p>
+                <p class="post-excerpt">${post.content.substring(0, 150)}...</p>
+                <a href="post.html?id=${post.id}" class="btn btn-primary">Ler mais</a>
+            </div>
+        </article>
+    `).join('');
+}
+
+// Inicializar o blog
+function initializeBlog() {
+    console.log('Inicializando blog...');
+    displayPosts();
 } 

@@ -31,35 +31,48 @@ async function loadPosts() {
 
 // Função para carregar os posts na tabela
 async function loadPostsTable() {
+    console.log('Carregando posts...');
     const posts = await loadPosts();
-    const tbody = document.querySelector('#posts-table tbody');
-    if (!tbody) return;
+    console.log('Posts carregados:', posts);
+    
+    const postsList = document.getElementById('posts-list');
+    if (!postsList) {
+        console.error('Elemento posts-list não encontrado');
+        return;
+    }
 
-    tbody.innerHTML = posts.map(post => `
-        <tr>
-            <td>${post.title}</td>
-            <td>${post.category}</td>
-            <td>${new Date(post.created_at).toLocaleDateString('pt-BR')}</td>
-            <td>
+    if (posts.length === 0) {
+        postsList.innerHTML = '<p>Nenhum post encontrado.</p>';
+        return;
+    }
+
+    postsList.innerHTML = posts.map(post => `
+        <div class="post-item">
+            <div class="post-info">
+                <h3>${post.title}</h3>
+                <p>Categoria: ${post.category}</p>
+                <p>Data: ${new Date(post.created_at).toLocaleDateString('pt-BR')}</p>
+            </div>
+            <div class="post-actions">
                 <button class="btn btn-sm btn-primary edit-post" data-id="${post.id}">
                     <i class="fas fa-edit"></i>
                 </button>
                 <button class="btn btn-sm btn-danger delete-post" data-id="${post.id}">
                     <i class="fas fa-trash"></i>
                 </button>
-            </td>
-        </tr>
+            </div>
+        </div>
     `).join('');
 
     // Adicionar listeners para os botões de editar e deletar
-    tbody.querySelectorAll('.edit-post').forEach(button => {
+    postsList.querySelectorAll('.edit-post').forEach(button => {
         button.addEventListener('click', () => {
             const id = parseInt(button.dataset.id);
             editPost(id);
         });
     });
 
-    tbody.querySelectorAll('.delete-post').forEach(button => {
+    postsList.querySelectorAll('.delete-post').forEach(button => {
         button.addEventListener('click', () => {
             const id = parseInt(button.dataset.id);
             deletePost(id);
@@ -70,6 +83,7 @@ async function loadPostsTable() {
 // Função para salvar um novo post
 async function savePost(post) {
     try {
+        console.log('Enviando post para a API:', post);
         const response = await fetch(`${API_URL}/posts`, {
             method: 'POST',
             headers: {
@@ -77,7 +91,16 @@ async function savePost(post) {
             },
             body: JSON.stringify(post)
         });
-        return response.ok;
+        
+        if (!response.ok) {
+            const error = await response.json();
+            console.error('Erro ao salvar post:', error);
+            return false;
+        }
+        
+        const savedPost = await response.json();
+        console.log('Post salvo com sucesso:', savedPost);
+        return true;
     } catch (error) {
         console.error('Erro ao salvar post:', error);
         return false;
@@ -161,6 +184,7 @@ async function deleteAllPosts() {
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('Inicializando admin.js');
     checkAuth();
     loadPostsTable();
 
@@ -181,6 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (postForm) {
         postForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            console.log('Formulário submetido');
             
             const post = {
                 title: document.getElementById('post-title').value,
@@ -188,6 +213,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 content: document.getElementById('post-content').value,
                 imageUrl: document.getElementById('post-image').value
             };
+
+            console.log('Dados do post:', post);
 
             const editId = postForm.dataset.editId;
             let success = false;
@@ -205,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (success) {
                 alert('Post salvo com sucesso!');
                 postForm.reset();
-                loadPostsTable();
+                await loadPostsTable(); // Recarrega a lista após salvar
             } else {
                 alert('Erro ao salvar o post.');
             }
