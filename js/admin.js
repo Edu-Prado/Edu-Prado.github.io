@@ -17,85 +17,90 @@ function logout() {
     window.location.href = 'admin-login.html';
 }
 
-// Função para carregar posts
-function loadPosts() {
-    const posts = JSON.parse(localStorage.getItem(POSTS_STORAGE_KEY) || '[]');
-    const postsList = document.getElementById('posts-list');
-    if (!postsList) return;
+// Função para carregar os posts do arquivo JSON
+async function loadPosts() {
+    try {
+        const response = await fetch('/data/posts.json');
+        const data = await response.json();
+        return data.posts;
+    } catch (error) {
+        console.error('Erro ao carregar posts:', error);
+        return [];
+    }
+}
 
-    postsList.innerHTML = posts.map(post => `
-        <div class="post-item">
-            <div class="post-info">
-                <h3>${post.title}</h3>
-                <p>Categoria: ${post.category}</p>
-                <p>Data: ${new Date(post.date).toLocaleDateString()}</p>
-            </div>
-            <div class="post-actions">
-                <button onclick="editPost(${post.id})" class="btn btn-secondary">
-                    <i class="fas fa-edit"></i> Editar
+// Função para salvar os posts no arquivo JSON
+async function savePosts(posts) {
+    try {
+        const response = await fetch('/data/posts.json', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ posts })
+        });
+        return response.ok;
+    } catch (error) {
+        console.error('Erro ao salvar posts:', error);
+        return false;
+    }
+}
+
+// Função para carregar os posts na tabela
+async function loadPostsTable() {
+    const posts = await loadPosts();
+    const tbody = document.querySelector('#posts-table tbody');
+    tbody.innerHTML = posts.map(post => `
+        <tr>
+            <td>${post.title}</td>
+            <td>${post.category}</td>
+            <td>${new Date(post.date).toLocaleDateString('pt-BR')}</td>
+            <td>
+                <button class="btn btn-sm btn-primary edit-post" data-id="${post.id}">
+                    <i class="fas fa-edit"></i>
                 </button>
-                <button onclick="deletePost(${post.id})" class="btn btn-danger">
-                    <i class="fas fa-trash"></i> Excluir
+                <button class="btn btn-sm btn-danger delete-post" data-id="${post.id}">
+                    <i class="fas fa-trash"></i>
                 </button>
-            </div>
-        </div>
+            </td>
+        </tr>
     `).join('');
 }
 
-// Função para salvar posts
-function savePosts(posts) {
-    localStorage.setItem(POSTS_STORAGE_KEY, JSON.stringify(posts));
+// Função para salvar um novo post
+async function savePost(post) {
+    const posts = await loadPosts();
+    posts.push(post);
+    return await savePosts(posts);
 }
 
-// Função para criar novo post
-function createPost(postData) {
-    const posts = JSON.parse(localStorage.getItem(POSTS_STORAGE_KEY) || '[]');
-    const newPost = {
-        id: Date.now(),
-        date: new Date().toISOString(),
-        ...postData
-    };
-    posts.push(newPost);
-    savePosts(posts);
-    loadPosts();
-    return newPost;
+// Função para atualizar um post existente
+async function updatePost(post) {
+    const posts = await loadPosts();
+    const index = posts.findIndex(p => p.id === post.id);
+    if (index !== -1) {
+        posts[index] = post;
+        return await savePosts(posts);
+    }
+    return false;
 }
 
-// Função para editar post
-function editPost(id) {
-    const posts = JSON.parse(localStorage.getItem(POSTS_STORAGE_KEY) || '[]');
-    const post = posts.find(p => p.id === id);
-    if (!post) return;
-
-    document.getElementById('title').value = post.title;
-    document.getElementById('category').value = post.category;
-    document.getElementById('imageUrl').value = post.imageUrl || '';
-    document.getElementById('content').value = post.content;
-    document.getElementById('post-form').dataset.editId = id;
+// Função para deletar um post
+async function deletePost(id) {
+    const posts = await loadPosts();
+    const filteredPosts = posts.filter(post => post.id !== id);
+    return await savePosts(filteredPosts);
 }
 
-// Função para deletar post
-function deletePost(id) {
-    if (!confirm('Tem certeza que deseja excluir este post?')) return;
-
-    const posts = JSON.parse(localStorage.getItem(POSTS_STORAGE_KEY) || '[]');
-    const updatedPosts = posts.filter(p => p.id !== id);
-    savePosts(updatedPosts);
-    loadPosts();
-}
-
-// Função para excluir todos os posts
-function deleteAllPosts() {
-    if (!confirm('Tem certeza que deseja excluir TODOS os posts? Esta ação não pode ser desfeita.')) return;
-    
-    localStorage.removeItem(POSTS_STORAGE_KEY);
-    loadPosts();
+// Função para deletar todos os posts
+async function deleteAllPosts() {
+    return await savePosts([]);
 }
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
     checkAuth();
-    loadPosts();
+    loadPostsTable();
 
     // Logout button
     const logoutButton = document.getElementById('logout-button');
@@ -106,43 +111,40 @@ document.addEventListener('DOMContentLoaded', () => {
     // Delete all posts button
     const deleteAllButton = document.getElementById('delete-all-posts');
     if (deleteAllButton) {
-        deleteAllButton.addEventListener('click', deleteAllPosts);
+        deleteAllButton.addEventListener('click', async () => {
+            if (confirm('Tem certeza que deseja deletar todos os posts? Esta ação não pode ser desfeita.')) {
+                if (await deleteAllPosts()) {
+                    alert('Todos os posts foram deletados com sucesso!');
+                    loadPostsTable();
+                } else {
+                    alert('Erro ao deletar os posts.');
+                }
+            }
+        });
     }
 
     // Post form
     const postForm = document.getElementById('post-form');
     if (postForm) {
-        postForm.addEventListener('submit', (e) => {
+        postForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const title = document.getElementById('title').value;
-            const category = document.getElementById('category').value;
-            const imageUrl = document.getElementById('imageUrl').value;
-            const content = document.getElementById('content').value;
-
-            const postData = {
-                title,
-                category,
-                imageUrl,
-                content
+            const post = {
+                id: Date.now(),
+                title: document.getElementById('post-title').value,
+                category: document.getElementById('post-category').value,
+                content: document.getElementById('post-content').value,
+                imageUrl: document.getElementById('post-image').value,
+                date: new Date().toISOString()
             };
 
-            const editId = postForm.dataset.editId;
-            if (editId) {
-                // Atualizar post existente
-                const posts = JSON.parse(localStorage.getItem(POSTS_STORAGE_KEY) || '[]');
-                const updatedPosts = posts.map(p => 
-                    p.id === parseInt(editId) ? { ...p, ...postData } : p
-                );
-                savePosts(updatedPosts);
-                delete postForm.dataset.editId;
+            if (await savePost(post)) {
+                alert('Post salvo com sucesso!');
+                postForm.reset();
+                loadPostsTable();
             } else {
-                // Criar novo post
-                createPost(postData);
+                alert('Erro ao salvar o post.');
             }
-
-            postForm.reset();
-            loadPosts();
         });
     }
 }); 

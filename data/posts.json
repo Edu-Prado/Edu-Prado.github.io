@@ -1,35 +1,3 @@
-[
-    {
-        "id": 1,
-        "title": "Como a IA pode tornar seu trabalho mais eficiente?",
-        "slug": "ia-eficiencia-trabalho",
-        "description": "Descubra como implementar soluções de IA para aumentar sua produtividade e eficiência no trabalho.",
-        "content": "Conteúdo completo do post aqui...",
-        "image": "/images/blog/ai-trends.jpg",
-        "date": "2024-03-15",
-        "readTime": 5,
-        "tags": ["IA", "Produtividade", "Trabalho"]
-    },
-    {
-        "id": 2,
-        "title": "Automação inteligente: quais ferramentas valem a pena?",
-        "slug": "automacao-inteligente-ferramentas",
-        "description": "Um guia prático sobre as melhores ferramentas de automação para otimizar seus processos.",
-        "content": "Conteúdo completo do post aqui...",
-        "image": "/images/blog/web-dev.jpg",
-        "date": "2024-03-10",
-        "readTime": 8,
-        "tags": ["Automação", "Ferramentas", "Produtividade"]
-    },
-    {
-        "id": 3,
-        "title": "Tendências tecnológicas para os próximos anos",
-        "slug": "tendencias-tecnologicas-futuro",
-        "description": "Análise das principais tendências que moldarão o futuro da tecnologia e dos negócios.",
-        "content": "Conteúdo completo do post aqui...",
-        "image": "/images/blog/cloud-computing.jpg",
-        "date": "2024-03-05",
-        "readTime": 6,
-        "tags": ["Tendências", "Tecnologia", "Inovação"]
-    }
-] 
+{
+    "posts": []
+} 

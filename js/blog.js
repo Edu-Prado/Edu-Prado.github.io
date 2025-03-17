@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     console.log('[Blog] Iniciando carregamento dos posts');
-    loadPosts();
+    initializeBlog();
 
     // Adiciona funcionalidade de pesquisa
     const searchInput = document.querySelector('.search-input');
@@ -86,12 +86,36 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-function loadPosts() {
-    const posts = JSON.parse(localStorage.getItem('blog_posts') || '[]');
-    console.log('[Blog] Posts carregados:', posts);
-    displayPosts(posts);
+// Função para carregar os posts do arquivo JSON
+async function loadPosts() {
+    try {
+        const response = await fetch('/data/posts.json');
+        const data = await response.json();
+        return data.posts;
+    } catch (error) {
+        console.error('Erro ao carregar posts:', error);
+        return [];
+    }
 }
 
+// Função para salvar os posts no arquivo JSON
+async function savePosts(posts) {
+    try {
+        const response = await fetch('/data/posts.json', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ posts })
+        });
+        return response.ok;
+    } catch (error) {
+        console.error('Erro ao salvar posts:', error);
+        return false;
+    }
+}
+
+// Função para exibir os posts
 function displayPosts(posts) {
     const blogGrid = document.querySelector('.blog-grid');
     if (!blogGrid) return;
@@ -101,24 +125,40 @@ function displayPosts(posts) {
         return;
     }
     
-    const postsHTML = posts.map(post => `
+    blogGrid.innerHTML = posts.map(post => `
         <div class="blog-card">
             <div class="blog-image">
-                <img src="${post.imageUrl || 'images/blog-default.jpg'}" alt="${post.title}">
+                <img src="${post.imageUrl || 'images/blog/default.jpg'}" alt="${post.title}">
             </div>
             <div class="blog-content">
-                <h3>${post.title}</h3>
                 <div class="blog-meta">
-                    <span>${post.category}</span>
-                    <span>${new Date(post.date).toLocaleDateString()}</span>
+                    <span class="blog-category">${post.category}</span>
+                    <span class="blog-date">${new Date(post.date).toLocaleDateString('pt-BR')}</span>
                 </div>
+                <h3>${post.title}</h3>
                 <p>${post.content.substring(0, 150)}...</p>
-                <a href="post.html?id=${post.id}" class="btn btn-primary">Ler mais</a>
+                <a href="post.html?id=${post.id}" class="read-more">Ler mais</a>
             </div>
         </div>
     `).join('');
-    
-    console.log('[Blog] HTML dos posts gerado:', postsHTML);
-    blogGrid.innerHTML = postsHTML;
-    console.log('[Blog] HTML inserido no elemento .blog-grid');
+}
+
+// Função para carregar e exibir os posts
+async function initializeBlog() {
+    const posts = await loadPosts();
+    displayPosts(posts);
+
+    // Adicionar listener para o campo de pesquisa
+    const searchInput = document.querySelector('.search-input');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredPosts = posts.filter(post => 
+                post.title.toLowerCase().includes(searchTerm) ||
+                post.category.toLowerCase().includes(searchTerm) ||
+                post.content.toLowerCase().includes(searchTerm)
+            );
+            displayPosts(filteredPosts);
+        });
+    }
 } 
