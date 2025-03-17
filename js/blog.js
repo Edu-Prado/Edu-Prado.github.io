@@ -107,11 +107,54 @@ async function loadPosts() {
 
 // Função para formatar a data
 function formatDate(dateString) {
-    if (!dateString) return 'Data não disponível';
+    console.log('Formatando data:', dateString);
+    
+    if (!dateString) {
+        console.log('Data não fornecida');
+        return 'Data não disponível';
+    }
+
     try {
-        const date = new Date(dateString);
-        if (isNaN(date.getTime())) return 'Data não disponível';
-        return date.toLocaleDateString('pt-BR');
+        // Tenta diferentes formatos de data
+        let date;
+        if (typeof dateString === 'string') {
+            // Remove qualquer parte de timezone se existir
+            dateString = dateString.split('T')[0];
+            
+            // Tenta diferentes formatos de data
+            const formats = [
+                /^\d{4}-\d{2}-\d{2}$/,  // YYYY-MM-DD
+                /^\d{2}\/\d{2}\/\d{4}$/, // DD/MM/YYYY
+                /^\d{4}\/\d{2}\/\d{2}$/  // YYYY/MM/DD
+            ];
+
+            for (const format of formats) {
+                if (format.test(dateString)) {
+                    date = new Date(dateString);
+                    break;
+                }
+            }
+
+            if (!date || isNaN(date.getTime())) {
+                console.log('Formato de data inválido:', dateString);
+                return 'Data não disponível';
+            }
+        } else {
+            date = new Date(dateString);
+        }
+
+        // Formata a data para o padrão brasileiro
+        const options = { 
+            day: '2-digit', 
+            month: '2-digit', 
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        };
+
+        const formattedDate = date.toLocaleDateString('pt-BR', options);
+        console.log('Data formatada:', formattedDate);
+        return formattedDate;
     } catch (error) {
         console.error('Erro ao formatar data:', error);
         return 'Data não disponível';
