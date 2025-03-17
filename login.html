@@ -30,7 +30,7 @@
     <div class="container">
         <div class="login-container">
             <div class="logo">
-                <img src="img/logo.png" alt="Edu Prado Logo">
+                <img src="assets/img/logo.png" alt="Edu Prado Logo">
             </div>
             <h2 class="text-center mb-4">Login</h2>
             <form id="login-form">
@@ -50,23 +50,16 @@
         </div>
     </div>
 
-    <script src="https://unpkg.com/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
     <script>
         console.log('Iniciando script de login...');
-        
-        // Verifica se o Supabase está carregado
-        if (typeof createClient === 'undefined') {
-            console.error('Erro: Supabase não está carregado!');
-        } else {
-            console.log('Supabase está disponível');
-        }
         
         // Configuração do Supabase
         const SUPABASE_URL = 'https://gvnxngmxlxppvqtoqler.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2bnhuZ214bHhwcHZxdG9xbGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyNDE1OTgsImV4cCI6MjA1NzgxNzU5OH0.YqckHPGQ-5DAfFDITZ-vDtghXah0qwwPaIzYfVRFu5U';
         
         console.log('Inicializando cliente Supabase...');
-        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         console.log('Cliente Supabase inicializado');
 
         // Função para fazer login
