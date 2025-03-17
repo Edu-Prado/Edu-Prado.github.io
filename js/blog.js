@@ -28,9 +28,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Adiciona funcionalidade de pesquisa
     const searchInput = document.querySelector('.search-input');
     if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
+        searchInput.addEventListener('input', async (e) => {
             const searchTerm = e.target.value.toLowerCase();
-            const posts = JSON.parse(localStorage.getItem('blog_posts') || '[]');
+            const posts = await loadPosts();
             
             const filteredPosts = posts.filter(post => 
                 post.title.toLowerCase().includes(searchTerm) ||
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 post.content.toLowerCase().includes(searchTerm)
             );
             
-            displayPosts(filteredPosts);
+            displayFilteredPosts(filteredPosts);
         });
     }
 
