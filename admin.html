@@ -3,261 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administração do Blog | EduPrado.me</title>
+    <title>Admin | EduPrado.me</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="css/styles.css">
     <style>
         .admin-container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
-        .posts-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-        }
-        .posts-table th, .posts-table td {
-            padding: 0.75rem;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        .posts-table th {
-            background-color: #f8f9fa;
-            font-weight: 600;
-        }
-        .action-buttons {
-            display: flex;
-            gap: 0.5rem;
-        }
-        .btn-edit, .btn-delete {
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .btn-edit {
-            background-color: #ffc107;
-            color: #000;
-        }
-        .btn-delete {
-            background-color: #dc3545;
-            color: #fff;
-        }
-        .post-form {
             max-width: 800px;
             margin: 2rem auto;
-            padding: 1rem;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 2rem;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-        .form-group {
-            margin-bottom: 1rem;
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
         }
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
+
+        .admin-actions {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
         }
-        .form-group input, .form-group textarea {
+
+        .admin-login {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: var(--section-bg);
+        }
+
+        .login-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            max-width: 400px;
         }
-        .form-group textarea {
-            min-height: 150px;
+
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 2rem;
         }
     </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="container">
-            <a href="/" class="logo">
-                <img src="images/logo.png" alt="EduPrado.me Logo" class="logo-img">
-            </a>
-            <ul class="nav-links">
-                <li><a href="/">Voltar ao site</a></li>
-            </ul>
-        </div>
-    </nav>
-
     <div class="admin-container">
-        <h1>Administração do Blog</h1>
-        
-        <button id="newPostBtn" class="btn btn-primary">Novo Post</button>
-        
-        <div id="postForm" class="post-form" style="display: none;">
-            <h2 id="formTitle">Novo Post</h2>
-            <form id="blogPostForm">
-                <input type="hidden" id="postId">
-                <div class="form-group">
-                    <label for="title">Título</label>
-                    <input type="text" id="title" required>
-                </div>
-                <div class="form-group">
-                    <label for="description">Descrição</label>
-                    <input type="text" id="description" required>
-                </div>
-                <div class="form-group">
-                    <label for="imageUrl">URL da Imagem</label>
-                    <input type="url" id="imageUrl" placeholder="https://exemplo.com/imagem.jpg">
-                    <small>Deixe em branco para usar uma imagem padrão</small>
-                </div>
-                <div class="form-group">
-                    <label for="content">Conteúdo</label>
-                    <textarea id="content" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="category">Categoria</label>
-                    <input type="text" id="category" value="Geral">
-                </div>
-                <button type="submit" class="btn btn-primary">Salvar</button>
-                <button type="button" class="btn btn-secondary" onclick="hideForm()">Cancelar</button>
-            </form>
+        <div class="admin-header">
+            <h1>Painel Administrativo</h1>
+            <button id="logout-button" class="btn btn-secondary">
+                <i class="fas fa-sign-out-alt"></i> Sair
+            </button>
         </div>
 
-        <table class="posts-table">
-            <thead>
-                <tr>
-                    <th>Título</th>
-                    <th>Categoria</th>
-                    <th>Data</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody id="postsTableBody">
-                <!-- Posts serão carregados aqui -->
-            </tbody>
-        </table>
+        <div class="admin-actions">
+            <button id="delete-all-posts" class="btn btn-danger">
+                <i class="fas fa-trash"></i> Excluir Todos os Posts
+            </button>
+        </div>
+
+        <form id="post-form" class="post-form">
+            <div class="form-group">
+                <label for="title">Título</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+            <div class="form-group">
+                <label for="category">Categoria</label>
+                <input type="text" id="category" name="category" required>
+            </div>
+            <div class="form-group">
+                <label for="imageUrl">URL da Imagem</label>
+                <input type="url" id="imageUrl" name="imageUrl">
+                <small>Deixe em branco para usar uma imagem padrão</small>
+            </div>
+            <div class="form-group">
+                <label for="content">Conteúdo</label>
+                <textarea id="content" name="content" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Publicar Post</button>
+        </form>
     </div>
 
-    <script>
-        const API_URL = 'https://eduprado-backend.onrender.com/api';
-        let posts = [];
-
-        // Carrega todos os posts
-        async function loadPosts() {
-            try {
-                const response = await fetch(`${API_URL}/posts`);
-                if (!response.ok) throw new Error('Erro ao carregar posts');
-                
-                posts = await response.json();
-                displayPosts();
-            } catch (error) {
-                console.error('Erro:', error);
-                alert('Erro ao carregar posts. Por favor, tente novamente.');
-            }
-        }
-
-        // Exibe os posts na tabela
-        function displayPosts() {
-            const tbody = document.getElementById('postsTableBody');
-            tbody.innerHTML = posts.map(post => `
-                <tr>
-                    <td>${post.title}</td>
-                    <td>${post.category || 'Geral'}</td>
-                    <td>${new Date(post.createdAt).toLocaleDateString('pt-BR')}</td>
-                    <td class="action-buttons">
-                        <button class="btn-edit" onclick="editPost('${post.id}')">
-                            <i class="fas fa-edit"></i> Editar
-                        </button>
-                        <button class="btn-delete" onclick="deletePost('${post.id}')">
-                            <i class="fas fa-trash"></i> Excluir
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        // Mostra o formulário para novo post
-        document.getElementById('newPostBtn').addEventListener('click', () => {
-            document.getElementById('formTitle').textContent = 'Novo Post';
-            document.getElementById('postId').value = '';
-            document.getElementById('blogPostForm').reset();
-            document.getElementById('postForm').style.display = 'block';
-        });
-
-        // Esconde o formulário
-        function hideForm() {
-            document.getElementById('postForm').style.display = 'none';
-        }
-
-        // Edita um post existente
-        function editPost(id) {
-            const post = posts.find(p => p.id === id);
-            if (!post) return;
-
-            document.getElementById('formTitle').textContent = 'Editar Post';
-            document.getElementById('postId').value = post.id;
-            document.getElementById('title').value = post.title;
-            document.getElementById('description').value = post.description;
-            document.getElementById('imageUrl').value = post.imageUrl || '';
-            document.getElementById('content').value = post.content;
-            document.getElementById('category').value = post.category || 'Geral';
-            document.getElementById('postForm').style.display = 'block';
-        }
-
-        // Deleta um post
-        async function deletePost(id) {
-            if (!confirm('Tem certeza que deseja excluir este post?')) return;
-
-            try {
-                const response = await fetch(`${API_URL}/posts/${id}`, {
-                    method: 'DELETE'
-                });
-                
-                if (!response.ok) throw new Error('Erro ao excluir post');
-                
-                posts = posts.filter(p => p.id !== id);
-                displayPosts();
-                alert('Post excluído com sucesso!');
-            } catch (error) {
-                console.error('Erro:', error);
-                alert('Erro ao excluir post. Por favor, tente novamente.');
-            }
-        }
-
-        // Manipula o envio do formulário
-        document.getElementById('blogPostForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const postId = document.getElementById('postId').value;
-            const postData = {
-                title: document.getElementById('title').value,
-                description: document.getElementById('description').value,
-                imageUrl: document.getElementById('imageUrl').value,
-                content: document.getElementById('content').value,
-                category: document.getElementById('category').value
-            };
-
-            try {
-                const method = postId ? 'PUT' : 'POST';
-                const url = postId ? `${API_URL}/posts/${postId}` : `${API_URL}/posts`;
-                
-                const response = await fetch(url, {
-                    method,
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(postData)
-                });
-
-                if (!response.ok) throw new Error('Erro ao salvar post');
-
-                await loadPosts();
-                hideForm();
-                alert('Post salvo com sucesso!');
-            } catch (error) {
-                console.error('Erro:', error);
-                alert('Erro ao salvar post. Por favor, tente novamente.');
-            }
-        });
-
-        // Carrega os posts quando a página é carregada
-        loadPosts();
-    </script>
+    <script src="js/admin.js"></script>
 </body>
 </html> 
