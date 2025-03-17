@@ -9,29 +9,18 @@ function trackEvent(eventName, params) {
     }
 }
 
-console.log('[Blog] Script carregado, aguardando DOMContentLoaded...');
+console.log('[Blog] Script carregado, aguardando DOMContentLoaded');
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('[Blog] DOMContentLoaded disparado');
-    console.log('[Blog] Verificando elementos da página...');
-    console.log('[Blog] blog-grid:', document.querySelector('.blog-grid'));
-    console.log('[Blog] Iniciando carregamento dos posts...');
     
-    // Configura dimensões personalizadas para análise de blog (se GA disponível)
-    if (typeof gtag === 'function') {
-        gtag('set', {
-            'page_type': 'blog',
-            'user_type': 'visitor'
-        });
-
-        // Rastreia visualização da página do blog
-        trackEvent('page_view', {
-            'page_title': 'Blog Home',
-            'page_location': window.location.href,
-            'page_path': window.location.pathname
-        });
+    const blogGrid = document.querySelector('.blog-grid');
+    if (!blogGrid) {
+        console.log('[Blog] Elemento .blog-grid não encontrado');
+        return;
     }
-
+    
+    console.log('[Blog] Iniciando carregamento dos posts');
     loadPosts();
 
     // Adiciona rastreamento de cliques nos posts do blog
@@ -80,169 +69,36 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-async function loadPosts() {
-    try {
-        console.log('[Blog] Iniciando requisição para o backend...');
-        const backendUrl = 'https://eduprado-backend.onrender.com/api/posts';
-        console.log('[Blog] URL:', backendUrl);
-        
-        const response = await fetch(backendUrl, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            mode: 'cors'
-        });
-        
-        console.log('[Blog] Status da resposta:', response.status);
-        console.log('[Blog] Headers da resposta:', Object.fromEntries(response.headers.entries()));
-        
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('[Blog] Erro na resposta:', {
-                status: response.status,
-                statusText: response.statusText,
-                body: errorText
-            });
-            throw new Error(`Erro HTTP: ${response.status} - ${errorText}`);
-        }
-        
-        const responseText = await response.text();
-        console.log('[Blog] Resposta bruta:', responseText);
-        
-        let posts;
-        try {
-            posts = JSON.parse(responseText);
-            console.log('[Blog] Posts parseados:', posts);
-        } catch (parseError) {
-            console.error('[Blog] Erro ao fazer parse da resposta:', parseError);
-            throw new Error('Erro ao processar resposta do servidor');
-        }
-        
-        if (!Array.isArray(posts)) {
-            console.error('[Blog] Formato inválido de posts:', posts);
-            throw new Error('Formato inválido de posts recebidos');
-        }
-        
-        displayPosts(posts);
-    } catch (error) {
-        console.error('[Blog] Erro ao carregar posts:', error);
-        trackEvent('error', {
-            'event_category': 'Blog',
-            'event_label': 'Load Posts Error',
-            'error_message': error.message
-        });
-        
-        const blogGrid = document.querySelector('.blog-grid');
-        if (blogGrid) {
-            blogGrid.innerHTML = `
-                <div class="error-message">
-                    <p>Erro ao carregar os posts. Por favor, tente novamente mais tarde.</p>
-                    <p class="error-details">Detalhes: ${error.message}</p>
-                    <button onclick="loadPosts()" class="btn btn-primary">Tentar novamente</button>
-                </div>
-            `;
-        }
-    }
-}
-
-function displayPosts(posts) {
-    console.log('[Blog] Iniciando exibição dos posts...');
+function loadPosts() {
+    const posts = JSON.parse(localStorage.getItem('blog_posts') || '[]');
+    console.log('[Blog] Posts carregados:', posts);
+    
     const blogGrid = document.querySelector('.blog-grid');
-    console.log('[Blog] Elemento blog-grid:', blogGrid);
+    if (!blogGrid) return;
     
-    if (!blogGrid) {
-        console.error('[Blog] Container do blog não encontrado!');
+    if (posts.length === 0) {
+        blogGrid.innerHTML = '<p class="text-center">Nenhum post encontrado.</p>';
         return;
     }
-
-    if (!Array.isArray(posts) || posts.length === 0) {
-        console.log('[Blog] Nenhum post encontrado');
-        blogGrid.innerHTML = `
-            <div class="no-posts-message">
-                <p>Nenhum post encontrado.</p>
-                <p>Seja o primeiro a criar um post!</p>
+    
+    const postsHTML = posts.map(post => `
+        <div class="blog-card">
+            <div class="blog-image">
+                <img src="${post.imageUrl || 'images/blog-default.jpg'}" alt="${post.title}">
             </div>
-        `;
-        return;
-    }
-
-    console.log('[Blog] Total de posts:', posts.length);
-    const postsToShow = posts.slice(0, 3);
-    console.log('[Blog] Posts que serão exibidos:', postsToShow);
-    
-    try {
-        const htmlContent = postsToShow.map(post => {
-            if (!post) {
-                console.error('[Blog] Post inválido:', post);
-                return '';
-            }
-            
-            // Sanitiza os dados do post para evitar undefined
-            const title = post.title || 'Sem título';
-            const content = post.excerpt || post.content || 'Sem conteúdo';
-            const excerpt = content.substring(0, 150) + '...';
-            const category = post.category || 'Geral';
-            const date = post.createdAt ? new Date(post.createdAt).toLocaleDateString('pt-BR') : 'Data não disponível';
-            const postId = post.id || '';
-            
-            // Define uma imagem padrão caso não exista imageUrl
-            let imageUrl = 'https://placehold.co/400x300/e9ecef/495057?text=Post+sem+imagem';
-            if (post.imageUrl) {
-                imageUrl = post.imageUrl.startsWith('http') 
-                    ? post.imageUrl 
-                    : `https://eduprado-backend.onrender.com${post.imageUrl}`;
-            }
-            
-            console.log('[Blog] Processando post:', {
-                title,
-                excerpt: excerpt.substring(0, 50) + '...',
-                imageUrl,
-                category,
-                date,
-                postId
-            });
-            
-            return `
-                <div class="blog-card">
-                    <div class="blog-image">
-                        <img src="${imageUrl}" 
-                             alt="${title}"
-                             onerror="this.src='https://placehold.co/400x300/e9ecef/495057?text=Erro+ao+carregar+imagem'; this.onerror=null;">
-                    </div>
-                    <div class="blog-content">
-                        <h3>${title}</h3>
-                        <p>${excerpt}</p>
-                        <div class="blog-meta">
-                            <span class="date">${date}</span>
-                            <span class="category">${category}</span>
-                        </div>
-                        ${postId ? `<a href="post.html?id=${postId}" class="btn btn-secondary">Ler mais</a>` : ''}
-                    </div>
+            <div class="blog-content">
+                <h3>${post.title}</h3>
+                <div class="blog-meta">
+                    <span>${post.category}</span>
+                    <span>${new Date(post.date).toLocaleDateString()}</span>
                 </div>
-            `;
-        }).join('');
-
-        console.log('[Blog] HTML gerado:', htmlContent);
-        blogGrid.innerHTML = htmlContent;
-        console.log('[Blog] HTML atualizado:', blogGrid.innerHTML);
-        
-        console.log('[Blog] Posts carregados com sucesso!');
-        
-        trackEvent('posts_loaded', {
-            'event_category': 'Blog',
-            'event_label': 'Posts Loaded',
-            'value': posts.length
-        });
-    } catch (error) {
-        console.error('[Blog] Erro ao renderizar posts:', error);
-        blogGrid.innerHTML = `
-            <div class="error-message">
-                <p>Erro ao exibir os posts. Por favor, tente novamente mais tarde.</p>
-                <p class="error-details">Detalhes: ${error.message}</p>
-                <button onclick="loadPosts()" class="btn btn-primary">Tentar novamente</button>
+                <p>${post.content.substring(0, 150)}...</p>
+                <a href="post.html?id=${post.id}" class="btn btn-primary">Ler mais</a>
             </div>
-        `;
-    }
+        </div>
+    `).join('');
+    
+    console.log('[Blog] HTML dos posts gerado:', postsHTML);
+    blogGrid.innerHTML = postsHTML;
+    console.log('[Blog] HTML inserido no elemento .blog-grid');
 } 
