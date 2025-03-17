@@ -644,4 +644,31 @@ body {
 
 .search-input::placeholder {
     color: var(--light-text);
+}
+
+/* Blog Header */
+.blog-header {
+    padding: 8rem 0 4rem;
+    background: var(--background);
+    text-align: center;
+}
+
+.blog-header h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.blog-header .subtitle {
+    color: var(--light-text);
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.blog-grid-section {
+    padding: 4rem 0;
+    background: var(--section-bg);
+}
+
+.blog-grid-section .blog-grid {
+    margin-bottom: 0;
 } 
