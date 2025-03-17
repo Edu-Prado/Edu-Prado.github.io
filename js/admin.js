@@ -17,39 +17,23 @@ function logout() {
     window.location.href = 'admin-login.html';
 }
 
-// Função para carregar os posts do arquivo JSON
-async function loadPosts() {
-    try {
-        const response = await fetch('/data/posts.json');
-        const data = await response.json();
-        return data.posts;
-    } catch (error) {
-        console.error('Erro ao carregar posts:', error);
-        return [];
-    }
+// Função para carregar os posts do localStorage
+function loadPosts() {
+    return JSON.parse(localStorage.getItem(POSTS_STORAGE_KEY) || '[]');
 }
 
-// Função para salvar os posts no arquivo JSON
-async function savePosts(posts) {
-    try {
-        const response = await fetch('/data/posts.json', {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ posts })
-        });
-        return response.ok;
-    } catch (error) {
-        console.error('Erro ao salvar posts:', error);
-        return false;
-    }
+// Função para salvar os posts no localStorage
+function savePosts(posts) {
+    localStorage.setItem(POSTS_STORAGE_KEY, JSON.stringify(posts));
+    return true;
 }
 
 // Função para carregar os posts na tabela
-async function loadPostsTable() {
-    const posts = await loadPosts();
+function loadPostsTable() {
+    const posts = loadPosts();
     const tbody = document.querySelector('#posts-table tbody');
+    if (!tbody) return;
+
     tbody.innerHTML = posts.map(post => `
         <tr>
             <td>${post.title}</td>
@@ -65,36 +49,78 @@ async function loadPostsTable() {
             </td>
         </tr>
     `).join('');
+
+    // Adicionar listeners para os botões de editar e deletar
+    tbody.querySelectorAll('.edit-post').forEach(button => {
+        button.addEventListener('click', () => {
+            const id = parseInt(button.dataset.id);
+            editPost(id);
+        });
+    });
+
+    tbody.querySelectorAll('.delete-post').forEach(button => {
+        button.addEventListener('click', () => {
+            const id = parseInt(button.dataset.id);
+            deletePost(id);
+        });
+    });
 }
 
 // Função para salvar um novo post
-async function savePost(post) {
-    const posts = await loadPosts();
+function savePost(post) {
+    const posts = loadPosts();
     posts.push(post);
-    return await savePosts(posts);
+    return savePosts(posts);
 }
 
 // Função para atualizar um post existente
-async function updatePost(post) {
-    const posts = await loadPosts();
+function updatePost(post) {
+    const posts = loadPosts();
     const index = posts.findIndex(p => p.id === post.id);
     if (index !== -1) {
         posts[index] = post;
-        return await savePosts(posts);
+        return savePosts(posts);
     }
     return false;
 }
 
 // Função para deletar um post
-async function deletePost(id) {
-    const posts = await loadPosts();
+function deletePost(id) {
+    if (!confirm('Tem certeza que deseja excluir este post?')) return;
+    
+    const posts = loadPosts();
     const filteredPosts = posts.filter(post => post.id !== id);
-    return await savePosts(filteredPosts);
+    if (savePosts(filteredPosts)) {
+        alert('Post excluído com sucesso!');
+        loadPostsTable();
+    } else {
+        alert('Erro ao excluir o post.');
+    }
+}
+
+// Função para editar um post
+function editPost(id) {
+    const posts = loadPosts();
+    const post = posts.find(p => p.id === id);
+    if (!post) return;
+
+    document.getElementById('post-title').value = post.title;
+    document.getElementById('post-category').value = post.category;
+    document.getElementById('post-content').value = post.content;
+    document.getElementById('post-image').value = post.imageUrl || '';
+    document.getElementById('post-form').dataset.editId = id;
 }
 
 // Função para deletar todos os posts
-async function deleteAllPosts() {
-    return await savePosts([]);
+function deleteAllPosts() {
+    if (!confirm('Tem certeza que deseja excluir TODOS os posts? Esta ação não pode ser desfeita.')) return;
+    
+    if (savePosts([])) {
+        alert('Todos os posts foram excluídos com sucesso!');
+        loadPostsTable();
+    } else {
+        alert('Erro ao excluir os posts.');
+    }
 }
 
 // Event Listeners
@@ -111,22 +137,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Delete all posts button
     const deleteAllButton = document.getElementById('delete-all-posts');
     if (deleteAllButton) {
-        deleteAllButton.addEventListener('click', async () => {
-            if (confirm('Tem certeza que deseja deletar todos os posts? Esta ação não pode ser desfeita.')) {
-                if (await deleteAllPosts()) {
-                    alert('Todos os posts foram deletados com sucesso!');
-                    loadPostsTable();
-                } else {
-                    alert('Erro ao deletar os posts.');
-                }
-            }
-        });
+        deleteAllButton.addEventListener('click', deleteAllPosts);
     }
 
     // Post form
     const postForm = document.getElementById('post-form');
     if (postForm) {
-        postForm.addEventListener('submit', async (e) => {
+        postForm.addEventListener('submit', (e) => {
             e.preventDefault();
             
             const post = {
@@ -138,7 +155,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 date: new Date().toISOString()
             };
 
-            if (await savePost(post)) {
+            const editId = postForm.dataset.editId;
+            let success = false;
+
+            if (editId) {
+                // Atualizar post existente
+                post.id = parseInt(editId);
+                success = updatePost(post);
+                delete postForm.dataset.editId;
+            } else {
+                // Criar novo post
+                success = savePost(post);
+            }
+
+            if (success) {
                 alert('Post salvo com sucesso!');
                 postForm.reset();
                 loadPostsTable();

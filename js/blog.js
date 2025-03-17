@@ -86,33 +86,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Função para carregar os posts do arquivo JSON
-async function loadPosts() {
-    try {
-        const response = await fetch('/data/posts.json');
-        const data = await response.json();
-        return data.posts;
-    } catch (error) {
-        console.error('Erro ao carregar posts:', error);
-        return [];
-    }
-}
-
-// Função para salvar os posts no arquivo JSON
-async function savePosts(posts) {
-    try {
-        const response = await fetch('/data/posts.json', {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ posts })
-        });
-        return response.ok;
-    } catch (error) {
-        console.error('Erro ao salvar posts:', error);
-        return false;
-    }
+// Função para carregar os posts do localStorage
+function loadPosts() {
+    return JSON.parse(localStorage.getItem('blog_posts') || '[]');
 }
 
 // Função para exibir os posts
@@ -144,8 +120,8 @@ function displayPosts(posts) {
 }
 
 // Função para carregar e exibir os posts
-async function initializeBlog() {
-    const posts = await loadPosts();
+function initializeBlog() {
+    const posts = loadPosts();
     displayPosts(posts);
 
     // Adicionar listener para o campo de pesquisa
