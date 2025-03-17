@@ -105,6 +105,30 @@ async function loadPosts() {
     }
 }
 
+// Função para formatar a data
+function formatDate(dateString) {
+    if (!dateString) return 'Data não disponível';
+    try {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return 'Data não disponível';
+        return date.toLocaleDateString('pt-BR');
+    } catch (error) {
+        console.error('Erro ao formatar data:', error);
+        return 'Data não disponível';
+    }
+}
+
+// Função para verificar se a URL da imagem é válida
+function isValidImageUrl(url) {
+    if (!url) return false;
+    try {
+        new URL(url);
+        return true;
+    } catch {
+        return false;
+    }
+}
+
 // Função para exibir os posts na página
 async function displayPosts() {
     console.log('Exibindo posts...');
@@ -123,11 +147,14 @@ async function displayPosts() {
 
     blogGrid.innerHTML = posts.map(post => `
         <article class="post-card">
-            <img src="${post.image_url || 'images/default-post.jpg'}" alt="${post.title}" class="post-image">
+            <img src="${isValidImageUrl(post.image_url) ? post.image_url : 'images/blog-placeholder.jpg'}" 
+                 alt="${post.title}" 
+                 class="post-image"
+                 onerror="this.src='images/blog-placeholder.jpg'">
             <div class="post-content">
                 <h2>${post.title}</h2>
                 <p class="post-category">${post.category}</p>
-                <p class="post-date">${new Date(post.created_at).toLocaleDateString('pt-BR')}</p>
+                <p class="post-date">${formatDate(post.created_at)}</p>
                 <p class="post-excerpt">${post.content.substring(0, 150)}...</p>
                 <a href="post.html?id=${post.id}" class="btn btn-primary">Ler mais</a>
             </div>
@@ -161,11 +188,14 @@ function displayFilteredPosts(posts) {
 
     blogGrid.innerHTML = posts.map(post => `
         <article class="post-card">
-            <img src="${post.image_url || 'images/default-post.jpg'}" alt="${post.title}" class="post-image">
+            <img src="${isValidImageUrl(post.image_url) ? post.image_url : 'images/blog-placeholder.jpg'}" 
+                 alt="${post.title}" 
+                 class="post-image"
+                 onerror="this.src='images/blog-placeholder.jpg'">
             <div class="post-content">
                 <h2>${post.title}</h2>
                 <p class="post-category">${post.category}</p>
-                <p class="post-date">${new Date(post.created_at).toLocaleDateString('pt-BR')}</p>
+                <p class="post-date">${formatDate(post.created_at)}</p>
                 <p class="post-excerpt">${post.content.substring(0, 150)}...</p>
                 <a href="post.html?id=${post.id}" class="btn btn-primary">Ler mais</a>
             </div>
