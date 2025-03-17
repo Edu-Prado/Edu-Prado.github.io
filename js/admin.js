@@ -1,20 +1,46 @@
-// Verificação de autenticação
-const ADMIN_PASSWORD = 'Admin03012010';
-const STORAGE_KEY = 'admin_authenticated';
-const API_URL = 'https://eduprado-backend.onrender.com/api';
+// Configuração da API
+const API_URL = 'https://eduprado-api.onrender.com/api';
+const SUPABASE_URL = 'sua_url_do_supabase';
+const SUPABASE_ANON_KEY = 'sua_chave_anonima_do_supabase';
 
-// Verifica se está autenticado
-function checkAuth() {
-    const isAuthenticated = localStorage.getItem(STORAGE_KEY) === 'true';
-    if (!isAuthenticated) {
-        window.location.href = 'admin-login.html';
+// Inicializa o cliente Supabase
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// Função para verificar autenticação
+async function checkAuth() {
+    const { data: { session }, error } = await supabase.auth.getSession();
+    if (error || !session) {
+        window.location.href = 'login.html';
+        return false;
+    }
+    return true;
+}
+
+// Função para fazer login
+async function login(email, password) {
+    try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password
+        });
+
+        if (error) throw error;
+        return data;
+    } catch (error) {
+        console.error('Erro ao fazer login:', error);
+        return null;
     }
 }
 
 // Função para fazer logout
-function logout() {
-    localStorage.removeItem(STORAGE_KEY);
-    window.location.href = 'admin-login.html';
+async function logout() {
+    try {
+        const { error } = await supabase.auth.signOut();
+        if (error) throw error;
+        window.location.href = 'login.html';
+    } catch (error) {
+        console.error('Erro ao fazer logout:', error);
+    }
 }
 
 // Função para carregar os posts da API
@@ -163,17 +189,24 @@ async function savePost(post) {
     }
 }
 
-// Função para atualizar um post existente
-async function updatePost(post) {
+// Função para atualizar um post
+async function updatePost(id, post) {
     try {
-        const response = await fetch(`${API_URL}/posts/${post.id}`, {
+        const response = await fetch(`${API_URL}/posts/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(post)
         });
-        return response.ok;
+        
+        if (!response.ok) {
+            const error = await response.json();
+            console.error('Erro ao atualizar post:', error);
+            return false;
+        }
+        
+        return true;
     } catch (error) {
         console.error('Erro ao atualizar post:', error);
         return false;
@@ -239,59 +272,51 @@ async function deleteAllPosts() {
 }
 
 // Event Listeners
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('Inicializando admin.js');
-    checkAuth();
+document.addEventListener('DOMContentLoaded', async () => {
+    // Verifica autenticação
+    if (!await checkAuth()) return;
+    
+    // Carrega posts iniciais
     loadPostsTable();
-
-    // Logout button
-    const logoutButton = document.getElementById('logout-button');
-    if (logoutButton) {
-        logoutButton.addEventListener('click', logout);
+    
+    // Configura formulário de post
+    const postForm = document.getElementById('post-form');
+    postForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const post = {
+            title: document.getElementById('post-title').value,
+            category: document.getElementById('post-category').value,
+            content: document.getElementById('post-content').value,
+            imageUrl: document.getElementById('post-image').value
+        };
+        
+        let success;
+        if (window.editingPostId) {
+            success = await updatePost(window.editingPostId, post);
+        } else {
+            success = await savePost(post);
+        }
+        
+        if (success) {
+            postForm.reset();
+            window.editingPostId = null;
+            document.querySelector('.card-header').textContent = 'Novo Post';
+            loadPostsTable();
+        } else {
+            alert('Erro ao salvar post');
+        }
+    });
+    
+    // Configura botão de logout
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', logout);
     }
 
     // Delete all posts button
     const deleteAllButton = document.getElementById('delete-all-posts');
     if (deleteAllButton) {
         deleteAllButton.addEventListener('click', deleteAllPosts);
-    }
-
-    // Post form
-    const postForm = document.getElementById('post-form');
-    if (postForm) {
-        postForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            console.log('Formulário submetido');
-            
-            const post = {
-                title: document.getElementById('post-title').value,
-                category: document.getElementById('post-category').value,
-                content: document.getElementById('post-content').value,
-                image_url: document.getElementById('post-image').value
-            };
-
-            console.log('Dados do post:', post);
-
-            const editId = postForm.dataset.editId;
-            let success = false;
-
-            if (editId) {
-                // Atualizar post existente
-                post.id = parseInt(editId);
-                success = await updatePost(post);
-                delete postForm.dataset.editId;
-            } else {
-                // Criar novo post
-                success = await savePost(post);
-            }
-
-            if (success) {
-                alert('Post salvo com sucesso!');
-                postForm.reset();
-                await loadPostsTable(); // Recarrega a lista após salvar
-            } else {
-                alert('Erro ao salvar o post.');
-            }
-        });
     }
 }); 
