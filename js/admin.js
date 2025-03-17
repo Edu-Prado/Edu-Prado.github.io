@@ -4,27 +4,47 @@ const SUPABASE_URL = 'https://gvnxngmxlxppvqtoqler.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2bnhuZ214bHhwcHZxdG9xbGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyNDE1OTgsImV4cCI6MjA1NzgxNzU5OH0.YqckHPGQ-5DAfFDITZ-vDtghXah0qwwPaIzYfVRFu5U';
 
 // Inicializa o cliente Supabase
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+console.log('Inicializando Supabase...');
+if (!window.supabase) {
+    console.error('Supabase não está disponível globalmente');
+} else {
+    console.log('Supabase está disponível, criando cliente...');
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    console.log('Cliente Supabase criado com sucesso');
+}
 
 // Função para verificar autenticação
 async function checkAuth() {
+    console.log('Verificando autenticação...');
     const { data: { session }, error } = await supabase.auth.getSession();
-    if (error || !session) {
+    if (error) {
+        console.error('Erro ao verificar autenticação:', error);
         window.location.href = 'login.html';
         return false;
     }
+    if (!session) {
+        console.log('Nenhuma sessão encontrada, redirecionando para login...');
+        window.location.href = 'login.html';
+        return false;
+    }
+    console.log('Usuário autenticado:', session.user.email);
     return true;
 }
 
 // Função para fazer login
 async function login(email, password) {
+    console.log('Tentando fazer login...');
     try {
         const { data, error } = await supabase.auth.signInWithPassword({
             email,
             password
         });
 
-        if (error) throw error;
+        if (error) {
+            console.error('Erro ao fazer login:', error);
+            throw error;
+        }
+        console.log('Login realizado com sucesso!');
         return data;
     } catch (error) {
         console.error('Erro ao fazer login:', error);
@@ -34,9 +54,14 @@ async function login(email, password) {
 
 // Função para fazer logout
 async function logout() {
+    console.log('Fazendo logout...');
     try {
         const { error } = await supabase.auth.signOut();
-        if (error) throw error;
+        if (error) {
+            console.error('Erro ao fazer logout:', error);
+            throw error;
+        }
+        console.log('Logout realizado com sucesso!');
         window.location.href = 'login.html';
     } catch (error) {
         console.error('Erro ao fazer logout:', error);
@@ -45,10 +70,26 @@ async function logout() {
 
 // Função para carregar os posts da API
 async function loadPosts() {
+    console.log('Iniciando carregamento de posts...');
     try {
-        const response = await fetch(`${API_URL}/posts`);
-        if (!response.ok) throw new Error('Erro ao carregar posts');
-        return await response.json();
+        console.log('Fazendo requisição para:', `${API_URL}/posts`);
+        const response = await fetch(`${API_URL}/posts`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            mode: 'cors'
+        });
+        
+        if (!response.ok) {
+            console.error('Erro na resposta da API:', response.status, response.statusText);
+            throw new Error(`Erro ao carregar posts: ${response.status} ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        console.log('Posts carregados com sucesso:', data);
+        return data;
     } catch (error) {
         console.error('Erro ao carregar posts:', error);
         return [];
@@ -169,8 +210,10 @@ async function savePost(post) {
         const response = await fetch(`${API_URL}/posts`, {
             method: 'POST',
             headers: {
+                'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
+            mode: 'cors',
             body: JSON.stringify(post)
         });
         
@@ -192,11 +235,14 @@ async function savePost(post) {
 // Função para atualizar um post
 async function updatePost(id, post) {
     try {
+        console.log(`Atualizando post ${id}:`, post);
         const response = await fetch(`${API_URL}/posts/${id}`, {
             method: 'PUT',
             headers: {
+                'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
+            mode: 'cors',
             body: JSON.stringify(post)
         });
         
@@ -206,6 +252,7 @@ async function updatePost(id, post) {
             return false;
         }
         
+        console.log('Post atualizado com sucesso');
         return true;
     } catch (error) {
         console.error('Erro ao atualizar post:', error);
@@ -218,13 +265,23 @@ async function deletePost(id) {
     if (!confirm('Tem certeza que deseja excluir este post?')) return;
     
     try {
+        console.log(`Deletando post ${id}...`);
         const response = await fetch(`${API_URL}/posts/${id}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            mode: 'cors'
         });
+        
         if (response.ok) {
+            console.log('Post deletado com sucesso');
             alert('Post excluído com sucesso!');
             loadPostsTable();
         } else {
+            const error = await response.json();
+            console.error('Erro ao deletar post:', error);
             throw new Error('Erro ao excluir post');
         }
     } catch (error) {
@@ -236,15 +293,31 @@ async function deletePost(id) {
 // Função para editar um post
 async function editPost(id) {
     try {
-        const response = await fetch(`${API_URL}/posts/${id}`);
-        if (!response.ok) throw new Error('Erro ao carregar post');
+        console.log(`Carregando post ${id} para edição...`);
+        const response = await fetch(`${API_URL}/posts/${id}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            mode: 'cors'
+        });
+        
+        if (!response.ok) {
+            console.error('Erro ao carregar post:', response.status, response.statusText);
+            throw new Error('Erro ao carregar post');
+        }
+        
         const post = await response.json();
+        console.log('Post carregado:', post);
 
         document.getElementById('post-title').value = post.title;
         document.getElementById('post-category').value = post.category;
         document.getElementById('post-content').value = post.content;
         document.getElementById('post-image').value = post.image_url || '';
         document.getElementById('post-form').dataset.editId = id;
+        
+        console.log('Formulário preenchido com dados do post');
     } catch (error) {
         console.error('Erro ao carregar post:', error);
         alert('Erro ao carregar o post.');
@@ -256,13 +329,23 @@ async function deleteAllPosts() {
     if (!confirm('Tem certeza que deseja excluir TODOS os posts? Esta ação não pode ser desfeita.')) return;
     
     try {
+        console.log('Iniciando exclusão de todos os posts...');
         const response = await fetch(`${API_URL}/posts`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            mode: 'cors'
         });
+        
         if (response.ok) {
+            console.log('Todos os posts foram deletados com sucesso');
             alert('Todos os posts foram excluídos com sucesso!');
             loadPostsTable();
         } else {
+            const error = await response.json();
+            console.error('Erro ao deletar todos os posts:', error);
             throw new Error('Erro ao excluir posts');
         }
     } catch (error) {
@@ -273,6 +356,8 @@ async function deleteAllPosts() {
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', async () => {
+    console.log('Inicializando página...');
+    
     // Verifica autenticação
     if (!await checkAuth()) return;
     
@@ -283,6 +368,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const postForm = document.getElementById('post-form');
     postForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        console.log('Formulário submetido');
         
         const post = {
             title: document.getElementById('post-title').value,
@@ -293,17 +379,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         let success;
         if (window.editingPostId) {
+            console.log('Atualizando post existente:', window.editingPostId);
             success = await updatePost(window.editingPostId, post);
         } else {
+            console.log('Criando novo post');
             success = await savePost(post);
         }
         
         if (success) {
+            console.log('Operação realizada com sucesso');
             postForm.reset();
             window.editingPostId = null;
             document.querySelector('.card-header').textContent = 'Novo Post';
             loadPostsTable();
         } else {
+            console.error('Falha na operação');
             alert('Erro ao salvar post');
         }
     });
@@ -319,4 +409,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (deleteAllButton) {
         deleteAllButton.addEventListener('click', deleteAllPosts);
     }
-}); 
+});
