@@ -23,13 +23,30 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('[Blog] Iniciando carregamento dos posts');
     loadPosts();
 
+    // Adiciona funcionalidade de pesquisa
+    const searchInput = document.querySelector('.search-input');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const posts = JSON.parse(localStorage.getItem('blog_posts') || '[]');
+            
+            const filteredPosts = posts.filter(post => 
+                post.title.toLowerCase().includes(searchTerm) ||
+                post.category.toLowerCase().includes(searchTerm) ||
+                post.content.toLowerCase().includes(searchTerm)
+            );
+            
+            displayPosts(filteredPosts);
+        });
+    }
+
     // Adiciona rastreamento de cliques nos posts do blog
     document.querySelector('.blog-grid').addEventListener('click', (e) => {
         const postLink = e.target.closest('a[href^="post.html"]');
         if (postLink) {
             const postCard = postLink.closest('.blog-card');
             const postTitle = postCard.querySelector('h3').textContent;
-            const postCategory = postCard.querySelector('.category').textContent;
+            const postCategory = postCard.querySelector('.blog-meta span').textContent;
             
             // Rastreia clique no post com informações detalhadas
             trackEvent('post_click', {
@@ -72,7 +89,10 @@ document.addEventListener('DOMContentLoaded', () => {
 function loadPosts() {
     const posts = JSON.parse(localStorage.getItem('blog_posts') || '[]');
     console.log('[Blog] Posts carregados:', posts);
-    
+    displayPosts(posts);
+}
+
+function displayPosts(posts) {
     const blogGrid = document.querySelector('.blog-grid');
     if (!blogGrid) return;
     
