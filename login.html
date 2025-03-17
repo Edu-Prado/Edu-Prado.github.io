@@ -52,20 +52,31 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
     <script>
+        console.log('Iniciando script de login...');
+        
         // Configuração do Supabase
         const SUPABASE_URL = 'https://gvnxngmxlxppvqtoqler.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2bnhuZ214bHhwcHZxdG9xbGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyNDE1OTgsImV4cCI6MjA1NzgxNzU5OH0.YqckHPGQ-5DAfFDITZ-vDtghXah0qwwPaIzYfVRFu5U';
+        
+        console.log('Inicializando cliente Supabase...');
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log('Cliente Supabase inicializado');
 
         // Função para fazer login
         async function login(email, password) {
+            console.log('Tentando fazer login com email:', email);
             try {
                 const { data, error } = await supabase.auth.signInWithPassword({
                     email,
                     password
                 });
 
-                if (error) throw error;
+                if (error) {
+                    console.error('Erro no login:', error.message);
+                    throw error;
+                }
+
+                console.log('Login bem sucedido:', data);
                 return data;
             } catch (error) {
                 console.error('Erro ao fazer login:', error);
@@ -76,20 +87,26 @@
         // Event Listener do formulário
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+            console.log('Formulário submetido');
             
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const errorMessage = document.getElementById('error-message');
             
+            console.log('Tentando fazer login...');
             const data = await login(email, password);
             
             if (data) {
+                console.log('Login bem sucedido, redirecionando...');
                 window.location.href = 'admin.html';
             } else {
+                console.log('Login falhou, mostrando mensagem de erro');
                 errorMessage.textContent = 'Email ou senha inválidos';
                 errorMessage.style.display = 'block';
             }
         });
+
+        console.log('Script de login carregado');
     </script>
 </body>
 </html> 
