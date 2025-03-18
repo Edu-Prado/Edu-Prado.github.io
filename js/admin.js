@@ -31,65 +31,74 @@ async function initializeApp() {
     console.log('Verificando cliente Supabase...');
     toggleLoading(true, 'Verificando conexão...');
 
-    if (!window.supabaseClient) {
-        showError('Cliente Supabase não está disponível');
+    try {
+        if (typeof supabase === 'undefined') {
+            throw new Error('Biblioteca Supabase não foi carregada');
+        }
+
+        if (!window.supabaseClient) {
+            throw new Error('Cliente Supabase não foi inicializado corretamente');
+        }
+
+        console.log('Cliente Supabase está disponível:', window.supabaseClient);
+
+        // Verifica autenticação
+        if (!await checkAuth()) return;
+        
+        // Carrega posts iniciais
+        loadPostsTable();
+        
+        // Configura formulário de post
+        const postForm = document.getElementById('post-form');
+        postForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            console.log('Formulário submetido');
+            
+            const post = {
+                title: document.getElementById('post-title').value,
+                category: document.getElementById('post-category').value,
+                content: document.getElementById('post-content').value,
+                imageUrl: document.getElementById('post-image').value
+            };
+            
+            let success;
+            if (window.editingPostId) {
+                console.log('Atualizando post existente:', window.editingPostId);
+                success = await updatePost(window.editingPostId, post);
+            } else {
+                console.log('Criando novo post');
+                success = await savePost(post);
+            }
+            
+            if (success) {
+                console.log('Operação realizada com sucesso');
+                postForm.reset();
+                window.editingPostId = null;
+                document.querySelector('.card-header').textContent = 'Novo Post';
+                loadPostsTable();
+            } else {
+                console.error('Falha na operação');
+                alert('Erro ao salvar post');
+            }
+        });
+        
+        // Configura botão de logout
+        const logoutBtn = document.getElementById('logout-button');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', logout);
+        }
+
+        // Delete all posts button
+        const deleteAllButton = document.getElementById('delete-all-posts');
+        if (deleteAllButton) {
+            deleteAllButton.addEventListener('click', deleteAllPosts);
+        }
+    } catch (error) {
+        console.error('Erro ao inicializar aplicação:', error);
+        showError(`Erro ao inicializar: ${error.message}`);
         toggleLoading(false);
-        await delay(5000); // Espera 5 segundos
+        await delay(5000);
         window.location.href = 'login.html';
-        return;
-    }
-    console.log('Cliente Supabase está disponível');
-
-    // Verifica autenticação
-    if (!await checkAuth()) return;
-    
-    // Carrega posts iniciais
-    loadPostsTable();
-    
-    // Configura formulário de post
-    const postForm = document.getElementById('post-form');
-    postForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        console.log('Formulário submetido');
-        
-        const post = {
-            title: document.getElementById('post-title').value,
-            category: document.getElementById('post-category').value,
-            content: document.getElementById('post-content').value,
-            imageUrl: document.getElementById('post-image').value
-        };
-        
-        let success;
-        if (window.editingPostId) {
-            console.log('Atualizando post existente:', window.editingPostId);
-            success = await updatePost(window.editingPostId, post);
-        } else {
-            console.log('Criando novo post');
-            success = await savePost(post);
-        }
-        
-        if (success) {
-            console.log('Operação realizada com sucesso');
-            postForm.reset();
-            window.editingPostId = null;
-            document.querySelector('.card-header').textContent = 'Novo Post';
-            loadPostsTable();
-        } else {
-            console.error('Falha na operação');
-            alert('Erro ao salvar post');
-        }
-    });
-    
-    // Configura botão de logout
-    const logoutBtn = document.getElementById('logout-button');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', logout);
-    }
-
-    // Delete all posts button
-    const deleteAllButton = document.getElementById('delete-all-posts');
-    if (deleteAllButton) {
-        deleteAllButton.addEventListener('click', deleteAllPosts);
     }
 }
 
