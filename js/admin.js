@@ -1,6 +1,9 @@
 // Configuração da API
 const API_URL = 'https://eduprado-api.onrender.com/api';
 
+// Função para delay
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
 // Verifica se o cliente Supabase está disponível
 console.log('Verificando cliente Supabase...');
 if (!window.supabaseClient) {
@@ -13,19 +16,32 @@ console.log('Cliente Supabase está disponível');
 // Função para verificar autenticação
 async function checkAuth() {
     console.log('Verificando autenticação...');
-    const { data: { session }, error } = await window.supabaseClient.auth.getSession();
-    if (error) {
+    try {
+        const { data: { session }, error } = await window.supabaseClient.auth.getSession();
+        console.log('Resposta da verificação de autenticação:', { session, error });
+        
+        if (error) {
+            console.error('Erro ao verificar autenticação:', error);
+            await delay(2000); // Espera 2 segundos
+            window.location.href = 'login.html';
+            return false;
+        }
+        
+        if (!session) {
+            console.log('Nenhuma sessão encontrada, redirecionando para login...');
+            await delay(2000); // Espera 2 segundos
+            window.location.href = 'login.html';
+            return false;
+        }
+        
+        console.log('Usuário autenticado:', session.user.email);
+        return true;
+    } catch (error) {
         console.error('Erro ao verificar autenticação:', error);
+        await delay(2000); // Espera 2 segundos
         window.location.href = 'login.html';
         return false;
     }
-    if (!session) {
-        console.log('Nenhuma sessão encontrada, redirecionando para login...');
-        window.location.href = 'login.html';
-        return false;
-    }
-    console.log('Usuário autenticado:', session.user.email);
-    return true;
 }
 
 // Função para fazer login
@@ -37,11 +53,15 @@ async function login(email, password) {
             password
         });
 
+        console.log('Resposta do login:', { data, error });
+
         if (error) {
             console.error('Erro ao fazer login:', error);
             throw error;
         }
+        
         console.log('Login realizado com sucesso!');
+        await delay(2000); // Espera 2 segundos
         return data;
     } catch (error) {
         console.error('Erro ao fazer login:', error);
@@ -54,11 +74,15 @@ async function logout() {
     console.log('Fazendo logout...');
     try {
         const { error } = await window.supabaseClient.auth.signOut();
+        console.log('Resposta do logout:', { error });
+        
         if (error) {
             console.error('Erro ao fazer logout:', error);
             throw error;
         }
+        
         console.log('Logout realizado com sucesso!');
+        await delay(2000); // Espera 2 segundos
         window.location.href = 'login.html';
     } catch (error) {
         console.error('Erro ao fazer logout:', error);
