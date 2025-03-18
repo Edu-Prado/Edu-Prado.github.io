@@ -4,10 +4,21 @@ const API_URL = 'https://eduprado-api.onrender.com/api';
 // Função para delay
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
+// Função para mostrar mensagem de erro
+function showError(message) {
+    const errorElement = document.getElementById('error-message');
+    if (errorElement) {
+        errorElement.textContent = message;
+        errorElement.classList.add('show');
+    }
+    console.error(message);
+}
+
 // Verifica se o cliente Supabase está disponível
 console.log('Verificando cliente Supabase...');
 if (!window.supabaseClient) {
-    console.error('Cliente Supabase não está disponível');
+    showError('Cliente Supabase não está disponível');
+    await delay(5000); // Espera 5 segundos
     window.location.href = 'login.html';
     throw new Error('Cliente Supabase não está disponível');
 }
@@ -24,15 +35,15 @@ async function checkAuth() {
         console.log('Resposta da verificação de autenticação:', { session, error });
         
         if (error) {
-            console.error('Erro ao verificar autenticação:', error);
-            await delay(3000); // Espera 3 segundos
+            showError(`Erro ao verificar autenticação: ${error.message}`);
+            await delay(5000); // Espera 5 segundos
             window.location.href = 'login.html';
             return false;
         }
         
         if (!session) {
-            console.log('Nenhuma sessão encontrada, redirecionando para login...');
-            await delay(3000); // Espera 3 segundos
+            showError('Nenhuma sessão encontrada. Redirecionando para login...');
+            await delay(5000); // Espera 5 segundos
             window.location.href = 'login.html';
             return false;
         }
@@ -42,8 +53,8 @@ async function checkAuth() {
         console.log('Verificação de usuário:', { user, userError });
         
         if (userError || !user) {
-            console.error('Erro ao verificar usuário:', userError);
-            await delay(3000); // Espera 3 segundos
+            showError(`Erro ao verificar usuário: ${userError?.message || 'Usuário não encontrado'}`);
+            await delay(5000); // Espera 5 segundos
             window.location.href = 'login.html';
             return false;
         }
@@ -51,8 +62,8 @@ async function checkAuth() {
         console.log('Usuário autenticado:', user.email);
         return true;
     } catch (error) {
-        console.error('Erro ao verificar autenticação:', error);
-        await delay(3000); // Espera 3 segundos
+        showError(`Erro ao verificar autenticação: ${error.message}`);
+        await delay(5000); // Espera 5 segundos
         window.location.href = 'login.html';
         return false;
     }
