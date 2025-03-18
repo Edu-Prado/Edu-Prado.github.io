@@ -224,24 +224,16 @@ async function getAuthToken() {
 async function loadPosts() {
     console.log('Iniciando carregamento de posts...');
     try {
-        const token = await getAuthToken();
-        console.log('Fazendo requisição para:', `${API_URL}/posts`);
-        const response = await fetch(`${API_URL}/posts`, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            mode: 'cors'
-        });
+        const { data, error } = await window.supabaseClient
+            .from('posts')
+            .select('*')
+            .order('created_at', { ascending: false });
         
-        if (!response.ok) {
-            console.error('Erro na resposta da API:', response.status, response.statusText);
-            throw new Error(`Erro ao carregar posts: ${response.status} ${response.statusText}`);
+        if (error) {
+            console.error('Erro ao carregar posts:', error);
+            throw error;
         }
         
-        const data = await response.json();
         console.log('Posts carregados com sucesso:', data);
         return data;
     } catch (error) {
@@ -360,27 +352,18 @@ async function loadPostsTable() {
 // Função para salvar um novo post
 async function savePost(post) {
     try {
-        const token = await getAuthToken();
-        console.log('Enviando post para a API:', post);
-        const response = await fetch(`${API_URL}/posts`, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            mode: 'cors',
-            body: JSON.stringify(post)
-        });
+        console.log('Enviando post para o Supabase:', post);
+        const { data, error } = await window.supabaseClient
+            .from('posts')
+            .insert([post])
+            .select();
         
-        if (!response.ok) {
-            const error = await response.json();
+        if (error) {
             console.error('Erro ao salvar post:', error);
             return false;
         }
         
-        const savedPost = await response.json();
-        console.log('Post salvo com sucesso:', savedPost);
+        console.log('Post salvo com sucesso:', data);
         return true;
     } catch (error) {
         console.error('Erro ao salvar post:', error);
@@ -391,26 +374,19 @@ async function savePost(post) {
 // Função para atualizar um post
 async function updatePost(id, post) {
     try {
-        const token = await getAuthToken();
         console.log(`Atualizando post ${id}:`, post);
-        const response = await fetch(`${API_URL}/posts/${id}`, {
-            method: 'PUT',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            mode: 'cors',
-            body: JSON.stringify(post)
-        });
+        const { data, error } = await window.supabaseClient
+            .from('posts')
+            .update(post)
+            .eq('id', id)
+            .select();
         
-        if (!response.ok) {
-            const error = await response.json();
+        if (error) {
             console.error('Erro ao atualizar post:', error);
             return false;
         }
         
-        console.log('Post atualizado com sucesso');
+        console.log('Post atualizado com sucesso:', data);
         return true;
     } catch (error) {
         console.error('Erro ao atualizar post:', error);
@@ -423,27 +399,20 @@ async function deletePost(id) {
     if (!confirm('Tem certeza que deseja excluir este post?')) return;
     
     try {
-        const token = await getAuthToken();
         console.log(`Deletando post ${id}...`);
-        const response = await fetch(`${API_URL}/posts/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            mode: 'cors'
-        });
+        const { error } = await window.supabaseClient
+            .from('posts')
+            .delete()
+            .eq('id', id);
         
-        if (response.ok) {
-            console.log('Post deletado com sucesso');
-            alert('Post excluído com sucesso!');
-            loadPostsTable();
-        } else {
-            const error = await response.json();
+        if (error) {
             console.error('Erro ao deletar post:', error);
-            throw new Error('Erro ao excluir post');
+            throw error;
         }
+        
+        console.log('Post deletado com sucesso');
+        alert('Post excluído com sucesso!');
+        loadPostsTable();
     } catch (error) {
         console.error('Erro ao excluir post:', error);
         alert('Erro ao excluir o post.');
@@ -453,30 +422,24 @@ async function deletePost(id) {
 // Função para editar um post
 async function editPost(id) {
     try {
-        const token = await getAuthToken();
         console.log(`Carregando post ${id} para edição...`);
-        const response = await fetch(`${API_URL}/posts/${id}`, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            mode: 'cors'
-        });
+        const { data, error } = await window.supabaseClient
+            .from('posts')
+            .select('*')
+            .eq('id', id)
+            .single();
         
-        if (!response.ok) {
-            console.error('Erro ao carregar post:', response.status, response.statusText);
-            throw new Error('Erro ao carregar post');
+        if (error) {
+            console.error('Erro ao carregar post:', error);
+            throw error;
         }
         
-        const post = await response.json();
-        console.log('Post carregado:', post);
+        console.log('Post carregado:', data);
 
-        document.getElementById('post-title').value = post.title;
-        document.getElementById('post-category').value = post.category;
-        document.getElementById('post-content').value = post.content;
-        document.getElementById('post-image').value = post.image_url || '';
+        document.getElementById('post-title').value = data.title;
+        document.getElementById('post-category').value = data.category;
+        document.getElementById('post-content').value = data.content;
+        document.getElementById('post-image').value = data.image_url || '';
         document.getElementById('post-form').dataset.editId = id;
         
         console.log('Formulário preenchido com dados do post');
@@ -491,27 +454,20 @@ async function deleteAllPosts() {
     if (!confirm('Tem certeza que deseja excluir TODOS os posts? Esta ação não pode ser desfeita.')) return;
     
     try {
-        const token = await getAuthToken();
         console.log('Iniciando exclusão de todos os posts...');
-        const response = await fetch(`${API_URL}/posts`, {
-            method: 'DELETE',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            mode: 'cors'
-        });
+        const { error } = await window.supabaseClient
+            .from('posts')
+            .delete()
+            .neq('id', 0); // Deleta todos os posts
         
-        if (response.ok) {
-            console.log('Todos os posts foram deletados com sucesso');
-            alert('Todos os posts foram excluídos com sucesso!');
-            loadPostsTable();
-        } else {
-            const error = await response.json();
+        if (error) {
             console.error('Erro ao deletar todos os posts:', error);
-            throw new Error('Erro ao excluir posts');
+            throw error;
         }
+        
+        console.log('Todos os posts foram deletados com sucesso');
+        alert('Todos os posts foram excluídos com sucesso!');
+        loadPostsTable();
     } catch (error) {
         console.error('Erro ao excluir posts:', error);
         alert('Erro ao excluir os posts.');
