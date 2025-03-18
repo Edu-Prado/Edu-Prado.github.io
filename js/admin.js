@@ -233,7 +233,6 @@ async function loadPosts() {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            credentials: 'include',
             mode: 'cors'
         });
         
@@ -370,7 +369,6 @@ async function savePost(post) {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            credentials: 'include',
             mode: 'cors',
             body: JSON.stringify(post)
         });
@@ -402,7 +400,6 @@ async function updatePost(id, post) {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            credentials: 'include',
             mode: 'cors',
             body: JSON.stringify(post)
         });
@@ -435,7 +432,6 @@ async function deletePost(id) {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            credentials: 'include',
             mode: 'cors'
         });
         
@@ -466,7 +462,6 @@ async function editPost(id) {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            credentials: 'include',
             mode: 'cors'
         });
         
@@ -505,7 +500,6 @@ async function deleteAllPosts() {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            credentials: 'include',
             mode: 'cors'
         });
         
