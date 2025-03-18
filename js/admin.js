@@ -17,28 +17,42 @@ console.log('Cliente Supabase está disponível');
 async function checkAuth() {
     console.log('Verificando autenticação...');
     try {
+        // Aguarda um momento para garantir que a sessão foi estabelecida
+        await delay(1000);
+        
         const { data: { session }, error } = await window.supabaseClient.auth.getSession();
         console.log('Resposta da verificação de autenticação:', { session, error });
         
         if (error) {
             console.error('Erro ao verificar autenticação:', error);
-            await delay(2000); // Espera 2 segundos
+            await delay(3000); // Espera 3 segundos
             window.location.href = 'login.html';
             return false;
         }
         
         if (!session) {
             console.log('Nenhuma sessão encontrada, redirecionando para login...');
-            await delay(2000); // Espera 2 segundos
+            await delay(3000); // Espera 3 segundos
+            window.location.href = 'login.html';
+            return false;
+        }
+
+        // Verifica se a sessão está ativa
+        const { data: { user }, error: userError } = await window.supabaseClient.auth.getUser();
+        console.log('Verificação de usuário:', { user, userError });
+        
+        if (userError || !user) {
+            console.error('Erro ao verificar usuário:', userError);
+            await delay(3000); // Espera 3 segundos
             window.location.href = 'login.html';
             return false;
         }
         
-        console.log('Usuário autenticado:', session.user.email);
+        console.log('Usuário autenticado:', user.email);
         return true;
     } catch (error) {
         console.error('Erro ao verificar autenticação:', error);
-        await delay(2000); // Espera 2 segundos
+        await delay(3000); // Espera 3 segundos
         window.location.href = 'login.html';
         return false;
     }
@@ -61,7 +75,7 @@ async function login(email, password) {
         }
         
         console.log('Login realizado com sucesso!');
-        await delay(2000); // Espera 2 segundos
+        await delay(3000); // Espera 3 segundos
         return data;
     } catch (error) {
         console.error('Erro ao fazer login:', error);
