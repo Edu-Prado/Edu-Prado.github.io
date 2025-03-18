@@ -209,17 +209,31 @@ async function logout() {
     }
 }
 
+// Função para obter o token de autenticação
+async function getAuthToken() {
+    try {
+        const { data: { session } } = await window.supabaseClient.auth.getSession();
+        return session?.access_token;
+    } catch (error) {
+        console.error('Erro ao obter token:', error);
+        return null;
+    }
+}
+
 // Função para carregar os posts da API
 async function loadPosts() {
     console.log('Iniciando carregamento de posts...');
     try {
+        const token = await getAuthToken();
         console.log('Fazendo requisição para:', `${API_URL}/posts`);
         const response = await fetch(`${API_URL}/posts`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
+            credentials: 'include',
             mode: 'cors'
         });
         
@@ -347,13 +361,16 @@ async function loadPostsTable() {
 // Função para salvar um novo post
 async function savePost(post) {
     try {
+        const token = await getAuthToken();
         console.log('Enviando post para a API:', post);
         const response = await fetch(`${API_URL}/posts`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
+            credentials: 'include',
             mode: 'cors',
             body: JSON.stringify(post)
         });
@@ -376,13 +393,16 @@ async function savePost(post) {
 // Função para atualizar um post
 async function updatePost(id, post) {
     try {
+        const token = await getAuthToken();
         console.log(`Atualizando post ${id}:`, post);
         const response = await fetch(`${API_URL}/posts/${id}`, {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
+            credentials: 'include',
             mode: 'cors',
             body: JSON.stringify(post)
         });
@@ -406,13 +426,16 @@ async function deletePost(id) {
     if (!confirm('Tem certeza que deseja excluir este post?')) return;
     
     try {
+        const token = await getAuthToken();
         console.log(`Deletando post ${id}...`);
         const response = await fetch(`${API_URL}/posts/${id}`, {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
+            credentials: 'include',
             mode: 'cors'
         });
         
@@ -434,13 +457,16 @@ async function deletePost(id) {
 // Função para editar um post
 async function editPost(id) {
     try {
+        const token = await getAuthToken();
         console.log(`Carregando post ${id} para edição...`);
         const response = await fetch(`${API_URL}/posts/${id}`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
+            credentials: 'include',
             mode: 'cors'
         });
         
@@ -470,13 +496,16 @@ async function deleteAllPosts() {
     if (!confirm('Tem certeza que deseja excluir TODOS os posts? Esta ação não pode ser desfeita.')) return;
     
     try {
+        const token = await getAuthToken();
         console.log('Iniciando exclusão de todos os posts...');
         const response = await fetch(`${API_URL}/posts`, {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
+            credentials: 'include',
             mode: 'cors'
         });
         
