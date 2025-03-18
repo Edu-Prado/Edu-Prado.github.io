@@ -1,22 +1,19 @@
 // Configuração da API
 const API_URL = 'https://eduprado-api.onrender.com/api';
-const SUPABASE_URL = 'https://gvnxngmxlxppvqtoqler.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2bnhuZ214bHhwcHZxdG9xbGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyNDE1OTgsImV4cCI6MjA1NzgxNzU5OH0.YqckHPGQ-5DAfFDITZ-vDtghXah0qwwPaIzYfVRFu5U';
 
-// Inicializa o cliente Supabase
-console.log('Inicializando Supabase...');
-if (!window.supabase) {
-    console.error('Supabase não está disponível globalmente');
-} else {
-    console.log('Supabase está disponível, criando cliente...');
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    console.log('Cliente Supabase criado com sucesso');
+// Verifica se o cliente Supabase está disponível
+console.log('Verificando cliente Supabase...');
+if (!window.supabaseClient) {
+    console.error('Cliente Supabase não está disponível');
+    window.location.href = 'login.html';
+    throw new Error('Cliente Supabase não está disponível');
 }
+console.log('Cliente Supabase está disponível');
 
 // Função para verificar autenticação
 async function checkAuth() {
     console.log('Verificando autenticação...');
-    const { data: { session }, error } = await supabase.auth.getSession();
+    const { data: { session }, error } = await window.supabaseClient.auth.getSession();
     if (error) {
         console.error('Erro ao verificar autenticação:', error);
         window.location.href = 'login.html';
@@ -35,7 +32,7 @@ async function checkAuth() {
 async function login(email, password) {
     console.log('Tentando fazer login...');
     try {
-        const { data, error } = await supabase.auth.signInWithPassword({
+        const { data, error } = await window.supabaseClient.auth.signInWithPassword({
             email,
             password
         });
@@ -56,7 +53,7 @@ async function login(email, password) {
 async function logout() {
     console.log('Fazendo logout...');
     try {
-        const { error } = await supabase.auth.signOut();
+        const { error } = await window.supabaseClient.auth.signOut();
         if (error) {
             console.error('Erro ao fazer logout:', error);
             throw error;
