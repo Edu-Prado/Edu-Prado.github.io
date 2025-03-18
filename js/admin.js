@@ -26,18 +26,82 @@ function showError(message) {
     console.error(message);
 }
 
-// Verifica se o cliente Supabase está disponível
-console.log('Verificando cliente Supabase...');
-toggleLoading(true, 'Verificando conexão...');
+// Função para inicializar a aplicação
+async function initializeApp() {
+    console.log('Verificando cliente Supabase...');
+    toggleLoading(true, 'Verificando conexão...');
 
-if (!window.supabaseClient) {
-    showError('Cliente Supabase não está disponível');
-    toggleLoading(false);
-    await delay(5000); // Espera 5 segundos
-    window.location.href = 'login.html';
-    throw new Error('Cliente Supabase não está disponível');
+    if (!window.supabaseClient) {
+        showError('Cliente Supabase não está disponível');
+        toggleLoading(false);
+        await delay(5000); // Espera 5 segundos
+        window.location.href = 'login.html';
+        return;
+    }
+    console.log('Cliente Supabase está disponível');
+
+    // Verifica autenticação
+    if (!await checkAuth()) return;
+    
+    // Carrega posts iniciais
+    loadPostsTable();
+    
+    // Configura formulário de post
+    const postForm = document.getElementById('post-form');
+    postForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        console.log('Formulário submetido');
+        
+        const post = {
+            title: document.getElementById('post-title').value,
+            category: document.getElementById('post-category').value,
+            content: document.getElementById('post-content').value,
+            imageUrl: document.getElementById('post-image').value
+        };
+        
+        let success;
+        if (window.editingPostId) {
+            console.log('Atualizando post existente:', window.editingPostId);
+            success = await updatePost(window.editingPostId, post);
+        } else {
+            console.log('Criando novo post');
+            success = await savePost(post);
+        }
+        
+        if (success) {
+            console.log('Operação realizada com sucesso');
+            postForm.reset();
+            window.editingPostId = null;
+            document.querySelector('.card-header').textContent = 'Novo Post';
+            loadPostsTable();
+        } else {
+            console.error('Falha na operação');
+            alert('Erro ao salvar post');
+        }
+    });
+    
+    // Configura botão de logout
+    const logoutBtn = document.getElementById('logout-button');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', logout);
+    }
+
+    // Delete all posts button
+    const deleteAllButton = document.getElementById('delete-all-posts');
+    if (deleteAllButton) {
+        deleteAllButton.addEventListener('click', deleteAllPosts);
+    }
 }
-console.log('Cliente Supabase está disponível');
+
+// Inicializa a aplicação quando o DOM estiver carregado
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('Inicializando página...');
+    initializeApp().catch(error => {
+        console.error('Erro ao inicializar aplicação:', error);
+        showError('Erro ao inicializar aplicação. Recarregando página...');
+        setTimeout(() => window.location.reload(), 5000);
+    });
+});
 
 // Função para verificar autenticação
 async function checkAuth() {
@@ -421,60 +485,3 @@ async function deleteAllPosts() {
         alert('Erro ao excluir os posts.');
     }
 }
-
-// Event Listeners
-document.addEventListener('DOMContentLoaded', async () => {
-    console.log('Inicializando página...');
-    
-    // Verifica autenticação
-    if (!await checkAuth()) return;
-    
-    // Carrega posts iniciais
-    loadPostsTable();
-    
-    // Configura formulário de post
-    const postForm = document.getElementById('post-form');
-    postForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        console.log('Formulário submetido');
-        
-        const post = {
-            title: document.getElementById('post-title').value,
-            category: document.getElementById('post-category').value,
-            content: document.getElementById('post-content').value,
-            imageUrl: document.getElementById('post-image').value
-        };
-        
-        let success;
-        if (window.editingPostId) {
-            console.log('Atualizando post existente:', window.editingPostId);
-            success = await updatePost(window.editingPostId, post);
-        } else {
-            console.log('Criando novo post');
-            success = await savePost(post);
-        }
-        
-        if (success) {
-            console.log('Operação realizada com sucesso');
-            postForm.reset();
-            window.editingPostId = null;
-            document.querySelector('.card-header').textContent = 'Novo Post';
-            loadPostsTable();
-        } else {
-            console.error('Falha na operação');
-            alert('Erro ao salvar post');
-        }
-    });
-    
-    // Configura botão de logout
-    const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', logout);
-    }
-
-    // Delete all posts button
-    const deleteAllButton = document.getElementById('delete-all-posts');
-    if (deleteAllButton) {
-        deleteAllButton.addEventListener('click', deleteAllPosts);
-    }
-});
