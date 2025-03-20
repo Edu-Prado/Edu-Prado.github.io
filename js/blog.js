@@ -92,13 +92,24 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadPosts() {
     try {
         console.log('Carregando posts do blog...');
-        const response = await fetch(`${API_URL}/posts`);
-        if (!response.ok) {
-            throw new Error('Erro ao carregar posts');
+        
+        // Verifica se o cliente Supabase está disponível
+        if (!window.supabase) {
+            throw new Error('Cliente Supabase não está inicializado');
         }
-        const posts = await response.json();
-        console.log('Posts carregados:', posts);
-        return posts;
+
+        const { data, error } = await window.supabase
+            .from('posts')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            console.error('Erro ao carregar posts:', error);
+            throw error;
+        }
+
+        console.log('Posts carregados:', data);
+        return data || [];
     } catch (error) {
         console.error('Erro ao carregar posts:', error);
         return [];

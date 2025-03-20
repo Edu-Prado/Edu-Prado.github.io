@@ -14,6 +14,22 @@
         gtag('config', 'G-QYZ06TPTGJ');
     </script>
     
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        window.addEventListener('load', () => {
+            const SUPABASE_URL = 'https://xgkqjfyxjvvxhwxvvlxz.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhna3FqZnl4anZ2eGh3eHZ2bHh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDk2NzI0NjAsImV4cCI6MjAyNTI0ODQ2MH0.Pu_IiRJDFw_CXm0Z_FoGY8YMoZZQQYB5Vy3Qd8rCDvw';
+            
+            try {
+                window.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                console.log('[Supabase] Cliente inicializado com sucesso');
+            } catch (error) {
+                console.error('[Supabase] Erro ao inicializar cliente:', error);
+            }
+        });
+    </script>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="css/styles.css">
     <script src="js/blog.js" defer></script>
