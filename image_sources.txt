@@ -1,0 +1,22 @@
+## Logos
+- Logo principal: Criar logo personalizada com nome "EduPrado.me" em fonte moderna
+- Logo branca: Versão branca da mesma logo
+
+## Perfil e Sobre
+- Foto de perfil: https://unsplash.com/photos/person-holding-black-tablet-computer (ThisisEngineering)
+- Foto sobre: https://unsplash.com/photos/woman-in-white-long-sleeve-shirt-using-black-laptop-computer (ThisisEngineering)
+
+## Ícones
+- Web Dev: https://unsplash.com/photos/a-MacBook-with-lines-of-code-on-its-screen-on-a-busy-desk (Christopher Gower)
+- AI: https://unsplash.com/photos/an-abstract-image-of-a-sphere-with-dots-and-lines (Growtika)
+- Cloud: https://unsplash.com/photos/geometric-shape-digital-wallpaper (Fabio)
+
+## Blog
+- AI Trends: https://unsplash.com/photos/Futuristic-robot-in-front-of-screens-with-data-information-Artificial-intelligence-and-computing-concept-This-is-a-3d-render-illustration (Getty Images)
+- Web Dev: https://unsplash.com/photos/turned-on-gray-laptop-computer (Luca Bravo)
+- Cloud Computing: https://unsplash.com/photos/a-laptop-computer-with-a-mouse-and-keyboard (Mike Hindle)
+
+## Projetos
+- AI Assistant: https://unsplash.com/photos/white-and-brown-human-robot-illustration (Possessed Photography)
+- Smart Analytics: https://unsplash.com/photos/a-computer-generated-image-of-a-human-brain (Sumaid pal Singh Bakshi)
+- Cloud Platform: https://unsplash.com/photos/a-group-of-people-standing-around-a-display-of-video-screens (Maxim Hopman) 
