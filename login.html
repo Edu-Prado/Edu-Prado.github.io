@@ -24,6 +24,24 @@
         .logo img {
             max-width: 150px;
         }
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .loading-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -50,6 +68,15 @@
         </div>
     </div>
 
+    <div id="loading" class="loading">
+        <div class="loading-content">
+            <div class="spinner-border text-primary mb-3" role="status">
+                <span class="visually-hidden">Carregando...</span>
+            </div>
+            <div id="loading-message">Fazendo login...</div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
     <script>
         console.log('Iniciando script de login...');
@@ -59,8 +86,26 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2bnhuZ214bHhwcHZxdG9xbGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyNDE1OTgsImV4cCI6MjA1NzgxNzU5OH0.YqckHPGQ-5DAfFDITZ-vDtghXah0qwwPaIzYfVRFu5U';
         
         console.log('Inicializando cliente Supabase...');
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            auth: {
+                persistSession: true,
+                storageKey: 'supabase.auth.token',
+                storage: window.localStorage,
+                autoRefreshToken: true,
+                detectSessionInUrl: true
+            }
+        });
         console.log('Cliente Supabase inicializado');
+
+        // Função para mostrar/ocultar loading
+        function toggleLoading(show, message = 'Fazendo login...') {
+            const loading = document.getElementById('loading');
+            const loadingMessage = document.getElementById('loading-message');
+            if (loading && loadingMessage) {
+                loading.style.display = show ? 'flex' : 'none';
+                loadingMessage.textContent = message;
+            }
+        }
 
         // Função para fazer login
         async function login(email, password) {
@@ -74,6 +119,12 @@
                 if (error) {
                     console.error('Erro no login:', error.message);
                     throw error;
+                }
+
+                // Armazena a sessão no localStorage
+                if (data?.session) {
+                    localStorage.setItem('supabase.auth.token', JSON.stringify(data.session));
+                    console.log('Sessão armazenada:', data.session);
                 }
 
                 console.log('Login bem sucedido:', data);
@@ -98,20 +149,42 @@
                 const password = document.getElementById('password').value;
                 const errorMessage = document.getElementById('error-message');
                 
+                toggleLoading(true);
                 console.log('Tentando fazer login...');
                 const data = await login(email, password);
                 
                 if (data) {
                     console.log('Login bem sucedido, redirecionando...');
+                    toggleLoading(true, 'Redirecionando...');
                     window.location.href = 'admin.html';
                 } else {
                     console.log('Login falhou, mostrando mensagem de erro');
                     errorMessage.textContent = 'Email ou senha inválidos';
                     errorMessage.style.display = 'block';
+                    toggleLoading(false);
                 }
             });
             console.log('Event listener adicionado com sucesso');
         }
+
+        // Verifica se já existe uma sessão válida
+        async function checkExistingSession() {
+            console.log('Verificando sessão existente...');
+            try {
+                const { data: { session }, error } = await supabase.auth.getSession();
+                console.log('Sessão existente:', session);
+                
+                if (session) {
+                    console.log('Sessão válida encontrada, redirecionando...');
+                    window.location.href = 'admin.html';
+                }
+            } catch (error) {
+                console.error('Erro ao verificar sessão:', error);
+            }
+        }
+
+        // Verifica sessão ao carregar a página
+        checkExistingSession();
 
         console.log('Script de login carregado');
     </script>
