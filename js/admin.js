@@ -128,6 +128,10 @@ async function checkAuth() {
     toggleLoading(true, 'Verificando autenticação...');
     
     try {
+        // Verifica se há uma sessão no localStorage
+        const storedSession = localStorage.getItem('supabase.auth.token');
+        console.log('Sessão armazenada:', storedSession ? 'Encontrada' : 'Não encontrada');
+
         // Verifica a sessão atual
         const { data: { session }, error: sessionError } = await window.supabaseClient.auth.getSession();
         console.log('Resposta da verificação de autenticação:', { session, error: sessionError });
@@ -141,6 +145,15 @@ async function checkAuth() {
             console.error('Nenhuma sessão encontrada');
             throw new Error('Nenhuma sessão encontrada');
         }
+
+        // Configura o listener de mudança de autenticação
+        window.supabaseClient.auth.onAuthStateChange((event, session) => {
+            console.log('Mudança no estado de autenticação:', event, session);
+            if (event === 'SIGNED_OUT' || !session) {
+                console.log('Usuário deslogado ou sessão expirada');
+                window.location.href = 'login.html';
+            }
+        });
 
         // Verifica se o usuário está autenticado
         const { data: { user }, error: userError } = await window.supabaseClient.auth.getUser();
@@ -163,7 +176,10 @@ async function checkAuth() {
         console.error('Erro ao verificar autenticação:', error);
         showError(`Erro ao verificar autenticação: ${error.message}`);
         toggleLoading(false);
-        await delay(2000); // Reduzido para 2 segundos
+        
+        // Limpa o localStorage e redireciona
+        localStorage.removeItem('supabase.auth.token');
+        await delay(2000);
         window.location.href = 'login.html';
         return false;
     }
@@ -185,8 +201,13 @@ async function login(email, password) {
             throw error;
         }
         
+        // Armazena a sessão no localStorage
+        if (data?.session) {
+            localStorage.setItem('supabase.auth.token', JSON.stringify(data.session));
+        }
+        
         console.log('Login realizado com sucesso!');
-        await delay(3000); // Espera 3 segundos
+        await delay(1000); // Reduzido para 1 segundo
         return data;
     } catch (error) {
         console.error('Erro ao fazer login:', error);
@@ -206,8 +227,11 @@ async function logout() {
             throw error;
         }
         
+        // Limpa o localStorage
+        localStorage.removeItem('supabase.auth.token');
+        
         console.log('Logout realizado com sucesso!');
-        await delay(2000); // Espera 2 segundos
+        await delay(1000); // Reduzido para 1 segundo
         window.location.href = 'login.html';
     } catch (error) {
         console.error('Erro ao fazer logout:', error);
