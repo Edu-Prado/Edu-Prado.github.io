@@ -108,21 +108,41 @@ async function loadPosts() {
             throw new Error('Cliente Supabase inválido');
         }
 
-        const { data, error } = await window.supabase
+        // Adiciona um timeout de 10 segundos para a requisição
+        const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('Timeout ao carregar posts')), 10000);
+        });
+
+        const fetchPromise = window.supabase
             .from('posts')
             .select('*')
             .order('created_at', { ascending: false });
 
+        // Usa Promise.race para implementar o timeout
+        const { data, error } = await Promise.race([
+            fetchPromise,
+            timeoutPromise
+        ]);
+
         if (error) {
+            if (error.message && error.message.includes('Failed to fetch')) {
+                console.error('[Blog] Erro de conexão ao carregar posts. Verifique sua conexão com a internet.');
+                throw new Error('Erro de conexão ao carregar posts');
+            }
             console.error('[Blog] Erro ao carregar posts:', error);
             throw error;
         }
 
+        if (!data) {
+            console.warn('[Blog] Nenhum post encontrado');
+            return [];
+        }
+
         console.log('[Blog] Posts carregados:', data);
-        return data || [];
+        return data;
     } catch (error) {
         console.error('[Blog] Erro ao carregar posts:', error);
-        throw error; // Propaga o erro para ser tratado pelo initializeBlog
+        throw error;
     }
 }
 
@@ -294,9 +314,15 @@ async function initializeBlog() {
         console.error('[Blog] Erro ao inicializar blog:', error);
         const blogGrid = document.querySelector('.blog-grid');
         if (blogGrid) {
+            let errorMessage = 'Desculpe, não foi possível carregar os posts.';
+            
+            if (error.message && error.message.includes('conexão')) {
+                errorMessage = 'Erro de conexão. Verifique sua conexão com a internet.';
+            }
+            
             blogGrid.innerHTML = `
                 <div class="error-message">
-                    <p>Desculpe, não foi possível carregar os posts.</p>
+                    <p>${errorMessage}</p>
                     <button onclick="initializeBlog()" class="btn btn-primary">Tentar novamente</button>
                 </div>
             `;
