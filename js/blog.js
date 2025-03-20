@@ -91,11 +91,21 @@ document.addEventListener('DOMContentLoaded', () => {
 // Função para carregar os posts
 async function loadPosts() {
     try {
-        console.log('Carregando posts do blog...');
+        console.log('[Blog] Carregando posts do blog...');
         
         // Verifica se o cliente Supabase está disponível
         if (!window.supabase) {
+            console.error('[Blog] Cliente Supabase não está disponível');
             throw new Error('Cliente Supabase não está inicializado');
+        }
+
+        console.log('[Blog] Cliente Supabase encontrado, buscando posts...');
+        
+        // Verifica se o método from está disponível
+        if (typeof window.supabase.from !== 'function') {
+            console.error('[Blog] Método "from" não encontrado no cliente Supabase');
+            console.log('[Blog] Cliente Supabase:', window.supabase);
+            throw new Error('Cliente Supabase inválido');
         }
 
         const { data, error } = await window.supabase
@@ -104,15 +114,15 @@ async function loadPosts() {
             .order('created_at', { ascending: false });
 
         if (error) {
-            console.error('Erro ao carregar posts:', error);
+            console.error('[Blog] Erro ao carregar posts:', error);
             throw error;
         }
 
-        console.log('Posts carregados:', data);
+        console.log('[Blog] Posts carregados:', data);
         return data || [];
     } catch (error) {
-        console.error('Erro ao carregar posts:', error);
-        return [];
+        console.error('[Blog] Erro ao carregar posts:', error);
+        throw error; // Propaga o erro para ser tratado pelo initializeBlog
     }
 }
 
