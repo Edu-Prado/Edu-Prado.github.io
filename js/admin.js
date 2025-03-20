@@ -7,9 +7,13 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 // Função para mostrar/ocultar tela de carregamento
 function toggleLoading(show, message = 'Carregando...') {
     const overlay = document.getElementById('loading-overlay');
-    const messageElement = overlay.querySelector('.loading-message');
     if (overlay) {
-        overlay.style.display = show ? 'flex' : 'none';
+        if (show) {
+            overlay.classList.remove('d-none');
+        } else {
+            overlay.classList.add('d-none');
+        }
+        const messageElement = document.getElementById('loading-message');
         if (messageElement) {
             messageElement.textContent = message;
         }
@@ -20,8 +24,11 @@ function toggleLoading(show, message = 'Carregando...') {
 function showError(message) {
     const errorElement = document.getElementById('error-message');
     if (errorElement) {
-        errorElement.textContent = message;
-        errorElement.classList.add('show');
+        errorElement.classList.remove('d-none');
+        const alertElement = errorElement.querySelector('.alert');
+        if (alertElement) {
+            alertElement.textContent = message;
+        }
     }
     console.error(message);
 }
@@ -121,47 +128,42 @@ async function checkAuth() {
     toggleLoading(true, 'Verificando autenticação...');
     
     try {
-        // Aguarda um momento para garantir que a sessão foi estabelecida
-        await delay(1000);
+        // Verifica a sessão atual
+        const { data: { session }, error: sessionError } = await window.supabaseClient.auth.getSession();
+        console.log('Resposta da verificação de autenticação:', { session, error: sessionError });
         
-        const { data: { session }, error } = await window.supabaseClient.auth.getSession();
-        console.log('Resposta da verificação de autenticação:', { session, error });
-        
-        if (error) {
-            showError(`Erro ao verificar autenticação: ${error.message}`);
-            toggleLoading(false);
-            await delay(5000); // Espera 5 segundos
-            window.location.href = 'login.html';
-            return false;
+        if (sessionError) {
+            console.error('Erro ao verificar sessão:', sessionError);
+            throw sessionError;
         }
         
         if (!session) {
-            showError('Nenhuma sessão encontrada. Redirecionando para login...');
-            toggleLoading(false);
-            await delay(5000); // Espera 5 segundos
-            window.location.href = 'login.html';
-            return false;
+            console.error('Nenhuma sessão encontrada');
+            throw new Error('Nenhuma sessão encontrada');
         }
 
-        // Verifica se a sessão está ativa
+        // Verifica se o usuário está autenticado
         const { data: { user }, error: userError } = await window.supabaseClient.auth.getUser();
         console.log('Verificação de usuário:', { user, userError });
         
-        if (userError || !user) {
-            showError(`Erro ao verificar usuário: ${userError?.message || 'Usuário não encontrado'}`);
-            toggleLoading(false);
-            await delay(5000); // Espera 5 segundos
-            window.location.href = 'login.html';
-            return false;
+        if (userError) {
+            console.error('Erro ao verificar usuário:', userError);
+            throw userError;
+        }
+        
+        if (!user) {
+            console.error('Usuário não encontrado');
+            throw new Error('Usuário não encontrado');
         }
         
         console.log('Usuário autenticado:', user.email);
         toggleLoading(false);
         return true;
     } catch (error) {
+        console.error('Erro ao verificar autenticação:', error);
         showError(`Erro ao verificar autenticação: ${error.message}`);
         toggleLoading(false);
-        await delay(5000); // Espera 5 segundos
+        await delay(2000); // Reduzido para 2 segundos
         window.location.href = 'login.html';
         return false;
     }

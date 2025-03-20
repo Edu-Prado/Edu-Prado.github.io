@@ -99,9 +99,19 @@
     <script>
         // Inicialização do cliente Supabase
         const supabaseUrl = 'https://gvnxngmxlxppvqtoqler.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2bnhuZ214bHhwcHZxdG9xbGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDk1OTg5ODAsImV4cCI6MjAyNTE3NDk4MH0.YqckHPGQ-5DAfFDITZ-vDtghXah0qwwPaIzYfVRFu5U';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2bnhuZ214bHhwcHZxdG9xbGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyNDE1OTgsImV4cCI6MjA1NzgxNzU5OH0.YqckHPGQ-5DAfFDITZ-vDtghXah0qwwPaIzYfVRFu5U';
+        
+        // Cria o cliente Supabase
         window.supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
-        console.log('Supabase inicializado:', window.supabaseClient);
+        
+        // Verifica se o cliente foi criado corretamente
+        if (!window.supabaseClient) {
+            console.error('Erro ao criar cliente Supabase');
+            document.getElementById('error-message').classList.remove('d-none');
+            document.getElementById('error-message').querySelector('.alert').textContent = 'Erro ao conectar com o Supabase';
+        } else {
+            console.log('Supabase inicializado:', window.supabaseClient);
+        }
     </script>
     <script src="js/admin.js"></script>
 </body>
