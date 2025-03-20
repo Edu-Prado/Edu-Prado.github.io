@@ -17,12 +17,25 @@
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const SUPABASE_URL = 'https://xgkqjfyxjvvxhwxvvlxz.supabase.app';
+        const SUPABASE_URL = 'https://xgkqjfyxjvvxhwxvvlxz.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhna3FqZnl4anZ2eGh3eHZ2bHh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDk2NzI0NjAsImV4cCI6MjAyNTI0ODQ2MH0.Pu_IiRJDFw_CXm0Z_FoGY8YMoZZQQYB5Vy3Qd8rCDvw';
         
         try {
             window.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             console.log('[Supabase] Cliente inicializado com sucesso');
+            
+            // Teste de conexão
+            window.supabase.from('posts').select('count').single()
+                .then(response => {
+                    if (response.error) {
+                        console.error('[Supabase] Erro no teste de conexão:', response.error);
+                    } else {
+                        console.log('[Supabase] Teste de conexão bem sucedido');
+                    }
+                })
+                .catch(error => {
+                    console.error('[Supabase] Erro no teste de conexão:', error);
+                });
         } catch (error) {
             console.error('[Supabase] Erro ao inicializar cliente:', error);
         }

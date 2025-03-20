@@ -100,6 +100,7 @@ async function loadPosts() {
         }
 
         console.log('[Blog] Cliente Supabase encontrado, buscando posts...');
+        console.log('[Blog] URL do Supabase:', window.supabase.supabaseUrl);
         
         // Verifica se o método from está disponível
         if (typeof window.supabase.from !== 'function') {
@@ -125,11 +126,10 @@ async function loadPosts() {
         ]);
 
         if (error) {
+            console.error('[Blog] Erro do Supabase:', error);
             if (error.message && error.message.includes('Failed to fetch')) {
-                console.error('[Blog] Erro de conexão ao carregar posts. Verifique sua conexão com a internet.');
                 throw new Error('Erro de conexão ao carregar posts');
             }
-            console.error('[Blog] Erro ao carregar posts:', error);
             throw error;
         }
 
@@ -142,6 +142,16 @@ async function loadPosts() {
         return data;
     } catch (error) {
         console.error('[Blog] Erro ao carregar posts:', error);
+        
+        // Adiciona mais informações de debug
+        if (window.supabase) {
+            console.log('[Blog] Estado do cliente Supabase:', {
+                url: window.supabase.supabaseUrl,
+                hasFrom: typeof window.supabase.from === 'function',
+                hasAuth: typeof window.supabase.auth === 'object'
+            });
+        }
+        
         throw error;
     }
 }
