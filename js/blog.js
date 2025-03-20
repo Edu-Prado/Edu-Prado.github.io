@@ -174,17 +174,21 @@ function isValidImageUrl(url) {
 
 // Função para exibir os posts na página
 async function displayPosts() {
-    console.log('Exibindo posts...');
+    console.log('[Blog] Exibindo posts...');
     const posts = await loadPosts();
     const blogGrid = document.querySelector('.blog-grid');
     
     if (!blogGrid) {
-        console.error('Elemento blog-grid não encontrado');
+        console.error('[Blog] Elemento blog-grid não encontrado');
         return;
     }
 
-    if (posts.length === 0) {
-        blogGrid.innerHTML = '<p>Nenhum post encontrado.</p>';
+    if (!Array.isArray(posts) || posts.length === 0) {
+        blogGrid.innerHTML = `
+            <div class="no-posts">
+                <p>Nenhum post encontrado.</p>
+            </div>
+        `;
         return;
     }
 
@@ -203,30 +207,18 @@ async function displayPosts() {
                      onerror="this.src='images/blog-placeholder.jpg'">
             </div>
             <div class="post-content">
-                <h2>${post.title}</h2>
+                <h2 class="post-title">${post.title}</h2>
                 <div class="post-meta">
-                    <span class="post-category">${post.category}</span>
+                    <span class="post-category">${post.category || 'Sem categoria'}</span>
                     <span class="post-date">${formatDate(post.created_at)}</span>
                 </div>
-                <p class="post-excerpt">${post.content.substring(0, 150)}...</p>
+                <p class="post-excerpt">${post.content ? post.content.substring(0, 150) + '...' : 'Sem conteúdo'}</p>
                 <a href="post.html?id=${post.id}" class="btn btn-primary">Ler mais</a>
             </div>
         </article>
     `).join('');
 
-    // Adicionar listener para o campo de busca
-    const searchInput = document.querySelector('.search-input');
-    if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            const filteredPosts = posts.filter(post => 
-                post.title.toLowerCase().includes(searchTerm) ||
-                post.category.toLowerCase().includes(searchTerm) ||
-                post.content.toLowerCase().includes(searchTerm)
-            );
-            displayFilteredPosts(filteredPosts);
-        });
-    }
+    console.log('[Blog] Posts exibidos com sucesso');
 }
 
 // Função para exibir posts filtrados
@@ -260,8 +252,33 @@ function displayFilteredPosts(posts) {
     `).join('');
 }
 
-// Inicializar o blog
-function initializeBlog() {
-    console.log('Inicializando blog...');
-    displayPosts();
+// Função para inicializar o blog
+async function initializeBlog() {
+    console.log('[Blog] Inicializando blog');
+    try {
+        // Adiciona indicador de carregamento
+        const blogGrid = document.querySelector('.blog-grid');
+        if (!blogGrid) {
+            console.error('[Blog] Elemento blog-grid não encontrado');
+            return;
+        }
+        
+        blogGrid.innerHTML = '<div class="loading">Carregando posts...</div>';
+        
+        // Tenta carregar os posts
+        await displayPosts();
+        
+        console.log('[Blog] Blog inicializado com sucesso');
+    } catch (error) {
+        console.error('[Blog] Erro ao inicializar blog:', error);
+        const blogGrid = document.querySelector('.blog-grid');
+        if (blogGrid) {
+            blogGrid.innerHTML = `
+                <div class="error-message">
+                    <p>Desculpe, não foi possível carregar os posts.</p>
+                    <button onclick="initializeBlog()" class="btn btn-primary">Tentar novamente</button>
+                </div>
+            `;
+        }
+    }
 } 
