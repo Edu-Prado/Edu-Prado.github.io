@@ -3,215 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin | EduPrado.me</title>
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="css/styles.css">
-    <style>
-        .admin-container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background: white;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-
-        .admin-actions {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .post-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            background: var(--section-bg);
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .post-info h3 {
-            margin: 0;
-            color: var(--text-color);
-        }
-
-        .post-info p {
-            margin: 0.5rem 0;
-            color: var(--light-text);
-        }
-
-        .post-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .posts-section {
-            margin-top: 3rem;
-        }
-
-        .posts-section h2 {
-            margin-bottom: 1rem;
-        }
-
-        .form-section {
-            margin-bottom: 3rem;
-        }
-
-        .form-section h2 {
-            margin-bottom: 1rem;
-        }
-
-        .admin-login {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: var(--section-bg);
-        }
-
-        .login-container {
-            background: white;
-            padding: 2rem;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .login-container h2 {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.9);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #3498db;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .loading-message {
-            position: absolute;
-            top: 60%;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 1.2rem;
-            color: #333;
-        }
-
-        .error-message {
-            background-color: #ffebee;
-            color: #c62828;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-radius: 0.5rem;
-            display: none;
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1001;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .error-message.show {
-            display: block;
-        }
-    </style>
+    <title>Painel Administrativo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/admin.css">
 </head>
 <body>
-    <div id="loading-overlay" class="loading-overlay">
-        <div class="loading-spinner"></div>
-        <div class="loading-message">Carregando...</div>
-    </div>
-
-    <div id="error-message" class="error-message"></div>
-
-    <div class="admin-container">
-        <div class="admin-header">
-            <h1>Painel Administrativo</h1>
-            <button id="logout-button" class="btn btn-secondary">
-                <i class="fas fa-sign-out-alt"></i> Sair
-            </button>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1>Painel Administrativo</h1>
+                    <button id="logout-button" class="btn btn-danger">Sair</button>
+                </div>
+            </div>
         </div>
 
-        <div class="admin-actions">
-            <button id="delete-all-posts" class="btn btn-danger">
-                <i class="fas fa-trash"></i> Excluir Todos os Posts
-            </button>
-        </div>
+        <div class="row">
+            <!-- Formulário de Post -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 id="form-title" class="h5 mb-0">Novo Post</h2>
+                    </div>
+                    <div class="card-body">
+                        <form id="post-form">
+                            <div class="mb-3">
+                                <label for="post-title" class="form-label">Título</label>
+                                <input type="text" class="form-control" id="post-title" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="post-category" class="form-label">Categoria</label>
+                                <input type="text" class="form-control" id="post-category" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="post-content" class="form-label">Conteúdo</label>
+                                <textarea class="form-control" id="post-content" rows="5" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="post-image" class="form-label">URL da Imagem</label>
+                                <input type="url" class="form-control" id="post-image">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Salvar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
 
-        <div class="form-section">
-            <h2>Novo Post</h2>
-            <form id="post-form" class="post-form">
-                <div class="form-group">
-                    <label for="post-title">Título</label>
-                    <input type="text" id="post-title" name="title" required>
+            <!-- Lista de Posts -->
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h2 class="h5 mb-0">Posts</h2>
+                            <button id="delete-all-posts" class="btn btn-sm btn-danger">Excluir Todos</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="posts-table" class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Título</th>
+                                        <th>Categoria</th>
+                                        <th>Conteúdo</th>
+                                        <th>Imagem</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Posts serão carregados aqui -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="post-category">Categoria</label>
-                    <input type="text" id="post-category" name="category" required>
-                </div>
-                <div class="form-group">
-                    <label for="post-image">URL da Imagem</label>
-                    <input type="url" id="post-image" name="imageUrl">
-                    <small>Deixe em branco para usar uma imagem padrão</small>
-                </div>
-                <div class="form-group">
-                    <label for="post-content">Conteúdo</label>
-                    <textarea id="post-content" name="content" required></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary">Publicar Post</button>
-            </form>
-        </div>
-
-        <div class="posts-section">
-            <h2>Posts Existentes</h2>
-            <div id="posts-list">
-                <!-- Posts serão carregados aqui via JavaScript -->
             </div>
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay d-none">
+        <div class="spinner-border text-light" role="status">
+            <span class="visually-hidden">Carregando...</span>
+        </div>
+        <div id="loading-message" class="text-light mt-2">Carregando...</div>
+    </div>
+
+    <!-- Error Message -->
+    <div id="error-message" class="error-message d-none">
+        <div class="alert alert-danger" role="alert"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // Configuração do Supabase
-        const SUPABASE_URL = 'https://gvnxngmxlxppvqtoqler.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2bnhuZ214bHhwcHZxdG9xbGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyNDE1OTgsImV4cCI6MjA1NzgxNzU5OH0.YqckHPGQ-5DAfFDITZ-vDtghXah0qwwPaIzYfVRFu5U';
-        
-        // Inicializa o Supabase globalmente
-        window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Inicialização do cliente Supabase
+        const supabaseUrl = 'https://gvnxngmxlxppvqtoqler.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2bnhuZ214bHhwcHZxdG9xbGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDk1OTg5ODAsImV4cCI6MjAyNTE3NDk4MH0.YqckHPGQ-5DAfFDITZ-vDtghXah0qwwPaIzYfVRFu5U';
+        window.supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
         console.log('Supabase inicializado:', window.supabaseClient);
     </script>
     <script src="js/admin.js"></script>

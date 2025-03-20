@@ -46,7 +46,7 @@ async function initializeApp() {
         if (!await checkAuth()) return;
         
         // Carrega posts iniciais
-        loadPostsTable();
+        await loadPostsTable();
         
         // Configura formulário de post
         const postForm = document.getElementById('post-form');
@@ -62,9 +62,10 @@ async function initializeApp() {
             };
             
             let success;
-            if (window.editingPostId) {
-                console.log('Atualizando post existente:', window.editingPostId);
-                success = await updatePost(window.editingPostId, post);
+            const editingPostId = postForm.dataset.editId;
+            if (editingPostId) {
+                console.log('Atualizando post existente:', editingPostId);
+                success = await updatePost(editingPostId, post);
             } else {
                 console.log('Criando novo post');
                 success = await savePost(post);
@@ -73,9 +74,9 @@ async function initializeApp() {
             if (success) {
                 console.log('Operação realizada com sucesso');
                 postForm.reset();
-                window.editingPostId = null;
-                document.querySelector('.card-header').textContent = 'Novo Post';
-                loadPostsTable();
+                postForm.dataset.editId = '';
+                document.getElementById('form-title').textContent = 'Novo Post';
+                await loadPostsTable();
             } else {
                 console.error('Falha na operação');
                 alert('Erro ao salvar post');
@@ -93,6 +94,8 @@ async function initializeApp() {
         if (deleteAllButton) {
             deleteAllButton.addEventListener('click', deleteAllPosts);
         }
+
+        toggleLoading(false);
     } catch (error) {
         console.error('Erro ao inicializar aplicação:', error);
         showError(`Erro ao inicializar: ${error.message}`);
@@ -235,7 +238,7 @@ async function loadPosts() {
         }
         
         console.log('Posts carregados com sucesso:', data);
-        return data;
+        return data || [];
     } catch (error) {
         console.error('Erro ao carregar posts:', error);
         return [];
@@ -298,54 +301,40 @@ function formatDate(dateString) {
     }
 }
 
-// Função para carregar os posts na tabela
+// Função para carregar a tabela de posts
 async function loadPostsTable() {
     console.log('Carregando posts...');
     const posts = await loadPosts();
     console.log('Posts carregados:', posts);
     
-    const postsList = document.getElementById('posts-list');
-    if (!postsList) {
-        console.error('Elemento posts-list não encontrado');
+    const tableBody = document.querySelector('#posts-table tbody');
+    if (!tableBody) {
+        console.error('Elemento tbody não encontrado');
         return;
     }
-
+    
+    tableBody.innerHTML = '';
+    
     if (posts.length === 0) {
-        postsList.innerHTML = '<p>Nenhum post encontrado.</p>';
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td colspan="5" class="text-center">Nenhum post encontrado</td>';
+        tableBody.appendChild(tr);
         return;
     }
-
-    postsList.innerHTML = posts.map(post => `
-        <div class="post-item">
-            <div class="post-info">
-                <h3>${post.title}</h3>
-                <p>Categoria: ${post.category}</p>
-                <p>Data: ${formatDate(post.created_at)}</p>
-            </div>
-            <div class="post-actions">
-                <button class="btn btn-sm btn-primary edit-post" data-id="${post.id}">
-                    <i class="fas fa-edit"></i>
-                </button>
-                <button class="btn btn-sm btn-danger delete-post" data-id="${post.id}">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-        </div>
-    `).join('');
-
-    // Adicionar listeners para os botões de editar e deletar
-    postsList.querySelectorAll('.edit-post').forEach(button => {
-        button.addEventListener('click', () => {
-            const id = parseInt(button.dataset.id);
-            editPost(id);
-        });
-    });
-
-    postsList.querySelectorAll('.delete-post').forEach(button => {
-        button.addEventListener('click', () => {
-            const id = parseInt(button.dataset.id);
-            deletePost(id);
-        });
+    
+    posts.forEach(post => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${post.title}</td>
+            <td>${post.category}</td>
+            <td>${post.content.substring(0, 100)}...</td>
+            <td>${post.image_url || '-'}</td>
+            <td>
+                <button onclick="editPost(${post.id})" class="btn btn-sm btn-primary">Editar</button>
+                <button onclick="deletePost(${post.id})" class="btn btn-sm btn-danger">Excluir</button>
+            </td>
+        `;
+        tableBody.appendChild(tr);
     });
 }
 
