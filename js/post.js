@@ -61,10 +61,18 @@ async function loadPost() {
         
         // Formatar o conteúdo preservando quebras de linha e parágrafos
         const formattedContent = post.content
-            .split('\n')
-            .map(paragraph => paragraph.trim())
+            .split('\n\n')  // Divide por parágrafos (duas quebras de linha)
+            .map(paragraph => {
+                // Se o parágrafo contiver quebras de linha simples, preserva-as com <br>
+                const formattedParagraph = paragraph
+                    .split('\n')
+                    .map(line => line.trim())
+                    .filter(line => line.length > 0)
+                    .join('<br>');
+                
+                return formattedParagraph ? `<p>${formattedParagraph}</p>` : '';
+            })
             .filter(paragraph => paragraph.length > 0)
-            .map(paragraph => `<p>${paragraph}</p>`)
             .join('\n');
         
         contentElement.innerHTML = formattedContent;
