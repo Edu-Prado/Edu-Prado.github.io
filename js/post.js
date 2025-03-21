@@ -35,10 +35,12 @@ async function loadPost() {
         const postContent = document.querySelector('.post-content');
         if (postContent) {
             postContent.innerHTML = `
-                <h1>${post.title}</h1>
-                <div class="post-meta">
-                    <span class="post-date">${new Date(post.created_at).toLocaleDateString('pt-BR')}</span>
-                    <span class="post-category">${post.category || 'Geral'}</span>
+                <div class="post-header">
+                    <h1>${post.title}</h1>
+                    <div class="post-meta">
+                        <span class="post-date">${new Date(post.created_at).toLocaleDateString('pt-BR')}</span>
+                        <span class="post-category">${post.category || 'Geral'}</span>
+                    </div>
                 </div>
                 <div class="post-image">
                     <img src="${post.image_url || 'images/profile.jpg'}" alt="${post.title}" onerror="this.src='images/profile.jpg'">
