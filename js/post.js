@@ -58,7 +58,22 @@ async function loadPost() {
 
         // Atualizar o conteúdo do post
         const contentElement = document.getElementById('post-content');
-        contentElement.innerHTML = post.content;
+        
+        // Formatar o conteúdo preservando quebras de linha e parágrafos
+        const formattedContent = post.content
+            .split('\n')
+            .map(paragraph => paragraph.trim())
+            .filter(paragraph => paragraph.length > 0)
+            .map(paragraph => `<p>${paragraph}</p>`)
+            .join('\n');
+        
+        contentElement.innerHTML = formattedContent;
+
+        // Adicionar estilos adicionais para melhor legibilidade
+        contentElement.querySelectorAll('p').forEach(p => {
+            p.style.marginBottom = '1.5rem';
+            p.style.lineHeight = '1.8';
+        });
 
         // Adicionar tratamento de erro para todas as imagens no conteúdo
         contentElement.querySelectorAll('img').forEach(img => {

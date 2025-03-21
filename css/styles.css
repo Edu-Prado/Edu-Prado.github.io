@@ -561,17 +561,15 @@ body {
     font-weight: 500;
     text-decoration: none;
     transition: all 0.3s ease;
-}
-
-.btn-primary {
     background-color: var(--primary-color);
     color: white;
     border: none;
 }
 
-.btn-primary:hover {
+.btn:hover {
     background-color: #0056b3;
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .btn-outline {
@@ -584,6 +582,19 @@ body {
     background-color: var(--primary-color);
     color: white;
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-secondary {
+    background-color: var(--section-bg);
+    color: var(--text-color);
+    border: none;
+}
+
+.btn-secondary:hover {
+    background-color: var(--border-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* Animations */
@@ -809,11 +820,78 @@ body {
     color: #333;
 }
 
+.blog-post .post-content p {
+    margin-bottom: 1.5rem;
+    text-align: justify;
+}
+
+.blog-post .post-content h2 {
+    font-size: 1.8rem;
+    margin: 2rem 0 1rem;
+    color: var(--text-color);
+}
+
+.blog-post .post-content h3 {
+    font-size: 1.5rem;
+    margin: 1.5rem 0 1rem;
+    color: var(--text-color);
+}
+
+.blog-post .post-content ul,
+.blog-post .post-content ol {
+    margin: 1rem 0 1.5rem 2rem;
+}
+
+.blog-post .post-content li {
+    margin-bottom: 0.5rem;
+}
+
 .blog-post .post-content img {
     max-width: 100%;
     height: auto;
     margin: 1.5rem 0;
     border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.blog-post .post-content a {
+    color: var(--primary-color);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s ease;
+}
+
+.blog-post .post-content a:hover {
+    border-color: var(--primary-color);
+}
+
+.blog-post .post-content blockquote {
+    margin: 1.5rem 0;
+    padding: 1rem 1.5rem;
+    border-left: 4px solid var(--primary-color);
+    background-color: #f8f9fa;
+    font-style: italic;
+}
+
+.blog-post .post-content code {
+    background-color: #f8f9fa;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.9em;
+}
+
+.blog-post .post-content pre {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+}
+
+.blog-post .post-content pre code {
+    background-color: transparent;
+    padding: 0;
 }
 
 @media (max-width: 768px) {
@@ -897,4 +975,16 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+/* Ajuste para os botões do blog */
+.post-card .btn {
+    margin-top: 1rem;
+    font-size: 1rem;
+}
+
+/* Ajuste para os botões de projeto */
+.project-card .btn {
+    margin-top: 1rem;
+    display: inline-block;
 } 
