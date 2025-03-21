@@ -49,8 +49,10 @@ body {
     align-items: center;
 }
 
-.logo-img {
-    height: 40px;
+.logo img {
+    max-height: 40px;
+    width: auto;
+    display: block;
 }
 
 .nav-links {
@@ -662,6 +664,10 @@ body {
     .post-card {
         max-width: 500px;
         margin: 0 auto;
+    }
+
+    .logo img {
+        max-height: 32px;
     }
 }
 
