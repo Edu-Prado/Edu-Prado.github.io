@@ -252,10 +252,10 @@ async function displayPosts() {
     blogGrid.innerHTML = recentPosts.map(post => `
         <article class="post-card">
             <div class="post-image-container">
-                <img src="${isValidImageUrl(post.image_url) ? post.image_url : 'images/blog-placeholder.jpg'}" 
+                <img src="${isValidImageUrl(post.image_url) ? post.image_url : 'images/profile.jpg'}" 
                      alt="${post.title}" 
                      class="post-image"
-                     onerror="this.src='images/blog-placeholder.jpg'">
+                     onerror="this.src='images/profile.jpg'">
             </div>
             <div class="post-content">
                 <h2 class="post-title">${post.title}</h2>
@@ -285,10 +285,10 @@ function displayFilteredPosts(posts) {
     blogGrid.innerHTML = posts.map(post => `
         <article class="post-card">
             <div class="post-image-container">
-                <img src="${isValidImageUrl(post.image_url) ? post.image_url : 'images/blog-placeholder.jpg'}" 
+                <img src="${isValidImageUrl(post.image_url) ? post.image_url : 'images/profile.jpg'}" 
                      alt="${post.title}" 
                      class="post-image"
-                     onerror="this.src='images/blog-placeholder.jpg'">
+                     onerror="this.src='images/profile.jpg'">
             </div>
             <div class="post-content">
                 <h2>${post.title}</h2>
