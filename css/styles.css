@@ -50,7 +50,7 @@ body {
 }
 
 .logo img {
-    max-height: 40px;
+    max-height: 50px;
     width: auto;
     display: block;
 }
@@ -525,7 +525,8 @@ body {
 }
 
 .footer-logo img {
-    height: 40px;
+    max-height: 50px;
+    width: auto;
     margin-bottom: 1rem;
 }
 
@@ -666,8 +667,9 @@ body {
         margin: 0 auto;
     }
 
-    .logo img {
-        max-height: 32px;
+    .logo img,
+    .footer-logo img {
+        max-height: 40px;
     }
 }
 
