@@ -69,20 +69,7 @@ async function loadPost() {
         const contentElement = document.getElementById('post-content');
         
         // Formatar o conteúdo preservando quebras de linha e parágrafos
-        const formattedContent = currentPost.content
-            .split('\n\n')  // Divide por parágrafos (duas quebras de linha)
-            .map(paragraph => {
-                // Se o parágrafo contiver quebras de linha simples, preserva-as com <br>
-                const formattedParagraph = paragraph
-                    .split('\n')
-                    .map(line => line.trim())
-                    .filter(line => line.length > 0)
-                    .join('<br>');
-                
-                return formattedParagraph ? `<p>${formattedParagraph}</p>` : '';
-            })
-            .filter(paragraph => paragraph.length > 0)
-            .join('\n');
+        const formattedContent = formatContent(currentPost.content);
         
         contentElement.innerHTML = formattedContent;
 
@@ -107,6 +94,34 @@ async function loadPost() {
             </div>
         `;
     }
+}
+
+function formatContent(content) {
+    // Divide o conteúdo em parágrafos
+    const paragraphs = content.split('\n\n').filter(p => p.trim());
+    
+    // Processa cada parágrafo
+    const formattedParagraphs = paragraphs.map(paragraph => {
+        // Verifica se é um embed do YouTube
+        if (paragraph.trim().startsWith('[youtube]') && paragraph.trim().endsWith('[/youtube]')) {
+            const videoId = paragraph.trim().replace('[youtube]', '').replace('[/youtube]', '').trim();
+            return `<div class="video-container">
+                <iframe 
+                    width="100%" 
+                    height="315" 
+                    src="https://www.youtube.com/embed/${videoId}" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+                </iframe>
+            </div>`;
+        }
+        
+        // Processa parágrafos normais
+        return `<p>${paragraph.split('\n').join('<br>')}</p>`;
+    });
+
+    return formattedParagraphs.join('\n');
 }
 
 // Inicializar quando o DOM estiver carregado
