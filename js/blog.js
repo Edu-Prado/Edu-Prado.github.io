@@ -261,7 +261,7 @@ async function displayPosts() {
                     <span class="post-category">${post.category || 'Geral'}</span>
                 </div>
                 <p class="post-excerpt">${post.excerpt || post.content.substring(0, 150) + '...'}</p>
-                <a href="/post.html?id=${post.id}" class="btn btn-primary">Ler mais</a>
+                <a href="/post.html?id=${post.id}" class="btn btn-outline">Ler mais</a>
             </div>
         </article>
     `).join('');
@@ -291,7 +291,7 @@ function displayFilteredPosts(posts) {
                     <span class="post-category">${post.category || 'Geral'}</span>
                 </div>
                 <p class="post-excerpt">${post.excerpt || post.content.substring(0, 150) + '...'}</p>
-                <a href="/post.html?id=${post.id}" class="btn btn-primary">Ler mais</a>
+                <a href="/post.html?id=${post.id}" class="btn btn-outline">Ler mais</a>
             </div>
         </article>
     `).join('');
