@@ -252,19 +252,16 @@ async function displayPosts() {
     blogGrid.innerHTML = recentPosts.map(post => `
         <article class="post-card">
             <div class="post-image-container">
-                <img src="${isValidImageUrl(post.image_url) ? post.image_url : 'images/profile.jpg'}" 
-                     alt="${post.title}" 
-                     class="post-image"
-                     onerror="this.src='images/profile.jpg'">
+                <img src="${post.image_url || 'images/profile.jpg'}" alt="${post.title}" class="post-image" onerror="this.src='images/profile.jpg'">
             </div>
             <div class="post-content">
-                <h2 class="post-title">${post.title}</h2>
+                <h3 class="post-title">${post.title}</h3>
                 <div class="post-meta">
-                    <span class="post-category">${post.category || 'Sem categoria'}</span>
-                    <span class="post-date">${formatDate(post.created_at)}</span>
+                    <span class="post-date">${new Date(post.created_at).toLocaleDateString('pt-BR')}</span>
+                    <span class="post-category">${post.category || 'Geral'}</span>
                 </div>
-                <p class="post-excerpt">${post.content ? post.content.substring(0, 150) + '...' : 'Sem conteúdo'}</p>
-                <a href="post.html?id=${post.id}" class="btn btn-primary">Ler mais</a>
+                <p class="post-excerpt">${post.excerpt || post.content.substring(0, 150) + '...'}</p>
+                <a href="/post.html?id=${post.id}" class="btn btn-primary">Ler mais</a>
             </div>
         </article>
     `).join('');
@@ -285,19 +282,16 @@ function displayFilteredPosts(posts) {
     blogGrid.innerHTML = posts.map(post => `
         <article class="post-card">
             <div class="post-image-container">
-                <img src="${isValidImageUrl(post.image_url) ? post.image_url : 'images/profile.jpg'}" 
-                     alt="${post.title}" 
-                     class="post-image"
-                     onerror="this.src='images/profile.jpg'">
+                <img src="${post.image_url || 'images/profile.jpg'}" alt="${post.title}" class="post-image" onerror="this.src='images/profile.jpg'">
             </div>
             <div class="post-content">
-                <h2>${post.title}</h2>
+                <h3 class="post-title">${post.title}</h3>
                 <div class="post-meta">
-                    <span class="post-category">${post.category}</span>
-                    <span class="post-date">${formatDate(post.created_at)}</span>
+                    <span class="post-date">${new Date(post.created_at).toLocaleDateString('pt-BR')}</span>
+                    <span class="post-category">${post.category || 'Geral'}</span>
                 </div>
-                <p class="post-excerpt">${post.content.substring(0, 150)}...</p>
-                <a href="post.html?id=${post.id}" class="btn btn-primary">Ler mais</a>
+                <p class="post-excerpt">${post.excerpt || post.content.substring(0, 150) + '...'}</p>
+                <a href="/post.html?id=${post.id}" class="btn btn-primary">Ler mais</a>
             </div>
         </article>
     `).join('');

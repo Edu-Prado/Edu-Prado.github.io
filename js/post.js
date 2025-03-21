@@ -5,7 +5,8 @@ async function loadPost() {
         const postId = urlParams.get('id');
         
         if (!postId) {
-            throw new Error('ID do post não fornecido');
+            window.location.href = '/index.html';
+            return;
         }
 
         console.log('[Post] Carregando post:', postId);
@@ -18,48 +19,61 @@ async function loadPost() {
             .single();
 
         if (error) {
-            console.error('[Post] Erro do Supabase:', error);
-            throw new Error('Erro ao carregar post');
+            console.error('Erro ao carregar post:', error);
+            document.getElementById('post-content').innerHTML = `
+                <div class="error-message">
+                    <p>Erro ao carregar o post. Por favor, tente novamente mais tarde.</p>
+                    <a href="/index.html" class="btn btn-primary">Voltar para o Blog</a>
+                </div>
+            `;
+            return;
         }
 
         if (!post) {
-            throw new Error('Post não encontrado');
+            document.getElementById('post-content').innerHTML = `
+                <div class="error-message">
+                    <p>Post não encontrado.</p>
+                    <a href="/index.html" class="btn btn-primary">Voltar para o Blog</a>
+                </div>
+            `;
+            return;
         }
 
         console.log('[Post] Post encontrado:', post);
         
         // Atualizar o título da página
-        document.title = `${post.title} | Blog EduPrado.me`;
+        document.title = `${post.title} - Edu Prado`;
         
+        // Atualizar os elementos do post
+        document.getElementById('post-title').textContent = post.title;
+        document.getElementById('post-category').textContent = post.category || 'Geral';
+        document.getElementById('post-date').textContent = new Date(post.created_at).toLocaleDateString('pt-BR');
+        
+        // Configurar a imagem do post com fallback para imagem padrão
+        const postImage = document.getElementById('post-image');
+        postImage.src = post.image_url || '/images/profile.jpg';
+        postImage.onerror = function() {
+            this.src = '/images/profile.jpg';
+        };
+
         // Atualizar o conteúdo do post
-        const postContent = document.querySelector('.post-content');
-        if (postContent) {
-            postContent.innerHTML = `
-                <div class="post-header">
-                    <h1>${post.title}</h1>
-                    <div class="post-meta">
-                        <span class="post-date">${new Date(post.created_at).toLocaleDateString('pt-BR')}</span>
-                        <span class="post-category">${post.category || 'Geral'}</span>
-                    </div>
-                </div>
-                <div class="post-image">
-                    <img src="${post.image_url || 'images/profile.jpg'}" alt="${post.title}" onerror="this.src='images/profile.jpg'">
-                </div>
-                <div class="post-text">${post.content}</div>
-            `;
-        }
+        const contentElement = document.getElementById('post-content');
+        contentElement.innerHTML = post.content;
+
+        // Adicionar tratamento de erro para todas as imagens no conteúdo
+        contentElement.querySelectorAll('img').forEach(img => {
+            img.onerror = function() {
+                this.src = '/images/profile.jpg';
+            };
+        });
     } catch (error) {
-        console.error('[Post] Erro ao carregar post:', error);
-        const postContent = document.querySelector('.post-content');
-        if (postContent) {
-            postContent.innerHTML = `
-                <div class="error-message">
-                    <h2>Post não encontrado</h2>
-                    <p>O post que você está procurando não existe ou foi removido.</p>
-                    <a href="/blog.html" class="btn">Voltar para o Blog</a>
-                </div>
-            `;
-        }
+        console.error('Erro ao processar post:', error);
+        document.getElementById('post-content').innerHTML = `
+            <div class="error-message">
+                <p>Ocorreu um erro ao carregar o post. Por favor, tente novamente mais tarde.</p>
+                <a href="/index.html" class="btn btn-primary">Voltar para o Blog</a>
+            </div>
+        `;
     }
 }
 
