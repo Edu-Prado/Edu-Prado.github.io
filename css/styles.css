@@ -825,12 +825,14 @@ body {
     padding: 2rem;
     font-size: 1.1rem;
     line-height: 1.8;
-    color: #333;
+    color: var(--text-color);
+    background: white;
 }
 
 .blog-post .post-content p {
     margin-bottom: 1.5rem;
     text-align: justify;
+    color: var(--text-color);
 }
 
 .blog-post .post-content h2 {
