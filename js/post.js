@@ -117,8 +117,21 @@ function formatContent(content) {
             </div>`;
         }
         
-        // Processa parágrafos normais
-        return `<p>${paragraph.split('\n').join('<br>')}</p>`;
+        // Processa Markdown básico
+        let formattedParagraph = paragraph
+            // Negrito
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            // Itálico
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            // Imagens
+            .replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1" class="post-content-image">')
+            // Links
+            .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>')
+            // Quebras de linha
+            .split('\n')
+            .join('<br>');
+        
+        return `<p>${formattedParagraph}</p>`;
     });
 
     return formattedParagraphs.join('\n');
