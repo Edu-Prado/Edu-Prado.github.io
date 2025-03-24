@@ -1122,4 +1122,24 @@ body {
 
 .post-content a:hover {
     border-bottom-color: var(--primary-color);
+}
+
+.ad-container {
+    margin: 2rem 0;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.ad-container ins {
+    display: block;
+    min-height: 100px;
+}
+
+@media (max-width: 768px) {
+    .ad-container {
+        margin: 1rem 0;
+        padding: 0.5rem;
+    }
 } 
