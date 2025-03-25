@@ -1,17 +1,17 @@
 // Lista de imagens de perfil disponíveis
 const profileImages = [
-    'images/profile/profile1.png',
-    'images/profile/profile2.png',
-    'images/profile/profile3.png',
-    'images/profile/profile4.png',
-    'images/profile/profile5.png',
-    'images/profile/profile6.png',
-    'images/profile/profile7.png',
-    'images/profile/profile8.png',
-    'images/profile/profile9.png',
-    'images/profile/profile10.png'
-    'images/profile/profile11.png'
-    'images/profile/profile12.png'
+    'images/profile/Profile1.png',
+    'images/profile/Profile2.png',
+    'images/profile/Profile3.png',
+    'images/profile/Profile4.png',
+    'images/profile/Profile5.png',
+    'images/profile/Profile6.png',
+    'images/profile/Profile7.png',
+    'images/profile/Profile8.png',
+    'images/profile/Profile9.png',
+    'images/profile/Profile10.png'
+    'images/profile/Profile11.png'
+    'images/profile/Profile12.png'
 ];
 
 // Função para selecionar uma imagem aleatória
