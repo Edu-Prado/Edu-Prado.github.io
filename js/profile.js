@@ -7,7 +7,7 @@ const profileImages = [
     'images/profile/Profile5.png', // Corrigido para .png
     'images/profile/Profile6.png', // Corrigido para .png
     'images/profile/Profile7.png', // Corrigido para .png
-    'images/profile/P0rofile8.png', // Corrigido para .png
+    'images/profile/Profile8.png', // Corrigido para .png
     'images/profile/Profile9.png', // Corrigido para .png
     'images/profile/Profile10.png', // Corrigido para .png
     'images/profile/Profile11.png', // Corrigido para .png
