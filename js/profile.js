@@ -1,15 +1,17 @@
 // Lista de imagens de perfil disponíveis
 const profileImages = [
-    'images/profile/profile1.png', // Corrigido para .png
-    'images/profile/profile2.png', // Corrigido para .png
-    'images/profile/profile3.png', // Corrigido para .png
-    'images/profile/profile4.png', // Corrigido para .png
-    'images/profile/profile5.png', // Corrigido para .png
-    'images/profile/profile6.png', // Corrigido para .png
-    'images/profile/profile7.png', // Corrigido para .png
-    'images/profile/profile8.png', // Corrigido para .png
-    'images/profile/profile9.png', // Corrigido para .png
-    'images/profile/profile10.png' // Corrigido para .png
+    'images/profile/Profile1.png', // Corrigido para .png
+    'images/profile/Profile2.png', // Corrigido para .png
+    'images/profile/Profile3.png', // Corrigido para .png
+    'images/profile/Profile4.png', // Corrigido para .png
+    'images/profile/Profile5.png', // Corrigido para .png
+    'images/profile/Profile6.png', // Corrigido para .png
+    'images/profile/Profile7.png', // Corrigido para .png
+    'images/profile/P0rofile8.png', // Corrigido para .png
+    'images/profile/Profile9.png', // Corrigido para .png
+    'images/profile/Profile10.png' // Corrigido para .png
+    'images/profile/Profile11.png' // Corrigido para .png
+    'images/profile/Profile12.png' // Corrigido para .png
 ];
 
 // Função para selecionar uma imagem aleatória
