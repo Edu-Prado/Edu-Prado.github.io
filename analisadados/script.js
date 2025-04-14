@@ -20,13 +20,15 @@ document.getElementById('uploadForm').addEventListener('submit', function(event)
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error('Erro na análise.');
+                return response.json().then(errorData => {
+                    throw new Error(errorData.error || 'Erro na análise.');
+                });
             }
             return response.json();
         })
         .then(data => {
-            descStatsDiv.textContent = JSON.stringify(data.desc_stats, null, 2);
-            corrMatrixDiv.textContent = JSON.stringify(data.corr_matrix, null, 2);
+            descStatsDiv.textContent = JSON.stringify(data[0], null, 2);
+            corrMatrixDiv.textContent = JSON.stringify(data[1], null, 2);
             resultsDiv.classList.remove('hidden');
         })
         .catch(error => {
