@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise de Dados | Edu Prado</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="/">Edu Prado</a>
+            </div>
+            <!-- Adicione outros links de navegação, se necessário -->
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1>Análise de Dados</h1>
+        <p>Carregue um arquivo CSV para análise:</p>
+        <form id="uploadForm">
+            <input type="file" id="fileInput" accept=".csv" required>
+            <button type="submit" class="button">Analisar</button>
+        </form>
+        <section id="results" class="hidden">
+            <h2>Resultados</h2>
+            <div id="descStats">
+                <h3>Estatísticas Descritivas</h3>
+                <pre></pre> 
+            </div>
+            <div id="corrMatrix">
+                <h3>Matriz de Correlação</h3>
+                <pre></pre>
+            </div>
+        </section>
+        <div id="error" class="hidden"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Edu Prado</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
