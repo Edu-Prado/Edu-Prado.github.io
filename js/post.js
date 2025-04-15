@@ -112,10 +112,17 @@ async function fetchComments(postId) {
             .eq('post_id', postId)
             .order('created_at', { ascending: true });
 
-        if (error) {
-            console.error('Erro ao buscar comentários:', error);
-            commentsList.innerHTML = '<p>Erro ao carregar comentários.</p>';
-            return;
+        if (error) {            
+            if (error.code === '404') {
+                console.warn('Tabela de comentários não encontrada ou inacessível.');
+                commentsList.innerHTML = '<p>Não foi possível carregar os comentários para este post.</p>';
+            } else {
+                console.error('Erro ao buscar comentários:', error);
+                commentsList.innerHTML = '<p>Erro ao carregar comentários.</p>';
+            }
+            // Log do erro retornado pelo Supabase
+            console.log('Detalhes do erro:', error);
+            return;            
         }
 
         if (comments && comments.length > 0) {
