@@ -255,7 +255,7 @@ async function displayPosts() {
         return displayPosts(); // Recarrega a página anterior se não houver posts
     }
 
-    blogGrid.innerHTML = recentPosts.map(post => `
+    blogGrid.innerHTML = currentPosts.map(post => `
         <article class="post-card">
             <div class="post-image-container">
                 <img src="${post.image_url || 'images/profile.jpg'}" alt="${post.title}" class="post-image" onerror="this.src='images/profile.jpg'">
