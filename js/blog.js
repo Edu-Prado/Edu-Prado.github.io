@@ -1,4 +1,6 @@
 const API_URL = 'https://eduprado-backend.onrender.com/api';
+let currentPage = 1;
+const postsPerPage = 6;
 
 // Função auxiliar para verificar se o Google Analytics está disponível
 function trackEvent(eventName, params) {
@@ -21,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('[Blog] Elemento .blog-grid não encontrado');
         return;
     }
-    
+
     console.log('[Blog] Iniciando carregamento dos posts');
     initializeBlog();
 
@@ -30,16 +32,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (searchInput) {
         searchInput.addEventListener('input', async (e) => {
             const searchTerm = e.target.value.toLowerCase();
-            const posts = await loadPosts();
-            
-            const filteredPosts = posts.filter(post => 
+            const allPosts = await loadPosts();
+
+            const filteredPosts = allPosts.filter(post =>
                 post.title.toLowerCase().includes(searchTerm) ||
                 post.category.toLowerCase().includes(searchTerm) ||
                 post.content.toLowerCase().includes(searchTerm)
             );
-            
+
             displayFilteredPosts(filteredPosts);
-        });
+        });        
     }
 
     // Adiciona rastreamento de cliques nos posts do blog
@@ -49,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const postCard = postLink.closest('.blog-card');
             const postTitle = postCard.querySelector('h3').textContent;
             const postCategory = postCard.querySelector('.blog-meta span').textContent;
-            
+
             // Rastreia clique no post com informações detalhadas
             trackEvent('post_click', {
                 'event_category': 'Blog',
@@ -151,7 +153,7 @@ async function loadPosts() {
                 hasAuth: typeof window.supabase.auth === 'object'
             });
         }
-        
+
         throw error;
     }
 }
@@ -159,7 +161,7 @@ async function loadPosts() {
 // Função para formatar a data
 function formatDate(dateString) {
     console.log('Formatando data:', dateString);
-    
+
     if (!dateString) {
         console.log('Data não fornecida');
         return 'Data não disponível';
@@ -170,7 +172,7 @@ function formatDate(dateString) {
         let date;
         if (typeof dateString === 'string') {
             // Remove qualquer parte de timezone se existir
-            dateString = dateString.split('T')[0];
+            dateString = dateString.split('T')[0]
             
             // Tenta diferentes formatos de data
             const formats = [
@@ -227,7 +229,7 @@ function isValidImageUrl(url) {
 async function displayPosts() {
     console.log('[Blog] Exibindo posts...');
     const posts = await loadPosts();
-    const blogGrid = document.querySelector('.blog-grid');
+    const blogGrid = document.querySelector('.blog-grid')
     
     if (!blogGrid) {
         console.error('[Blog] Elemento blog-grid não encontrado');
@@ -241,13 +243,17 @@ async function displayPosts() {
             </div>
         `;
         return;
-    }
+    }    
 
-    // Ordena os posts por data (mais recentes primeiro)
-    const sortedPosts = posts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    
-    // Limita a 6 posts mais recentes
-    const recentPosts = sortedPosts.slice(0, 6);
+    // Paginação
+    const startIndex = (currentPage - 1) * postsPerPage;
+    const endIndex = startIndex + postsPerPage;
+    const currentPosts = posts.slice(startIndex, endIndex);
+
+    if (currentPosts.length === 0 && currentPage > 1) {
+        currentPage--;
+        return displayPosts(); // Recarrega a página anterior se não houver posts
+    }
 
     blogGrid.innerHTML = recentPosts.map(post => `
         <article class="post-card">
@@ -263,11 +269,35 @@ async function displayPosts() {
                 <p class="post-excerpt">${post.excerpt || post.content.substring(0, 150) + '...'}</p>
                 <a href="/post.html?id=${post.id}" class="btn btn-outline">Ler mais</a>
             </div>
-        </article>
-    `).join('');
+        </article>        
+    `).join('');    
 
-    console.log('[Blog] Posts exibidos com sucesso');
+        // Criação do botão "Posts Antigos" apenas se houver mais posts
+    if (posts.length > endIndex) {
+        let loadMoreButton = document.getElementById('loadMoreButton');
+        if (!loadMoreButton) {
+            loadMoreButton = document.createElement('button');
+            loadMoreButton.id = 'loadMoreButton';
+            loadMoreButton.textContent = 'Posts Antigos';
+            loadMoreButton.classList.add('btn', 'btn-primary', 'load-more-button');
+            loadMoreButton.style.marginTop = '20px';
+            blogGrid.parentNode.appendChild(loadMoreButton);
+        }
+
+        loadMoreButton.onclick = () => {
+            currentPage++;
+            displayPosts();
+        };
+    } else {
+        const loadMoreButton = document.getElementById('loadMoreButton');
+        if (loadMoreButton) {
+            loadMoreButton.remove();
+        }
+    }
+
+    console.log('[Blog] Posts exibidos com sucesso');    
 }
+
 
 // Função para exibir posts filtrados
 function displayFilteredPosts(posts) {
@@ -293,8 +323,8 @@ function displayFilteredPosts(posts) {
                 <p class="post-excerpt">${post.excerpt || post.content.substring(0, 150) + '...'}</p>
                 <a href="/post.html?id=${post.id}" class="btn btn-outline">Ler mais</a>
             </div>
-        </article>
-    `).join('');
+        </article>        
+    `).join('');    
 }
 
 // Função para inicializar o blog
@@ -307,10 +337,10 @@ async function initializeBlog() {
             console.error('[Blog] Elemento blog-grid não encontrado');
             return;
         }
-        
+
         blogGrid.innerHTML = '<div class="loading">Carregando posts...</div>';
-        
-        // Tenta carregar os posts
+
+        // Tenta carregar os posts        
         await displayPosts();
         
         console.log('[Blog] Blog inicializado com sucesso');
@@ -318,18 +348,16 @@ async function initializeBlog() {
         console.error('[Blog] Erro ao inicializar blog:', error);
         const blogGrid = document.querySelector('.blog-grid');
         if (blogGrid) {
-            let errorMessage = 'Desculpe, não foi possível carregar os posts.';
-            
+            let errorMessage = 'Desculpe, não foi possível carregar os posts.';            
             if (error.message && error.message.includes('conexão')) {
                 errorMessage = 'Erro de conexão. Verifique sua conexão com a internet.';
-            }
-            
+            }            
             blogGrid.innerHTML = `
                 <div class="error-message">
                     <p>${errorMessage}</p>
                     <button onclick="initializeBlog()" class="btn btn-primary">Tentar novamente</button>
                 </div>
-            `;
+            `;            
         }
     }
-} 
+}

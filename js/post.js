@@ -85,6 +85,10 @@ async function loadPost() {
                 this.src = '/images/profile.jpg';
             };
         });
+
+        // Carregar comentários
+        fetchComments(postId);
+
     } catch (error) {
         console.error('Erro ao processar post:', error);
         document.getElementById('post-content').innerHTML = `
@@ -129,8 +133,7 @@ function formatContent(content) {
             .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>')
             // Quebras de linha
             .split('\n')
-            .join('<br>');
-        
+            .join('<br>');        
         return `<p>${formattedParagraph}</p>`;
     });
 
