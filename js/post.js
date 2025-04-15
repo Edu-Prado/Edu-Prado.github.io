@@ -100,6 +100,76 @@ async function loadPost() {
     }
 }
 
+// Função para buscar comentários
+async function fetchComments(postId) {
+    const commentsList = document.getElementById('comments-list');
+    if (!commentsList) return;
+
+    try {
+        const { data: comments, error } = await window.supabase
+            .from('comments')
+            .select('*')
+            .eq('post_id', postId)
+            .order('created_at', { ascending: true });
+
+        if (error) {
+            console.error('Erro ao buscar comentários:', error);
+            commentsList.innerHTML = '<p>Erro ao carregar comentários.</p>';
+            return;
+        }
+
+        if (comments && comments.length > 0) {
+            commentsList.innerHTML = comments.map(comment => `
+                <div class="comment">
+                    <p>${comment.content}</p>
+                    <span class="comment-date">${new Date(comment.created_at).toLocaleDateString('pt-BR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
+                </div>
+            `).join('');
+        } else {
+            commentsList.innerHTML = '<p>Seja o primeiro a comentar!</p>';
+        }
+    } catch (err) {
+        console.error('Erro ao processar busca de comentários:', err);
+        commentsList.innerHTML = '<p>Erro ao carregar comentários.</p>';
+    }
+}
+
+// Função para submeter um comentário
+async function submitComment(postId, comment) {
+    const commentForm = document.getElementById('comment-form');
+    if (!commentForm) return;
+
+    const commentInput = document.getElementById('comment-input');
+    if (!commentInput) return;
+
+    const commentSubmit = document.getElementById('comment-submit');
+    if (!commentSubmit) return;
+
+    try {
+        commentSubmit.disabled = true;
+        commentSubmit.textContent = 'Enviando...';
+
+        const { error } = await window.supabase
+            .from('comments')
+            .insert([{ post_id: postId, content: comment }]);
+
+        if (error) {
+            throw error;
+        }
+
+        commentInput.value = '';
+        await fetchComments(postId);
+    } catch (err) {
+        console.error('Erro ao submeter comentário:', err);
+        // Aqui você pode adicionar feedback visual para o usuário sobre o erro
+    } finally {
+        commentSubmit.disabled = false;
+        commentSubmit.textContent = 'Enviar Comentário';
+    }
+}
+
+
+
 function formatContent(content) {
     // Divide o conteúdo em parágrafos
     const paragraphs = content.split('\n\n').filter(p => p.trim());
