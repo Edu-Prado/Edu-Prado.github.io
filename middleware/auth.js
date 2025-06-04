@@ -3,7 +3,7 @@ const User = require('../models/User');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'sua-chave-secreta-aqui';
 
-module.exports = async (req, res, next) => {
+const auth = async (req, res, next) => {
     try {
         // Pegar token do header
         const token = req.header('Authorization')?.replace('Bearer ', '');
