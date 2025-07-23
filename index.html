@@ -7,10 +7,9 @@
     <title>EduPrado.me | Tecnologia e Inteligência Artificial</title>
     
     <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <link rel="icon" href="images/favicon.ico">
     <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
-    <link rel="manifest" href="site.webmanifest">
+    <link rel="manifest" href="images/site.webmanifest">
     
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-QYZ06TPTGJ"></script>
@@ -27,30 +26,7 @@
     
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        const SUPABASE_URL = 'https://gvnxngmxlxppvqtoqler.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2bnhuZ214bHhwcHZxdG9xbGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyNDE1OTgsImV4cCI6MjA1NzgxNzU5OH0.YqckHPGQ-5DAfFDITZ-vDtghXah0qwwPaIzYfVRFu5U';
-        
-        try {
-            window.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            console.log('[Supabase] Cliente inicializado com sucesso');
-            
-            // Teste de conexão
-            window.supabase.from('posts').select('count').single()
-                .then(response => {
-                    if (response.error) {
-                        console.error('[Supabase] Erro no teste de conexão:', response.error);
-                    } else {
-                        console.log('[Supabase] Teste de conexão bem sucedido');
-                    }
-                })
-                .catch(error => {
-                    console.error('[Supabase] Erro no teste de conexão:', error);
-                });
-        } catch (error) {
-            console.error('[Supabase] Erro ao inicializar cliente:', error);
-        }
-    </script>
+    <script src="js/supabase-client.js" defer></script> 
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="css/styles.css">
@@ -307,7 +283,6 @@
     <!-- Scripts -->
     <script src="js/contact.js"></script>
     <script src="js/newsletter.js"></script>
-    <script src="js/main.js"></script>
     <script src="js/profile.js"></script>
 </body>
 </html> 

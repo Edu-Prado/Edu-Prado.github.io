@@ -1,4 +1,3 @@
-const API_URL = 'https://eduprado-backend.onrender.com/api';
 let currentPage = 1;
 const postsPerPage = 6;
 

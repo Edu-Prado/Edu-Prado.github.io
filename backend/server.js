@@ -13,7 +13,26 @@ const POSTS_FILE = path.join(DATA_DIR, 'posts.json');
 const uploadDir = process.env.UPLOAD_DIR || path.join(__dirname, '..', 'data', 'images', 'blog');
 
 // Middleware
-app.use(cors());
+const allowedOrigins = [
+    'https://eduprado.me',
+    'http://localhost:5500', // Common for VS Code Live Server
+    'http://localhost:3000', // If frontend is served from here, or for backend self-requests
+    // Add any other specific origins if needed, e.g., a staging domain
+];
+
+app.use(cors({
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        // For stricter security, you might want to remove this or handle it differently.
+        if (!origin) return callback(null, true); 
+        if (allowedOrigins.indexOf(origin) === -1) {
+            const msg = 'The CORS policy for this site does not ' +
+                        'allow access from the specified Origin.';
+            return callback(new Error(msg), false);
+        }
+        return callback(null, true);
+    }
+}));
 app.use(express.json());
 
 // Logs personalizados
