@@ -23,6 +23,7 @@ body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     color: var(--text-color);
     line-height: 1.6;
+    padding-bottom: 70px;
 }
 
 .container {
@@ -1152,4 +1153,13 @@ body {
         margin: 1rem 0;
         padding: 0.5rem;
     }
-} 
+}
+
+.floating-ad {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    text-align: center;
+}
