@@ -97,28 +97,6 @@ export default function Blog() {
                                     <div className="p-6 flex-1 flex flex-col">
                                         <div className="flex items-center justify-between mb-4">
                                             <span className="text-xs font-semibold tracking-wider uppercase text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
-                                                {post.tag || 'Geral'}
-                                            </span>
-                                            <span className="text-sm text-gray-500">{new Date(post.created_at).toLocaleDateString('pt-BR')}</span>
-                                        </div>
-
-                                        <h2 className="text-xl font-bold mb-3 text-gray-900 leading-tight">
-                                            <Link href={`/post?slug=${post.slug}`} className="hover:text-blue-600 transition">
-                                                {post.title}
-                                            </Link>
-                                        </h2>
-
-                                        <p className="text-gray-600 mb-4 flex-1 line-clamp-3">
-                                            {post.excerpt}
-                                        </p>
-
-                                        <Link href={`/post?slug=${post.slug}`} className="inline-flex items-center text-blue-600 font-semibold hover:underline mt-auto">
-                                            Ler artigo
-                                            <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-                                        </Link>
-                                    </div>
-                                </article>
-                            ))}
                             {filteredPosts.length === 0 && (
                                 <div className="col-span-full text-center text-gray-500 py-12">
                                     Nenhum artigo encontrado para "{searchTerm}".
@@ -131,5 +109,5 @@ export default function Blog() {
 
             <Footer />
         </>
-    )
-}
+                    )
+                    }

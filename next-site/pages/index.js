@@ -96,16 +96,28 @@ export default function Home() {
             <h2 className="text-3xl font-bold mb-12 text-center text-gray-800">Artigos em destaque</h2>
             <div className="grid gap-8 md:grid-cols-3">
               {featuredPosts.map(post => (
-                <div key={post.slug} className="border border-gray-100 p-6 rounded-xl hover:shadow-lg transition flex flex-col bg-white">
-                  <h3 className="text-xl font-bold mb-3 text-gray-900">
-                    <Link href={`/post?slug=${post.slug}`} className="hover:text-blue-600 transition">{post.title}</Link>
-                  </h3>
-                  <p className="text-sm text-gray-500 mb-4">{new Date(post.created_at).toLocaleDateString('pt-BR')}</p>
-                  <p className="text-gray-600 flex-1 mb-6 line-clamp-3">{post.excerpt}</p>
-                  <Link href={`/post?slug=${post.slug}`} className="text-blue-600 font-semibold mt-auto flex items-center hover:underline">
-                    Ler mais
-                    <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-                  </Link>
+                <div key={post.id} className="border border-gray-100 rounded-xl hover:shadow-lg transition flex flex-col bg-white overflow-hidden">
+                  {post.image_url && (
+                    <div className="h-48 overflow-hidden">
+                      <img
+                        src={post.image_url}
+                        alt={post.title}
+                        className="w-full h-full object-cover hover:scale-105 transition duration-500"
+                        onError={(e) => { e.target.onerror = null; e.target.style.display = 'none' }}
+                      />
+                    </div>
+                  )}
+                  <div className="p-6 flex-1 flex flex-col">
+                    <h3 className="text-xl font-bold mb-3 text-gray-900">
+                      <Link href={`/post?id=${post.id}`} className="hover:text-blue-600 transition">{post.title}</Link>
+                    </h3>
+                    <p className="text-sm text-gray-500 mb-4">{new Date(post.created_at).toLocaleDateString('pt-BR')}</p>
+                    <p className="text-gray-600 flex-1 mb-6 line-clamp-3">{post.excerpt}</p>
+                    <Link href={`/post?id=${post.id}`} className="text-blue-600 font-semibold mt-auto flex items-center hover:underline">
+                      Ler mais
+                      <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                    </Link>
+                  </div>
                 </div>
               ))}
             </div>

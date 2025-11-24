@@ -14,29 +14,29 @@ function readingTime(text) {
 
 export default function PostPage() {
     const router = useRouter()
-    const { slug } = router.query
+    const { id } = router.query
     const [post, setPost] = useState(null)
     const [loading, setLoading] = useState(true)
     const [errorMsg, setErrorMsg] = useState('')
 
     useEffect(() => {
         if (router.isReady) {
-            if (slug) {
-                fetchPost(slug)
+            if (id) {
+                fetchPost(id)
             } else {
                 setLoading(false)
-                setErrorMsg('Slug não fornecido na URL.')
+                setErrorMsg('ID não fornecido na URL.')
             }
         }
-    }, [router.isReady, slug])
+    }, [router.isReady, id])
 
-    async function fetchPost(slugToFetch) {
+    async function fetchPost(postId) {
         try {
-            console.log('Fetching post for slug:', slugToFetch)
+            console.log('Fetching post for id:', postId)
             const { data, error } = await supabase
                 .from('posts')
                 .select('*')
-                .eq('slug', slugToFetch)
+                .eq('id', postId)
                 .single()
 
             if (error) throw error
@@ -45,7 +45,7 @@ export default function PostPage() {
             setPost(data)
         } catch (error) {
             console.error('Erro ao buscar post:', error)
-            setErrorMsg(`Erro: ${error.message || 'Artigo não encontrado'}. Slug buscado: ${slugToFetch}`)
+            setErrorMsg(`Erro: ${error.message || 'Artigo não encontrado'}. ID buscado: ${postId}`)
         } finally {
             setLoading(false)
         }

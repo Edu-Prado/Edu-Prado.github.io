@@ -12,9 +12,8 @@ export default function Admin() {
     const [posts, setPosts] = useState([])
 
     const [formData, setFormData] = useState({
-        id: null, // Added ID for updates
+        id: null,
         title: '',
-        slug: '',
         excerpt: '',
         content: '',
         tag: 'IA',
@@ -53,7 +52,6 @@ export default function Admin() {
         setFormData({
             id: post.id,
             title: post.title,
-            slug: post.slug,
             excerpt: post.excerpt,
             content: post.content,
             tag: post.tag || 'IA',
@@ -68,7 +66,6 @@ export default function Admin() {
         setFormData({
             id: null,
             title: '',
-            slug: '',
             excerpt: '',
             content: '',
             tag: 'IA',
@@ -91,7 +88,6 @@ export default function Admin() {
         try {
             const postData = {
                 title: formData.title,
-                slug: formData.slug,
                 excerpt: formData.excerpt,
                 content: formData.content,
                 tag: formData.tag,
@@ -121,7 +117,7 @@ export default function Admin() {
             setMessage(formData.id ? 'Post atualizado!' : 'Post criado!')
             fetchPosts()
             if (!formData.id) {
-                setFormData({ ...formData, title: '', slug: '' }) // Clear some fields
+                setFormData({ ...formData, title: '' }) // Clear some fields
             }
             setTimeout(() => setView('list'), 1500)
         } catch (error) {
@@ -199,7 +195,6 @@ export default function Admin() {
                                     <tr key={post.id}>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="text-sm font-medium text-gray-900">{post.title}</div>
-                                            <div className="text-sm text-gray-500">{post.slug}</div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                             {new Date(post.created_at).toLocaleDateString('pt-BR')}
@@ -218,11 +213,6 @@ export default function Admin() {
                         <div>
                             <label className="block font-medium mb-1">Título</label>
                             <input required name="title" value={formData.title} onChange={handleChange} className="w-full border p-2 rounded" />
-                        </div>
-
-                        <div>
-                            <label className="block font-medium mb-1">Slug (URL amigável)</label>
-                            <input required name="slug" value={formData.slug} onChange={handleChange} className="w-full border p-2 rounded" placeholder="ex: meu-novo-artigo" />
                         </div>
 
                         <div>
