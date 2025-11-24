@@ -7,11 +7,27 @@ import Footer from '../../components/Footer'
 
 export default function Blog() {
     const [posts, setPosts] = useState([])
+    const [filteredPosts, setFilteredPosts] = useState([])
     const [loading, setLoading] = useState(true)
+    const [searchTerm, setSearchTerm] = useState('')
 
     useEffect(() => {
         fetchPosts()
     }, [])
+
+    useEffect(() => {
+        if (searchTerm.trim() === '') {
+            setFilteredPosts(posts)
+        } else {
+            const lowerTerm = searchTerm.toLowerCase()
+            const filtered = posts.filter(post =>
+                post.title.toLowerCase().includes(lowerTerm) ||
+                post.excerpt.toLowerCase().includes(lowerTerm) ||
+                (post.tag && post.tag.toLowerCase().includes(lowerTerm))
+            )
+            setFilteredPosts(filtered)
+        }
+    }, [searchTerm, posts])
 
     async function fetchPosts() {
         try {
@@ -22,6 +38,7 @@ export default function Blog() {
 
             if (error) throw error
             setPosts(data || [])
+            setFilteredPosts(data || [])
         } catch (error) {
             console.error('Erro ao buscar posts:', error)
         } finally {
@@ -40,9 +57,23 @@ export default function Blog() {
 
             <main className="pt-24 pb-12 bg-gray-50 min-h-screen">
                 <div className="container mx-auto px-4">
-                    <div className="text-center mb-12">
+                    <div className="text-center mb-8">
                         <h1 className="text-4xl font-bold mb-4 text-gray-900">Blog</h1>
-                        <p className="text-xl text-gray-600">Insights práticos sobre tecnologia e inovação.</p>
+                        <p className="text-xl text-gray-600 mb-8">Insights práticos sobre tecnologia e inovação.</p>
+
+                        {/* Search Bar */}
+                        <div className="max-w-md mx-auto relative">
+                            <input
+                                type="text"
+                                placeholder="Buscar artigos..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="w-full px-4 py-3 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+                            />
+                            <svg className="w-5 h-5 text-gray-400 absolute right-4 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
                     </div>
 
                     {loading ? (
@@ -51,8 +82,18 @@ export default function Blog() {
                         </div>
                     ) : (
                         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                            {posts.map(post => (
+                            {filteredPosts.map(post => (
                                 <article key={post.id} className="bg-white rounded-xl shadow-sm hover:shadow-md transition overflow-hidden flex flex-col border border-gray-100">
+                                    {post.image_url && (
+                                        <div className="h-48 overflow-hidden relative">
+                                            <img
+                                                src={post.image_url}
+                                                alt={post.title}
+                                                className="w-full h-full object-cover hover:scale-105 transition duration-500"
+                                                onError={(e) => { e.target.onerror = null; e.target.style.display = 'none' }}
+                                            />
+                                        </div>
+                                    )}
                                     <div className="p-6 flex-1 flex flex-col">
                                         <div className="flex items-center justify-between mb-4">
                                             <span className="text-xs font-semibold tracking-wider uppercase text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
@@ -78,6 +119,11 @@ export default function Blog() {
                                     </div>
                                 </article>
                             ))}
+                            {filteredPosts.length === 0 && (
+                                <div className="col-span-full text-center text-gray-500 py-12">
+                                    Nenhum artigo encontrado para "{searchTerm}".
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>

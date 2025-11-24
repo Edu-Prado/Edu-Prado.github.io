@@ -2,7 +2,7 @@ export const projects = [
   {
     slug: 'baixaia',
     title: 'BaixaIA',
-    image: '/images/baixaia.jpg',
+    image: '/images/projects/ai-assistant.jpg',
     excerpt: 'Conteúdo visual e experimental de IA para engajar e educar.',
     challenge: 'Engajar profissionais de negócios com o potencial da IA de forma acessível.',
     approach: 'Produção de vídeos curtos e peças visuais que mostram usos reais de IA com humor.',
@@ -12,7 +12,7 @@ export const projects = [
   {
     slug: 'open-finance-dados',
     title: 'Open Finance & Dados',
-    image: '/images/openfinance.jpg',
+    image: '/images/projects/cloud-platform.jpg',
     excerpt: 'Governança e produtos de dados com foco em valor.',
     challenge: 'Estruturar governança e uso de dados abertos para gerar novos produtos.',
     approach: 'Framework de governança e sprints de co-criação com equipes de produto.',
@@ -22,7 +22,7 @@ export const projects = [
   {
     slug: 'palestras-workshops',
     title: 'Palestras & Workshops',
-    image: '/images/palestras.jpg',
+    image: '/images/projects/smart-analytics.jpg',
     excerpt: 'Trilhas por maturidade para iniciar discussões de IA sem hype.',
     challenge: 'Ajudar lideranças a tomar decisões informadas sobre IA.',
     approach: 'Conteúdo modular dividido por níveis de maturidade e setor.',

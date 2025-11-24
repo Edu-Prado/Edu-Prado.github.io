@@ -17,25 +17,35 @@ export default function PostPage() {
     const { slug } = router.query
     const [post, setPost] = useState(null)
     const [loading, setLoading] = useState(true)
+    const [errorMsg, setErrorMsg] = useState('')
 
     useEffect(() => {
-        if (slug) {
-            fetchPost()
+        if (router.isReady) {
+            if (slug) {
+                fetchPost(slug)
+            } else {
+                setLoading(false)
+                setErrorMsg('Slug não fornecido na URL.')
+            }
         }
-    }, [slug])
+    }, [router.isReady, slug])
 
-    async function fetchPost() {
+    async function fetchPost(slugToFetch) {
         try {
+            console.log('Fetching post for slug:', slugToFetch)
             const { data, error } = await supabase
                 .from('posts')
                 .select('*')
-                .eq('slug', slug)
+                .eq('slug', slugToFetch)
                 .single()
 
             if (error) throw error
+            if (!data) throw new Error('Post não encontrado (data null)')
+
             setPost(data)
         } catch (error) {
             console.error('Erro ao buscar post:', error)
+            setErrorMsg(`Erro: ${error.message || 'Artigo não encontrado'}. Slug buscado: ${slugToFetch}`)
         } finally {
             setLoading(false)
         }
@@ -58,7 +68,8 @@ export default function PostPage() {
             <>
                 <Navbar />
                 <main className="pt-32 pb-12 min-h-screen container mx-auto px-4 text-center">
-                    <h1 className="text-2xl font-bold text-gray-700">Artigo não encontrado</h1>
+                    <h1 className="text-2xl font-bold text-gray-700">Ops! Algo deu errado.</h1>
+                    <p className="text-red-500 mt-2">{errorMsg}</p>
                     <button onClick={() => router.push('/blog')} className="mt-4 text-blue-600 hover:underline">Voltar para o Blog</button>
                 </main>
                 <Footer />
@@ -88,6 +99,11 @@ export default function PostPage() {
                         </div>
                         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">{post.title}</h1>
                         <p className="text-xl text-gray-600 leading-relaxed">{post.excerpt}</p>
+                        {post.image_url && (
+                            <div className="mt-8 mb-8 rounded-xl overflow-hidden shadow-sm">
+                                <img src={post.image_url} alt={post.title} className="w-full h-auto object-cover" />
+                            </div>
+                        )}
                     </header>
 
                     <div className="prose prose-lg prose-blue mx-auto text-gray-800">
