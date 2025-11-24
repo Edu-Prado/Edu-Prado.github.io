@@ -1,13 +1,33 @@
 import Head from 'next/head'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
+import { supabase } from '../lib/supabaseClient'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import ProjectCard from '../components/ProjectCard'
 import { projects } from '../data/projects'
-import { posts } from '../data/posts'
 
 export default function Home() {
-  const featuredPosts = posts.slice(0, 3)
+  const [featuredPosts, setFeaturedPosts] = useState([])
+
+  useEffect(() => {
+    fetchFeaturedPosts()
+  }, [])
+
+  async function fetchFeaturedPosts() {
+    try {
+      const { data } = await supabase
+        .from('posts')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(3)
+
+      if (data) setFeaturedPosts(data)
+    } catch (error) {
+      console.error('Erro ao buscar posts:', error)
+    }
+  }
+
   return (
     <>
       <Head>
@@ -78,11 +98,11 @@ export default function Home() {
               {featuredPosts.map(post => (
                 <div key={post.slug} className="border border-gray-100 p-6 rounded-xl hover:shadow-lg transition flex flex-col bg-white">
                   <h3 className="text-xl font-bold mb-3 text-gray-900">
-                    <Link href={`/blog/${post.slug}`} className="hover:text-blue-600 transition">{post.title}</Link>
+                    <Link href={`/post?slug=${post.slug}`} className="hover:text-blue-600 transition">{post.title}</Link>
                   </h3>
-                  <p className="text-sm text-gray-500 mb-4">{post.date}</p>
-                  <p className="text-gray-600 flex-1 mb-6">{post.excerpt}</p>
-                  <Link href={`/blog/${post.slug}`} className="text-blue-600 font-semibold mt-auto flex items-center hover:underline">
+                  <p className="text-sm text-gray-500 mb-4">{new Date(post.created_at).toLocaleDateString('pt-BR')}</p>
+                  <p className="text-gray-600 flex-1 mb-6 line-clamp-3">{post.excerpt}</p>
+                  <Link href={`/post?slug=${post.slug}`} className="text-blue-600 font-semibold mt-auto flex items-center hover:underline">
                     Ler mais
                     <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
                   </Link>
