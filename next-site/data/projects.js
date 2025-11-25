@@ -23,10 +23,10 @@ export const projects = [
     slug: 'palestras-workshops',
     title: 'Palestras & Workshops',
     image: '/images/projects/smart-analytics.jpg',
-    excerpt: 'Trilhas por maturidade para iniciar discussões de IA sem hype.',
-    challenge: 'Ajudar lideranças a tomar decisões informadas sobre IA.',
-    approach: 'Conteúdo modular dividido por níveis de maturidade e setor.',
-    result: 'Mais de 30 sessões com executivos e avaliação média 4.9/5.',
-    learnings: 'Discussão franca sobre limitações aumenta confiança na execução.'
+    excerpt: 'IA na vida real: como essa tecnologia muda o seu dia a dia.',
+    challenge: 'Explicar IA para quem não é especialista, sem "tech-ês".',
+    approach: 'Conteúdo visual, exemplos do cotidiano e linguagem acessível.',
+    result: 'Mais de 30 sessões com executivos e público geral, avaliação média 4.9/5.',
+    learnings: 'Quando tiramos o hype, as pessoas perdem o medo e começam a usar.'
   }
 ]
