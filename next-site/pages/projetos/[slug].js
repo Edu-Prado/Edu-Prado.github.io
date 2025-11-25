@@ -27,10 +27,12 @@ export default function Projeto() {
             <h2 className="text-2xl font-semibold mb-2">Abordagem</h2>
             <p>{project.approach}</p>
           </section>
-          <section>
-            <h2 className="text-2xl font-semibold mb-2">Resultado</h2>
-            <p>{project.result}</p>
-          </section>
+          {project.result && (
+            <section>
+              <h2 className="text-2xl font-semibold mb-2">Resultado</h2>
+              <p>{project.result}</p>
+            </section>
+          )}
           <section>
             <h2 className="text-2xl font-semibold mb-2">Aprendizados</h2>
             <p>{project.learnings}</p>
