@@ -308,9 +308,11 @@ export default function Admin() {
                         </div>
 
                         <div>
-                            <label className="block font-medium mb-1">Conteúdo (HTML permitido)</label>
-                            <textarea required name="content" value={formData.content} onChange={handleChange} rows="10" className="w-full border p-2 rounded font-mono text-sm" placeholder="<p>Seu texto aqui...</p>" />
-                            <p className="text-xs text-gray-500 mt-1">Dica: Use &lt;h2&gt; para subtítulos, &lt;p&gt; para parágrafos, &lt;b&gt; para negrito.</p>
+                            <label className="block font-medium mb-1">Conteúdo (Markdown suportado)</label>
+                            <textarea required name="content" value={formData.content} onChange={handleChange} rows="10" className="w-full border p-2 rounded font-mono text-sm" placeholder="Escreva seu texto aqui..." />
+                            <p className="text-xs text-gray-500 mt-1">
+                                Dica: Use <b>**negrito**</b>, <b>## Subtítulo</b>, <b>- Lista</b>. Para vídeos do YouTube, cole o link em uma linha separada. HTML também é suportado.
+                            </p>
                         </div>
 
                         <div>

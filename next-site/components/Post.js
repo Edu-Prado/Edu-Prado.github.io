@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import AdSense from './AdSense'
+import { parseMarkdown } from '../lib/markdown'
 
 function readingTime(text) {
   const words = text.split(/\s+/).length
@@ -27,10 +28,15 @@ export default function Post({ post }) {
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">{post.title}</h1>
           <p className="text-xl text-gray-600 leading-relaxed">{post.excerpt}</p>
+          {post.image_url && (
+            <div className="mt-8 mb-8 rounded-xl overflow-hidden shadow-sm">
+              <img src={post.image_url} alt={post.title} className="w-full h-auto object-cover" />
+            </div>
+          )}
         </header>
 
         <div className="prose prose-lg prose-blue mx-auto text-gray-800">
-          <div dangerouslySetInnerHTML={{ __html: post.content }} />
+          <div dangerouslySetInnerHTML={{ __html: parseMarkdown(post.content) }} />
         </div>
 
         <div className="mt-12 p-6 bg-blue-50 rounded-xl border border-blue-100">
