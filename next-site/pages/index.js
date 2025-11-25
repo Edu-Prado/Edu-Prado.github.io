@@ -40,6 +40,9 @@ export default function Home() {
       <Navbar />
 
       <main className="pt-20"> {/* Added padding-top to account for fixed navbar */}
+        <div className="w-full">
+          <img src="/images/header-bg.png" alt="Edu Prado Header" className="w-full h-auto object-cover" />
+        </div>
         <section className="py-20 text-center bg-gradient-to-b from-blue-50 to-white">
           <div className="container mx-auto px-4">
             <h1 className="text-5xl font-bold mb-6 text-gray-900">Descomplicando a IA<br />para quem não é especialista.</h1>
