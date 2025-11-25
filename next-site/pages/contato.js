@@ -130,11 +130,9 @@ export default function Contato() {
         </form>
 
         <div className="mt-12 pt-8 border-t border-gray-200">
-          <p className="text-gray-600">Preferir agendar direto?</p>
-          <a href="https://calendly.com/edu-prado" target="_blank" rel="noopener noreferrer" className="inline-flex items-center mt-2 text-blue-600 font-semibold hover:underline">
-            Agendar 30 min no Calendly
-            <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-          </a>
+          <p className="text-gray-600">
+            Para agendamentos, por favor envie uma mensagem acima solicitando um horário. Entrarei em contato para combinarmos.
+          </p>
         </div>
       </main>
 

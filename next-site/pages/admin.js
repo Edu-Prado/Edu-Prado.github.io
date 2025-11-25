@@ -150,6 +150,17 @@ export default function Admin() {
         }
     }
 
+    const handleDeleteMessage = async (id) => {
+        if (!confirm('Tem certeza que deseja excluir esta mensagem?')) return
+        try {
+            const { error } = await supabase.from('messages').delete().eq('id', id)
+            if (error) throw error
+            fetchMessages()
+        } catch (error) {
+            alert('Erro ao excluir: ' + error.message)
+        }
+    }
+
     if (!isAuthenticated) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -210,6 +221,7 @@ export default function Admin() {
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Organização</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mensagem</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
+                                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
@@ -227,6 +239,9 @@ export default function Admin() {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                             {new Date(msg.created_at).toLocaleDateString('pt-BR')}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <button onClick={() => handleDeleteMessage(msg.id)} className="text-red-600 hover:text-red-900">Excluir</button>
                                         </td>
                                     </tr>
                                 ))}
