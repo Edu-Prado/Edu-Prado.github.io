@@ -106,7 +106,7 @@ export default function PostPage() {
                         )}
                     </header>
 
-                    <div className="prose prose-lg prose-blue mx-auto text-gray-800">
+                    <div className="prose prose-lg prose-blue mx-auto text-gray-800 max-w-none">
                         <div dangerouslySetInnerHTML={{ __html: post.content }} />
                     </div>
 

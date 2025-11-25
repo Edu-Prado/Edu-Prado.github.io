@@ -21,8 +21,8 @@ export default function Blog() {
         } else {
             const lowerTerm = searchTerm.toLowerCase()
             const filtered = posts.filter(post =>
-                post.title.toLowerCase().includes(lowerTerm) ||
-                post.excerpt.toLowerCase().includes(lowerTerm) ||
+                (post.title && post.title.toLowerCase().includes(lowerTerm)) ||
+                (post.excerpt && post.excerpt.toLowerCase().includes(lowerTerm)) ||
                 (post.tag && post.tag.toLowerCase().includes(lowerTerm))
             )
             setFilteredPosts(filtered)

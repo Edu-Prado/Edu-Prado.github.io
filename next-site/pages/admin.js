@@ -8,8 +8,9 @@ export default function Admin() {
     const [isAuthenticated, setIsAuthenticated] = useState(false)
     const [loading, setLoading] = useState(false)
     const [message, setMessage] = useState('')
-    const [view, setView] = useState('list') // 'list' or 'form'
+    const [view, setView] = useState('list') // 'list', 'form', 'messages'
     const [posts, setPosts] = useState([])
+    const [messages, setMessages] = useState([])
 
     const [formData, setFormData] = useState({
         id: null,
@@ -26,6 +27,7 @@ export default function Admin() {
         if (auth === 'true') {
             setIsAuthenticated(true)
             fetchPosts()
+            fetchMessages()
         }
     }, [])
 
@@ -37,12 +39,21 @@ export default function Admin() {
         if (data) setPosts(data)
     }
 
+    const fetchMessages = async () => {
+        const { data, error } = await supabase
+            .from('messages')
+            .select('*')
+            .order('created_at', { ascending: false })
+        if (data) setMessages(data)
+    }
+
     const handleLogin = (e) => {
         e.preventDefault()
         if (password === 'admin123') {
             setIsAuthenticated(true)
             localStorage.setItem('admin_auth', 'true')
             fetchPosts()
+            fetchMessages()
         } else {
             alert('Senha incorreta')
         }
@@ -163,15 +174,25 @@ export default function Admin() {
             <main className="container mx-auto px-4 py-24">
                 <div className="flex justify-between items-center mb-8">
                     <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-                    {view === 'list' ? (
-                        <button onClick={handleNew} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                            + Novo Artigo
+                    <div className="space-x-4">
+                        <button
+                            onClick={() => setView('list')}
+                            className={`px-4 py-2 rounded ${view === 'list' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+                        >
+                            Artigos
                         </button>
-                    ) : (
-                        <button onClick={() => setView('list')} className="text-gray-600 hover:underline">
-                            &larr; Voltar para Lista
+                        <button
+                            onClick={() => setView('messages')}
+                            className={`px-4 py-2 rounded ${view === 'messages' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+                        >
+                            Mensagens
                         </button>
-                    )}
+                        {view === 'list' && (
+                            <button onClick={handleNew} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 ml-4">
+                                + Novo Artigo
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 {message && (
@@ -180,7 +201,46 @@ export default function Admin() {
                     </div>
                 )}
 
-                {view === 'list' ? (
+                {view === 'messages' && (
+                    <div className="bg-white rounded shadow overflow-hidden">
+                        <table className="min-w-full">
+                            <thead className="bg-gray-50">
+                                <tr>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">De</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Organização</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mensagem</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                                {messages.map(msg => (
+                                    <tr key={msg.id}>
+                                        <td className="px-6 py-4">
+                                            <div className="text-sm font-medium text-gray-900">{msg.name}</div>
+                                            <div className="text-sm text-gray-500">{msg.email}</div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {msg.organization}
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
+                                            {msg.message}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {new Date(msg.created_at).toLocaleDateString('pt-BR')}
+                                        </td>
+                                    </tr>
+                                ))}
+                                {messages.length === 0 && (
+                                    <tr>
+                                        <td colSpan="4" className="px-6 py-4 text-center text-gray-500">Nenhuma mensagem recebida.</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+
+                {view === 'list' && (
                     <div className="bg-white rounded shadow overflow-hidden">
                         <table className="min-w-full">
                             <thead className="bg-gray-50">
@@ -208,7 +268,9 @@ export default function Admin() {
                             </tbody>
                         </table>
                     </div>
-                ) : (
+                )}
+
+                {view === 'form' && (
                     <form onSubmit={handleSubmit} className="max-w-2xl space-y-6 bg-white p-6 rounded shadow">
                         <div>
                             <label className="block font-medium mb-1">Título</label>
