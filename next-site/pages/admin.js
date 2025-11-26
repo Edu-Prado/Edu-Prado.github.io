@@ -299,6 +299,12 @@ export default function Admin() {
                                 <option>Dados</option>
                                 <option>Estratégia</option>
                                 <option>Carreira</option>
+                                <option>IA para iniciantes</option>
+                                <option>Opinião</option>
+                                <option>Noticias</option>
+                                <option>Games</option>
+                                <option>Gadgets</option>
+                                <option>Tecnologia</option>
                             </select>
                         </div>
 
