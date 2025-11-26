@@ -103,8 +103,7 @@ export default function Admin() {
                 content: formData.content,
                 tag: formData.tag,
                 apply: formData.apply,
-                image_url: formData.image_url,
-                date: new Date().toISOString().split('T')[0]
+                image_url: formData.image_url
             }
 
             let error
