@@ -15,6 +15,7 @@ export default function Admin() {
     const [formData, setFormData] = useState({
         id: null,
         title: '',
+        slug: '',
         excerpt: '',
         content: '',
         tag: 'IA',
@@ -63,6 +64,7 @@ export default function Admin() {
         setFormData({
             id: post.id,
             title: post.title,
+            slug: post.slug || '',
             excerpt: post.excerpt,
             content: post.content,
             tag: post.tag || 'IA',
@@ -77,6 +79,7 @@ export default function Admin() {
         setFormData({
             id: null,
             title: '',
+            slug: '',
             excerpt: '',
             content: '',
             tag: 'IA',
@@ -99,6 +102,7 @@ export default function Admin() {
         try {
             const postData = {
                 title: formData.title,
+                slug: formData.slug,
                 excerpt: formData.excerpt,
                 content: formData.content,
                 tag: formData.tag,
@@ -289,7 +293,37 @@ export default function Admin() {
                     <form onSubmit={handleSubmit} className="max-w-2xl space-y-6 bg-white p-6 rounded shadow">
                         <div>
                             <label className="block font-medium mb-1">Título</label>
-                            <input required name="title" value={formData.title} onChange={handleChange} className="w-full border p-2 rounded" />
+                            <input
+                                required
+                                name="title"
+                                value={formData.title}
+                                onChange={(e) => {
+                                    const title = e.target.value;
+                                    // Auto-generate slug if it's new or empty, or if user hasn't manually edited it (simplified: always update if not editing slug directly)
+                                    // Better UX: Only auto-update if creating new or if slug matches old title. 
+                                    // For simplicity: Auto-update slug only if it's empty or we are in "new" mode and user hasn't touched slug?
+                                    // Let's just update title. We'll add a helper to generate slug.
+                                    setFormData(prev => ({
+                                        ...prev,
+                                        title,
+                                        slug: !prev.id ? title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") : prev.slug
+                                    }))
+                                }}
+                                className="w-full border p-2 rounded"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block font-medium mb-1">Slug (URL Amigável)</label>
+                            <input
+                                required
+                                name="slug"
+                                value={formData.slug}
+                                onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                                className="w-full border p-2 rounded bg-gray-50"
+                                placeholder="ex: titulo-do-artigo"
+                            />
+                            <p className="text-xs text-gray-500 mt-1">Este será o link do artigo: /blog/{formData.slug || '...'}</p>
                         </div>
 
                         <div>

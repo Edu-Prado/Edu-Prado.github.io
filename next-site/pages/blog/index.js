@@ -103,7 +103,7 @@ export default function Blog() {
                                         </div>
 
                                         <h2 className="text-xl font-bold mb-3 text-gray-900 leading-tight">
-                                            <Link href={`/post?id=${post.id}`} className="hover:text-blue-600 transition">
+                                            <Link href={`/blog/${post.slug}`} className="hover:text-blue-600 transition">
                                                 {post.title}
                                             </Link>
                                         </h2>
@@ -112,7 +112,7 @@ export default function Blog() {
                                             {post.excerpt}
                                         </p>
 
-                                        <Link href={`/post?id=${post.id}`} className="inline-flex items-center text-blue-600 font-semibold hover:underline mt-auto">
+                                        <Link href={`/blog/${post.slug}`} className="inline-flex items-center text-blue-600 font-semibold hover:underline mt-auto">
                                             Ler artigo
                                             <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
                                         </Link>

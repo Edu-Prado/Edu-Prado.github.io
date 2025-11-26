@@ -101,11 +101,11 @@ export default function Home() {
                   )}
                   <div className="p-6 flex-1 flex flex-col">
                     <h3 className="text-xl font-bold mb-3 text-gray-900">
-                      <Link href={`/post?id=${post.id}`} className="hover:text-blue-600 transition">{post.title}</Link>
+                      <Link href={`/blog/${post.slug}`} className="hover:text-blue-600 transition">{post.title}</Link>
                     </h3>
                     <p className="text-sm text-gray-500 mb-4">{new Date(post.created_at).toLocaleDateString('pt-BR')}</p>
                     <p className="text-gray-600 flex-1 mb-6 line-clamp-3">{post.excerpt}</p>
-                    <Link href={`/post?id=${post.id}`} className="text-blue-600 font-semibold mt-auto flex items-center hover:underline">
+                    <Link href={`/blog/${post.slug}`} className="text-blue-600 font-semibold mt-auto flex items-center hover:underline">
                       Ler mais
                       <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
                     </Link>
