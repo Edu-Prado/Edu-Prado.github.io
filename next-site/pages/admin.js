@@ -102,6 +102,7 @@ export default function Admin() {
                 excerpt: formData.excerpt,
                 content: formData.content,
                 tag: formData.tag,
+                category: formData.tag,
                 apply: formData.apply,
                 image_url: formData.image_url
             }
