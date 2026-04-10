@@ -15,8 +15,6 @@ export default function Sobre() {
         <h2 className="text-2xl font-semibold mb-2">Hoje eu atuo em</h2>
         <ul className="list-disc list-inside mb-6">
           <li>Consultoria e projetos-piloto de IA</li>
-          <li>Palestras e workshops executivos</li>
-          <li>Mentorias 1:1 e advisory</li>
           <li>Conteúdo aberto em blog e newsletter</li>
         </ul>
         <h2 className="text-2xl font-semibold mb-2">Como cheguei aqui</h2>
