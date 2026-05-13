@@ -1,4 +1,5 @@
 name: Deploy production Next.js site to GitHub Pages
+name: Deploy static site to GitHub Pages
 
 on:
   push:
@@ -46,10 +47,25 @@ jobs:
           echo "eduprado.me" > out/CNAME
           touch out/.nojekyll
 
+      - name: Prepare static site artifact
+        run: |
+          mkdir -p _site
+          cp index.html _site/
+          cp post.html _site/ 2>/dev/null || true
+          cp ads.txt _site/ 2>/dev/null || true
+          cp site.webmanifest _site/ 2>/dev/null || true
+          cp admin.html _site/ 2>/dev/null || true
+          cp admin-login.html _site/ 2>/dev/null || true
+          cp -R css js images admin analisadados _site/
+          cp -R data _site/ 2>/dev/null || true
+          touch _site/.nojekyll
+          echo "eduprado.me" > _site/CNAME
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: next-site/out
+          path: '_site'
 
   deploy:
     needs: build
