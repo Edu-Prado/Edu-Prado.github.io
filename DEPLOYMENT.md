@@ -140,3 +140,9 @@ Depois de criar o usuário, volte ao Render e desligue `ENABLE_PUBLIC_REGISTER`.
   <https://render.com/docs/monorepo-support>
 - GitHub Pages: publicar via branch ou GitHub Actions e configurar Source.
   <https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site>
+
+## 6) Se o GitHub mostrar merge conflicts
+
+Se o Pull Request ficar bloqueado por **merge conflicts**, veja o passo a passo em `RESOLVER_CONFLITOS_GITHUB.md`.
+
+Resumo da decisão correta: mantenha o deploy do GitHub Pages apontando para `next-site/out` e mantenha o Render apontando para `api`.
