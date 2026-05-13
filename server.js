@@ -12,8 +12,21 @@ const statsRoutes = require('./routes/stats');
 
 const app = express();
 
+const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:3000,http://127.0.0.1:3000,https://eduprado.me')
+    .split(',')
+    .map(origin => origin.trim())
+    .filter(Boolean);
+
 // Middlewares
-app.use(cors());
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+        return callback(new Error('Origem não permitida pelo CORS'));
+    },
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
