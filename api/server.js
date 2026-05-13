@@ -21,10 +21,178 @@ const supabase = createClient(
     process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
+const getUserRole = (user) => user?.app_metadata?.role || user?.user_metadata?.role;
+
+const getBearerToken = (req) => {
+    const authHeader = req.headers.authorization || '';
+    return authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+};
+
+const getAuthenticatedAdmin = async (req, res) => {
+    const token = getBearerToken(req);
+
+    if (!token) {
+        res.status(401).json({ error: 'Token não fornecido' });
+        return null;
+    }
+
+    const { data, error } = await supabase.auth.getUser(token);
+    if (error || !data?.user) {
+        res.status(401).json({ error: 'Token inválido' });
+        return null;
+    }
+
+    const role = getUserRole(data.user);
+    if (role !== 'admin') {
+        res.status(403).json({ error: 'Acesso negado' });
+        return null;
+    }
+
+    return data.user;
+};
+
+const requireAdminAuth = async (req, res, next) => {
+    try {
+        const user = await getAuthenticatedAdmin(req, res);
+        if (!user) return;
+
+        req.user = user;
+        next();
+    } catch (err) {
+        console.error('Erro ao validar autenticação:', err);
+        res.status(500).json({ error: 'Erro ao validar autenticação' });
+    }
+};
+
+const validatePostPayload = (req, res, next) => {
+    const { title, category, content, imageUrl } = req.body;
+    if (!title || !category || !content) {
+        return res.status(400).json({ error: 'Campos obrigatórios ausentes' });
+    }
+
+    if ([title, category].some(field => typeof field !== 'string' || field.length > 200)) {
+        return res.status(400).json({ error: 'Título/categoria inválidos' });
+    }
+
+    if (typeof content !== 'string' || content.length > 50000) {
+        return res.status(400).json({ error: 'Conteúdo inválido' });
+    }
+
+    if (imageUrl && (typeof imageUrl !== 'string' || imageUrl.length > 2000)) {
+        return res.status(400).json({ error: 'URL da imagem inválida' });
+    }
+
+    next();
+};
+
 // Middleware para logging
 app.use((req, res, next) => {
     console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
     next();
+});
+
+// Rota raiz/healthcheck para facilitar diagnóstico no navegador e no Render
+app.get('/', (req, res) => {
+    res.json({
+        message: 'EduPrado API está online',
+        endpoints: {
+            health: '/api/test',
+            login: '/api/auth/login',
+            verify: '/api/auth/verify',
+            posts: '/api/posts'
+        }
+    });
+});
+
+// Rotas de autenticação do admin usando Supabase Auth
+app.post('/api/auth/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({ message: 'Por favor, preencha email e senha' });
+        }
+
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error || !data?.session?.access_token || !data?.user) {
+            return res.status(401).json({ message: 'Credenciais inválidas' });
+        }
+
+        if (getUserRole(data.user) !== 'admin') {
+            return res.status(403).json({ message: 'Usuário sem permissão de administrador' });
+        }
+
+        res.json({
+            token: data.session.access_token,
+            user: {
+                id: data.user.id,
+                name: data.user.user_metadata?.name || data.user.email,
+                email: data.user.email
+            }
+        });
+    } catch (err) {
+        console.error('Erro no login:', err);
+        res.status(500).json({ message: 'Erro interno do servidor' });
+    }
+});
+
+app.get('/api/auth/verify', async (req, res) => {
+    try {
+        const user = await getAuthenticatedAdmin(req, res);
+        if (!user) return;
+
+        res.json({
+            user: {
+                id: user.id,
+                name: user.user_metadata?.name || user.email,
+                email: user.email
+            }
+        });
+    } catch (err) {
+        console.error('Erro ao verificar autenticação:', err);
+        res.status(500).json({ message: 'Erro ao verificar autenticação' });
+    }
+});
+
+app.post('/api/auth/register', async (req, res) => {
+    try {
+        if (process.env.NODE_ENV === 'production' && process.env.ENABLE_PUBLIC_REGISTER !== 'true') {
+            return res.status(403).json({ message: 'Registro público desabilitado em produção' });
+        }
+
+        const { name, email, password } = req.body;
+        if (!name || !email || !password) {
+            return res.status(400).json({ message: 'Por favor, preencha nome, email e senha' });
+        }
+
+        if (password.length < 8) {
+            return res.status(400).json({ message: 'A senha deve ter pelo menos 8 caracteres' });
+        }
+
+        const { data, error } = await supabase.auth.admin.createUser({
+            email,
+            password,
+            email_confirm: true,
+            app_metadata: { role: 'admin' },
+            user_metadata: { name, role: 'admin' }
+        });
+
+        if (error || !data?.user) {
+            return res.status(400).json({ message: error?.message || 'Erro ao criar usuário' });
+        }
+
+        res.status(201).json({
+            message: 'Usuário admin criado com sucesso',
+            user: {
+                id: data.user.id,
+                name: data.user.user_metadata?.name || data.user.email,
+                email: data.user.email
+            }
+        });
+    } catch (err) {
+        console.error('Erro ao registrar usuário:', err);
+        res.status(500).json({ message: 'Erro interno do servidor' });
+    }
 });
 
 // Rota de teste
@@ -84,7 +252,7 @@ app.get('/api/posts/:id', async (req, res) => {
 });
 
 // Criar novo post
-app.post('/api/posts', async (req, res) => {
+app.post('/api/posts', requireAdminAuth, validatePostPayload, async (req, res) => {
     const { title, category, content, imageUrl } = req.body;
     console.log('Criando novo post:', { title, category, imageUrl });
 
@@ -117,7 +285,7 @@ app.post('/api/posts', async (req, res) => {
 });
 
 // Atualizar post
-app.put('/api/posts/:id', async (req, res) => {
+app.put('/api/posts/:id', requireAdminAuth, validatePostPayload, async (req, res) => {
     const { title, category, content, imageUrl } = req.body;
     console.log(`Atualizando post ${req.params.id}:`, { title, category, imageUrl });
 
@@ -154,7 +322,7 @@ app.put('/api/posts/:id', async (req, res) => {
 });
 
 // Deletar post
-app.delete('/api/posts/:id', async (req, res) => {
+app.delete('/api/posts/:id', requireAdminAuth, async (req, res) => {
     console.log(`Deletando post ${req.params.id}`);
 
     try {
@@ -177,7 +345,7 @@ app.delete('/api/posts/:id', async (req, res) => {
 });
 
 // Deletar todos os posts
-app.delete('/api/posts', async (req, res) => {
+app.delete('/api/posts', requireAdminAuth, async (req, res) => {
     console.log('Deletando todos os posts');
 
     try {

@@ -1,39 +1,61 @@
-// Credenciais (em produção, isso deve estar no servidor)
-const ADMIN_CREDENTIALS = {
-    username: 'admin',
-    password: 'admin03012010'
-};
-
 const API_URL = window.location.hostname === 'localhost' 
     ? 'http://localhost:3000'
     : 'https://eduprado-backend.onrender.com';
 
+const AUTH_TOKEN_KEY = 'adminAuthToken';
+
 // Gerenciamento de autenticação
 async function login(username, password) {
     try {
-        // Aqui você faria a chamada para o backend
-        // Por enquanto, vamos simular com uma senha hardcoded
-        if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
-            localStorage.setItem('adminLoggedIn', 'true');
-            window.location.href = 'dashboard.html';
-        } else {
-            alert('Usuário ou senha incorretos');
+        const response = await fetch(`${API_URL}/api/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: username,
+                password
+            })
+        });
+
+        const data = await response.json();
+        if (!response.ok || !data.token) {
+            throw new Error(data.message || 'Usuário ou senha incorretos');
         }
+
+        localStorage.setItem(AUTH_TOKEN_KEY, data.token);
+        window.location.href = 'dashboard.html';
     } catch (error) {
         console.error('Erro ao fazer login:', error);
-        alert('Erro ao fazer login');
+        alert(error.message || 'Erro ao fazer login');
     }
 }
 
-function checkAuth() {
-    const isLoggedIn = localStorage.getItem('adminLoggedIn') === 'true';
-    if (!isLoggedIn) {
+async function checkAuth() {
+    const token = localStorage.getItem(AUTH_TOKEN_KEY);
+    if (!token) {
         window.location.href = 'index.html';
+        return false;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/api/auth/verify`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Sessão inválida');
+        }
+        return true;
+    } catch (error) {
+        localStorage.removeItem(AUTH_TOKEN_KEY);
+        window.location.href = 'index.html';
+        return false;
     }
 }
 
 function logout() {
-    localStorage.removeItem('adminLoggedIn');
+    localStorage.removeItem(AUTH_TOKEN_KEY);
     window.location.href = 'index.html';
 }
 
@@ -71,13 +93,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Se estiver na página do dashboard
     if (document.querySelector('.admin-dashboard')) {
-        checkAuth();
-        loadPosts();
+        checkAuth().then(isAuthenticated => {
+            if (isAuthenticated) {
+                loadPosts();
+            }
+        });
     }
 });
 
 // Funções para gerenciar posts
 let currentPosts = [];
+
+function escapeHtml(value = '') {
+    return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+}
 
 async function loadPosts() {
     try {
@@ -97,10 +131,10 @@ function displayPosts(posts) {
     const postsHTML = posts.map(post => `
         <div class="post-item">
             <div class="post-info">
-                <h3>${post.title}</h3>
+                <h3>${escapeHtml(post.title)}</h3>
                 <p class="post-meta">
-                    <span class="date">${post.date}</span>
-                    <span class="tags">${post.tags.join(', ')}</span>
+                    <span class="date">${escapeHtml(post.date)}</span>
+                    <span class="tags">${escapeHtml((post.tags || []).join(', '))}</span>
                 </p>
             </div>
             <div class="post-actions">
