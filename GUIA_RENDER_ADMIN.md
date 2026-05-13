@@ -139,6 +139,7 @@ Isso normalmente acontece por um destes motivos:
 
 ## 7) Deploy: onde publicar cada parte
 
+- **GitHub Pages** publica o site Next.js exportado de `next-site/out` (`eduprado.me`).
 - **GitHub Pages** publica o site estático (`eduprado.me`).
 - **Render** publica o backend/API (`eduprado-backend.onrender.com`).
 

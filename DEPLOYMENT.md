@@ -9,6 +9,7 @@ Este projeto tem duas partes em produção:
 
 ## 1) Deploy do site no GitHub Pages
 
+O site em produção deve ser o **Next.js exportado** que fica na pasta `next-site`, pois é essa versão que contém o admin mais novo e o campo de slug/URL amigável para SEO.
 O site simplificado atual é estático e usa o `index.html` da raiz do repositório.
 
 ### Como publicar
@@ -17,6 +18,7 @@ O site simplificado atual é estático e usa o `index.html` da raiz do repositó
 2. Abra o repositório `Edu-Prado.github.io`.
 3. Faça merge/push das alterações na branch `main`.
 4. Vá em **Actions**.
+5. Abra o workflow **Deploy production Next.js site to GitHub Pages**.
 5. Abra o workflow **Deploy static site to GitHub Pages**.
 6. Aguarde ficar verde.
 7. Acesse `https://eduprado.me`.
@@ -28,6 +30,11 @@ Em **Settings > Pages**:
 - **Source**: `GitHub Actions`
 - Domínio customizado: `eduprado.me`
 
+O workflow `.github/workflows/pages.yml` instala as dependências em `next-site`, executa `npm run build` e publica `next-site/out` no GitHub Pages.
+
+### O que NÃO usar como deploy principal agora
+
+O workflow `.github/workflows/deploy.yml` antigo ficou **manual apenas** para evitar conflito. O deploy automático oficial agora é o `.github/workflows/pages.yml`, que publica `next-site/out`.
 O workflow `.github/workflows/pages.yml` prepara uma pasta `_site` somente com os arquivos públicos necessários e publica essa pasta no GitHub Pages.
 
 ### O que NÃO usar como deploy principal agora
@@ -99,6 +106,10 @@ Abra também:
 
 Resultado esperado sem login: erro de token ausente/inválido. Isso é bom: significa que a rota existe.
 
+### Observação sobre `Token não fornecido`
+
+Se `https://eduprado-backend.onrender.com/api/auth/verify` retornar `{"error":"Token não fornecido"}`, o backend está respondendo corretamente. Essa rota só retorna usuário quando recebe um token de login no cabeçalho `Authorization`.
+
 Se aparecer `Cannot GET /api/auth/verify`, o Render ainda está rodando código antigo ou está apontando para a pasta errada.
 
 ### Site
@@ -136,3 +147,9 @@ Depois de criar o usuário, volte ao Render e desligue `ENABLE_PUBLIC_REGISTER`.
   <https://render.com/docs/monorepo-support>
 - GitHub Pages: publicar via branch ou GitHub Actions e configurar Source.
   <https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site>
+
+## 6) Se o GitHub mostrar merge conflicts
+
+Se o Pull Request ficar bloqueado por **merge conflicts**, veja o passo a passo em `RESOLVER_CONFLITOS_GITHUB.md`.
+
+Resumo da decisão correta: mantenha o deploy do GitHub Pages apontando para `next-site/out` e mantenha o Render apontando para `api`.
