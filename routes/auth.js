@@ -3,15 +3,23 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const auth = require('../middleware/auth');
+const { auth } = require('../middleware/auth');
 
 // Configurações do JWT
-const JWT_SECRET = process.env.JWT_SECRET || 'sua-chave-secreta-aqui';
+const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = '24h';
+
+if (!JWT_SECRET) {
+    console.error('[SECURITY] JWT_SECRET não definido. Configure a variável de ambiente.');
+}
 
 // Rota de login
 router.post('/login', async (req, res) => {
     try {
+        if (!JWT_SECRET) {
+            return res.status(500).json({ message: 'Configuração de autenticação inválida' });
+        }
+
         const { email, password } = req.body;
 
         // Validar campos
@@ -61,6 +69,14 @@ router.get('/verify', auth, (req, res) => {
 // Rota para criar usuário (apenas para desenvolvimento)
 router.post('/register', async (req, res) => {
     try {
+        if (!JWT_SECRET) {
+            return res.status(500).json({ message: 'Configuração de autenticação inválida' });
+        }
+
+        if (process.env.NODE_ENV === 'production' && process.env.ENABLE_PUBLIC_REGISTER !== 'true') {
+            return res.status(403).json({ message: 'Registro público desabilitado em produção' });
+        }
+
         const { name, email, password } = req.body;
 
         // Validar campos

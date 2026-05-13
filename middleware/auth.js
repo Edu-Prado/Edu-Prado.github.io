@@ -1,10 +1,18 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'sua-chave-secreta-aqui';
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+    console.error('[SECURITY] JWT_SECRET não definido. Configure a variável de ambiente.');
+}
 
 const auth = async (req, res, next) => {
     try {
+        if (!JWT_SECRET) {
+            return res.status(500).json({ message: 'Configuração de autenticação inválida' });
+        }
+
         // Pegar token do header
         const token = req.header('Authorization')?.replace('Bearer ', '');
         
