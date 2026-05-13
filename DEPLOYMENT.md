@@ -10,7 +10,6 @@ Este projeto tem duas partes em produção:
 ## 1) Deploy do site no GitHub Pages
 
 O site em produção deve ser o **Next.js exportado** que fica na pasta `next-site`, pois é essa versão que contém o admin mais novo e o campo de slug/URL amigável para SEO.
-O site simplificado atual é estático e usa o `index.html` da raiz do repositório.
 
 ### Como publicar
 
@@ -19,7 +18,6 @@ O site simplificado atual é estático e usa o `index.html` da raiz do repositó
 3. Faça merge/push das alterações na branch `main`.
 4. Vá em **Actions**.
 5. Abra o workflow **Deploy production Next.js site to GitHub Pages**.
-5. Abra o workflow **Deploy static site to GitHub Pages**.
 6. Aguarde ficar verde.
 7. Acesse `https://eduprado.me`.
 
@@ -35,11 +33,6 @@ O workflow `.github/workflows/pages.yml` instala as dependências em `next-site`
 ### O que NÃO usar como deploy principal agora
 
 O workflow `.github/workflows/deploy.yml` antigo ficou **manual apenas** para evitar conflito. O deploy automático oficial agora é o `.github/workflows/pages.yml`, que publica `next-site/out`.
-O workflow `.github/workflows/pages.yml` prepara uma pasta `_site` somente com os arquivos públicos necessários e publica essa pasta no GitHub Pages.
-
-### O que NÃO usar como deploy principal agora
-
-O workflow `.github/workflows/deploy.yml` de Next.js ficou **manual apenas** para evitar conflito. Ele não deve rodar automaticamente enquanto a versão simplificada estática for a produção.
 
 ## 2) Deploy do backend no Render
 
@@ -152,4 +145,4 @@ Depois de criar o usuário, volte ao Render e desligue `ENABLE_PUBLIC_REGISTER`.
 
 Se o Pull Request ficar bloqueado por **merge conflicts**, veja o passo a passo em `RESOLVER_CONFLITOS_GITHUB.md`.
 
-Resumo da decisão correta: mantenha o deploy do GitHub Pages apontando para `next-site/out` e mantenha o Render apontando para `api`.
+Resumo da decisão correta: mantenha o deploy do GitHub Pages apontando para `next-site/out` e mantenha o Render apontando para `api`. Se o botão **Commit merge** falhar, o guia também tem uma seção para criar um PR novo limpo ou resolver pelo terminal.

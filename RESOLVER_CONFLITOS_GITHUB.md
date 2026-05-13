@@ -88,3 +88,53 @@ startCommand: npm start
 ## Se bater insegurança
 
 Se você não souber qual lado manter em um conflito, priorize sempre a versão que menciona `next-site/out` para GitHub Pages e `rootDir: api` para Render.
+
+## Se o botão **Commit merge** falhar
+
+Se você clicou em **Commit merge** e o GitHub mostrou erro, normalmente é por um destes motivos:
+
+1. Ainda sobrou algum marcador de conflito no arquivo.
+2. Algum arquivo com conflito não foi marcado como resolvido.
+3. A branch `main` recebeu outro commit enquanto você resolvia o conflito.
+4. O GitHub não consegue resolver pelo navegador porque o conflito é grande demais.
+
+### Caminho recomendado para leigo: criar um PR novo limpo
+
+Se o GitHub não deixar concluir o **Commit merge**, o caminho mais simples é não insistir nesse PR conflitado:
+
+1. Feche o PR atual sem fazer merge.
+2. Abra um PR novo contendo as mesmas correções, mas criado a partir da `main` atualizada.
+3. No PR novo, confira se os arquivos importantes continuam assim:
+   - `.github/workflows/pages.yml` publica `next-site/out`.
+   - `.github/workflows/deploy.yml` continua manual-only.
+   - `render.yaml` continua com `rootDir: api`.
+4. Faça merge do PR novo.
+
+### Caminho pelo computador (para quem usa Git)
+
+Se alguém for resolver pelo terminal, use este fluxo:
+
+```bash
+git checkout main
+git pull origin main
+git checkout NOME_DA_BRANCH_DO_PR
+git merge main
+# resolver arquivos em conflito
+git add .
+git commit
+git push
+```
+
+Depois volte ao GitHub e tente fazer o merge novamente.
+
+### Como saber que resolveu de verdade
+
+Antes de tentar mergear novamente, confirme que não existe mais nenhum trecho parecido com:
+
+```txt
+< < < < < < <
+= = = = = = =
+> > > > > > >
+```
+
+Se existir, o GitHub vai continuar recusando o commit/merge.
