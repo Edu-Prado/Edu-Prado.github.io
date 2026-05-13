@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: eduprado-backend
+    runtime: node
+    rootDir: api
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeploy: true
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: ENABLE_PUBLIC_REGISTER
+        value: "false"
