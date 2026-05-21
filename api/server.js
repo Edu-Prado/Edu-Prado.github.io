@@ -220,6 +220,46 @@ const generateExcerpt = (content) => {
         .replace(/\s+/g, ' ')
         .trim();
     return cleanText.slice(0, 180) + (cleanText.length > 180 ? '...' : '');
+// Função para disparar o rebuild no GitHub Actions quando houver alteração nos posts
+const triggerGithubRebuild = async () => {
+    const githubToken = process.env.GITHUB_PAT || process.env.GITHUB_TOKEN;
+    const repoOwner = process.env.GITHUB_REPO_OWNER || 'Edu-Prado';
+    const repoName = process.env.GITHUB_REPO_NAME || 'Edu-Prado.github.io';
+    const workflowId = process.env.GITHUB_WORKFLOW_ID || 'pages.yml';
+
+    if (!githubToken) {
+        console.log('[GitHub Build] GITHUB_PAT não configurado no Render. O rebuild automático do GitHub Pages foi pulado.');
+        return false;
+    }
+
+    try {
+        console.log(`[GitHub Build] Disparando rebuild automático no GitHub Actions para ${repoOwner}/${repoName}...`);
+        
+        const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/actions/workflows/${workflowId}/dispatches`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${githubToken}`,
+                'Accept': 'application/vnd.github+json',
+                'X-GitHub-Api-Version': '2022-11-28',
+                'User-Agent': 'EduPrado-Backend-API'
+            },
+            body: JSON.stringify({
+                ref: 'main'
+            })
+        });
+
+        if (response.ok) {
+            console.log('[GitHub Build] Rebuild do GitHub Actions disparado com sucesso!');
+            return true;
+        } else {
+            const errText = await response.text();
+            console.error('[GitHub Build] Erro ao disparar rebuild no GitHub Actions:', response.status, errText);
+            return false;
+        }
+    } catch (err) {
+        console.error('[GitHub Build] Falha de conexão com a API do GitHub:', err);
+        return false;
+    }
 };
 
 // Rotas da API
@@ -302,6 +342,7 @@ app.post('/api/posts', requireAdminAuth, validatePostPayload, async (req, res) =
         }
 
         console.log('Post criado com sucesso:', data);
+        triggerGithubRebuild();
         res.status(201).json(data);
     } catch (err) {
         console.error('Erro ao criar post:', err);
@@ -342,6 +383,7 @@ app.put('/api/posts/:id', requireAdminAuth, validatePostPayload, async (req, res
         }
 
         console.log('Post atualizado com sucesso:', data);
+        triggerGithubRebuild();
         res.json(data);
     } catch (err) {
         console.error('Erro ao atualizar post:', err);
@@ -365,6 +407,7 @@ app.delete('/api/posts/:id', requireAdminAuth, async (req, res) => {
         }
 
         console.log('Post deletado com sucesso');
+        triggerGithubRebuild();
         res.json({ message: 'Post excluído com sucesso' });
     } catch (err) {
         console.error('Erro ao deletar post:', err);
@@ -388,6 +431,7 @@ app.delete('/api/posts', requireAdminAuth, async (req, res) => {
         }
 
         console.log('Todos os posts foram deletados com sucesso');
+        triggerGithubRebuild();
         res.json({ message: 'Todos os posts foram excluídos com sucesso' });
     } catch (err) {
         console.error('Erro ao deletar todos os posts:', err);
