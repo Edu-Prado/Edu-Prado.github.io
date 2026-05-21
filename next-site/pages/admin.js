@@ -173,8 +173,9 @@ export default function Admin() {
                 category: formData.tag, // API maps to category
                 content: formData.content,
                 imageUrl: formData.image_url,
-                // apply is optional in custom API if stored as metadata or if we map it
-                apply: formData.apply
+                apply: formData.apply,
+                slug: formData.slug,
+                excerpt: formData.excerpt
             }
 
             let response

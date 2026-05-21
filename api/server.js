@@ -65,7 +65,7 @@ const requireAdminAuth = async (req, res, next) => {
 };
 
 const validatePostPayload = (req, res, next) => {
-    const { title, category, content, imageUrl } = req.body;
+    const { title, category, content, imageUrl, slug, excerpt, apply } = req.body;
     if (!title || !category || !content) {
         return res.status(400).json({ error: 'Campos obrigatórios ausentes' });
     }
@@ -80,6 +80,18 @@ const validatePostPayload = (req, res, next) => {
 
     if (imageUrl && (typeof imageUrl !== 'string' || imageUrl.length > 2000)) {
         return res.status(400).json({ error: 'URL da imagem inválida' });
+    }
+
+    if (slug && (typeof slug !== 'string' || slug.length > 200)) {
+        return res.status(400).json({ error: 'Slug inválido' });
+    }
+
+    if (excerpt && (typeof excerpt !== 'string' || excerpt.length > 1000)) {
+        return res.status(400).json({ error: 'Resumo inválido' });
+    }
+
+    if (apply && (typeof apply !== 'string' || apply.length > 1000)) {
+        return res.status(400).json({ error: 'Dica prática inválida' });
     }
 
     next();
@@ -253,8 +265,8 @@ app.get('/api/posts/:id', async (req, res) => {
 
 // Criar novo post
 app.post('/api/posts', requireAdminAuth, validatePostPayload, async (req, res) => {
-    const { title, category, content, imageUrl } = req.body;
-    console.log('Criando novo post:', { title, category, imageUrl });
+    const { title, category, content, imageUrl, slug, excerpt, apply } = req.body;
+    console.log('Criando novo post:', { title, category, imageUrl, slug });
 
     try {
         const { data, error } = await supabase
@@ -265,6 +277,9 @@ app.post('/api/posts', requireAdminAuth, validatePostPayload, async (req, res) =
                     category,
                     content,
                     image_url: imageUrl,
+                    slug: slug || title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""),
+                    excerpt: excerpt || '',
+                    apply: apply || '',
                     created_at: new Date().toISOString()
                 }
             ])
@@ -286,8 +301,8 @@ app.post('/api/posts', requireAdminAuth, validatePostPayload, async (req, res) =
 
 // Atualizar post
 app.put('/api/posts/:id', requireAdminAuth, validatePostPayload, async (req, res) => {
-    const { title, category, content, imageUrl } = req.body;
-    console.log(`Atualizando post ${req.params.id}:`, { title, category, imageUrl });
+    const { title, category, content, imageUrl, slug, excerpt, apply } = req.body;
+    console.log(`Atualizando post ${req.params.id}:`, { title, category, imageUrl, slug });
 
     try {
         const { data, error } = await supabase
@@ -297,6 +312,9 @@ app.put('/api/posts/:id', requireAdminAuth, validatePostPayload, async (req, res
                 category,
                 content,
                 image_url: imageUrl,
+                slug,
+                excerpt: excerpt || '',
+                apply: apply || '',
                 updated_at: new Date().toISOString()
             })
             .eq('id', req.params.id)
