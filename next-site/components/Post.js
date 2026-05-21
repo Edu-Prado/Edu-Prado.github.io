@@ -40,6 +40,9 @@ export default function Post({ post }) {
           )}
         </header>
 
+        {/* AdSense Slot - Top of Article */}
+        <AdSense slot="2887166563" />
+
         <div className="prose prose-lg prose-blue mx-auto text-gray-800">
           <div dangerouslySetInnerHTML={{ __html: parseMarkdown(post.content) }} />
         </div>
