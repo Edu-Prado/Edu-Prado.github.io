@@ -212,6 +212,16 @@ app.get('/api/test', (req, res) => {
     res.json({ message: 'API está funcionando!' });
 });
 
+// Função auxiliar para gerar resumo automático caso venha em branco
+const generateExcerpt = (content) => {
+    if (!content) return '';
+    const cleanText = content
+        .replace(/[#*`_\-\[\]\(\)]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    return cleanText.slice(0, 180) + (cleanText.length > 180 ? '...' : '');
+};
+
 // Rotas da API
 // Listar todos os posts
 app.get('/api/posts', async (req, res) => {
@@ -278,7 +288,7 @@ app.post('/api/posts', requireAdminAuth, validatePostPayload, async (req, res) =
                     content,
                     image_url: imageUrl,
                     slug: slug || title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""),
-                    excerpt: excerpt || '',
+                    excerpt: excerpt || generateExcerpt(content),
                     apply: apply || '',
                     created_at: new Date().toISOString()
                 }
@@ -312,8 +322,8 @@ app.put('/api/posts/:id', requireAdminAuth, validatePostPayload, async (req, res
                 category,
                 content,
                 image_url: imageUrl,
-                slug,
-                excerpt: excerpt || '',
+                slug: slug || title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""),
+                excerpt: excerpt || generateExcerpt(content),
                 apply: apply || '',
                 updated_at: new Date().toISOString()
             })
