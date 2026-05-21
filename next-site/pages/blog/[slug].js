@@ -1,40 +1,13 @@
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabaseClient'
 import Navbar from '../../components/Navbar'
 import Footer from '../../components/Footer'
 import Post from '../../components/Post'
 
-export default function BlogPost() {
+export default function BlogPost({ post }) {
   const router = useRouter()
-  const { slug } = router.query
-  const [post, setPost] = useState(null)
-  const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    if (slug) {
-      fetchPost(slug)
-    }
-  }, [slug])
-
-  async function fetchPost(slug) {
-    try {
-      const { data, error } = await supabase
-        .from('posts')
-        .select('*')
-        .eq('slug', slug)
-        .single()
-
-      if (error) throw error
-      setPost(data)
-    } catch (error) {
-      console.error('Erro ao buscar post:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  if (loading) {
+  if (router.isFallback) {
     return (
       <>
         <Navbar />
@@ -69,3 +42,56 @@ export default function BlogPost() {
     </>
   )
 }
+
+export async function getStaticPaths() {
+  try {
+    const { data: posts, error } = await supabase
+      .from('posts')
+      .select('slug')
+
+    if (error) throw error
+
+    const paths = (posts || [])
+      .filter(post => post.slug)
+      .map(post => ({
+        params: { slug: post.slug }
+      }))
+
+    return {
+      paths,
+      fallback: false
+    }
+  } catch (error) {
+    console.error('Error generating static paths for blog:', error)
+    return {
+      paths: [],
+      fallback: false
+    }
+  }
+}
+
+export async function getStaticProps({ params }) {
+  try {
+    const { data: post, error } = await supabase
+      .from('posts')
+      .select('*')
+      .eq('slug', params.slug)
+      .single()
+
+    if (error) throw error
+
+    return {
+      props: {
+        post
+      }
+    }
+  } catch (error) {
+    console.error(`Error generating static props for blog slug ${params?.slug}:`, error)
+    return {
+      props: {
+        post: null
+      }
+    }
+  }
+}
+

@@ -367,6 +367,51 @@ app.delete('/api/posts', requireAdminAuth, async (req, res) => {
     }
 });
 
+// Listar todas as mensagens (contatos) - Apenas admin
+app.get('/api/messages', requireAdminAuth, async (req, res) => {
+    try {
+        console.log('Buscando mensagens no Supabase...');
+        const { data, error } = await supabase
+            .from('messages')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            console.error('Erro ao buscar mensagens:', error);
+            throw error;
+        }
+
+        console.log(`Encontradas ${data.length} mensagens`);
+        res.json(data);
+    } catch (err) {
+        console.error('Erro ao buscar mensagens:', err);
+        res.status(500).json({ error: 'Erro ao buscar mensagens' });
+    }
+});
+
+// Deletar mensagem específica - Apenas admin
+app.delete('/api/messages/:id', requireAdminAuth, async (req, res) => {
+    console.log(`Deletando mensagem ${req.params.id}`);
+
+    try {
+        const { error } = await supabase
+            .from('messages')
+            .delete()
+            .eq('id', req.params.id);
+
+        if (error) {
+            console.error('Erro ao deletar mensagem:', error);
+            throw error;
+        }
+
+        console.log('Mensagem deletada com sucesso');
+        res.json({ message: 'Mensagem excluída com sucesso' });
+    } catch (err) {
+        console.error('Erro ao deletar mensagem:', err);
+        res.status(500).json({ error: 'Erro ao deletar mensagem' });
+    }
+});
+
 // Tratamento de erros
 app.use((err, req, res, next) => {
     console.error('Erro não tratado:', err);
