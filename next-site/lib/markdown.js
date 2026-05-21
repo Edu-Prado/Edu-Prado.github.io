@@ -1,8 +1,14 @@
 export function parseMarkdown(text) {
     if (!text) return '';
 
+    // Pre-process text to ensure headers are on their own lines
+    // This handles cases where user writes "Previous line\n## Header" without double newline
+    let processedText = text
+        .replace(/([^\n])\n(#{1,6}\s)/g, '$1\n\n$2') // Ensure headers have empty line before
+        .replace(/(#{1,6}\s.*)\n([^\n])/g, '$1\n\n$2'); // Ensure headers have empty line after
+
     // Split by double newlines to identify paragraphs/blocks
-    const blocks = text.split(/\n\n+/);
+    const blocks = processedText.split(/\n\n+/);
 
     const processedBlocks = blocks.map(block => {
         const trimmed = block.trim();
@@ -20,6 +26,10 @@ export function parseMarkdown(text) {
         // Header 1 (# Title) - though usually title is separate
         if (trimmed.startsWith('# ')) {
             return `<h1 class="text-3xl font-bold mt-8 mb-4 text-gray-900">${parseInline(trimmed.substring(2))}</h1>`;
+        }
+        // Header 3 (### Title)
+        if (trimmed.startsWith('### ')) {
+            return `<h3 class="text-xl font-bold mt-6 mb-3 text-gray-800">${parseInline(trimmed.substring(4))}</h3>`;
         }
 
         // YouTube Embed (standalone link)
@@ -39,6 +49,18 @@ export function parseMarkdown(text) {
             </div>`;
         }
 
+        // Images: ![alt](url) - Standalone block
+        const imgMatch = trimmed.match(/^!\[(.*?)\]\((.*?)\)$/);
+        if (imgMatch) {
+            const alt = imgMatch[1];
+            const src = imgMatch[2];
+            return `
+            <div class="my-8">
+                <img src="${src}" alt="${alt}" class="w-full h-auto rounded-lg shadow-md" />
+                ${alt ? `<p class="text-center text-gray-500 text-sm mt-2">${alt}</p>` : ''}
+            </div>`;
+        }
+
         // List items (bullet points starting with "- ")
         const lines = trimmed.split('\n');
         if (lines.length > 0 && lines.every(line => line.trim().startsWith('- '))) {
@@ -55,8 +77,11 @@ export function parseMarkdown(text) {
 }
 
 function parseInline(text) {
+    // Images inline: ![alt](url)
+    let parsed = text.replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1" class="inline-block max-w-full h-auto rounded-lg shadow-sm" />');
+
     // Bold: **text**
-    let parsed = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+    parsed = parsed.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
 
     // Italic: *text*
     parsed = parsed.replace(/\*(.*?)\*/g, '<i>$1</i>');

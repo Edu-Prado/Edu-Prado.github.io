@@ -16,8 +16,13 @@ export default function Post({ post }) {
         <meta name="description" content={post.excerpt} />
         <meta property="og:title" content={post.title} />
         <meta property="og:description" content={post.excerpt} />
-        {/* AdSense Script */}
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7782077901383981" crossOrigin="anonymous"></script>
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content={`https://eduprado.me/blog/${post.slug}/`} />
+        {post.image_url && <meta property="og:image" content={post.image_url} />}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={post.title} />
+        <meta name="twitter:description" content={post.excerpt} />
+        {post.image_url && <meta name="twitter:image" content={post.image_url} />}
       </Head>
 
       <article className="max-w-3xl mx-auto px-4 py-12">

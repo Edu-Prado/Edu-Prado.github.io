@@ -1,9 +1,15 @@
 import { useState, useEffect } from 'react'
-import { supabase } from '../lib/supabaseClient'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 
+const API_URL = typeof window !== 'undefined' && window.location.hostname === 'localhost'
+    ? 'http://localhost:3000'
+    : 'https://eduprado-backend.onrender.com';
+
+const AUTH_TOKEN_KEY = 'adminAuthToken';
+
 export default function Admin() {
+    const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [isAuthenticated, setIsAuthenticated] = useState(false)
     const [loading, setLoading] = useState(false)
@@ -24,39 +30,98 @@ export default function Admin() {
     })
 
     useEffect(() => {
-        const auth = localStorage.getItem('admin_auth')
-        if (auth === 'true') {
-            setIsAuthenticated(true)
-            fetchPosts()
-            fetchMessages()
+        const verifySession = async () => {
+            const token = localStorage.getItem(AUTH_TOKEN_KEY)
+            if (token) {
+                try {
+                    const response = await fetch(`${API_URL}/api/auth/verify`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    if (response.ok) {
+                        setIsAuthenticated(true)
+                        fetchPostsDirectly(token)
+                        fetchMessagesDirectly(token)
+                    } else {
+                        localStorage.removeItem(AUTH_TOKEN_KEY)
+                    }
+                } catch (err) {
+                    console.error('Session verification failed:', err)
+                }
+            }
         }
+        verifySession()
     }, [])
 
+    const fetchPostsDirectly = async (token) => {
+        try {
+            const response = await fetch(`${API_URL}/api/posts`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            if (response.ok) {
+                const data = await response.json()
+                setPosts(data || [])
+            }
+        } catch (error) {
+            console.error('Erro ao buscar posts:', error)
+        }
+    }
+
+    const fetchMessagesDirectly = async (token) => {
+        try {
+            const response = await fetch(`${API_URL}/api/messages`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            if (response.ok) {
+                const data = await response.json()
+                setMessages(data || [])
+            }
+        } catch (error) {
+            console.error('Erro ao buscar mensagens:', error)
+        }
+    }
+
     const fetchPosts = async () => {
-        const { data, error } = await supabase
-            .from('posts')
-            .select('*')
-            .order('created_at', { ascending: false })
-        if (data) setPosts(data)
+        const token = localStorage.getItem(AUTH_TOKEN_KEY)
+        if (token) fetchPostsDirectly(token)
     }
 
     const fetchMessages = async () => {
-        const { data, error } = await supabase
-            .from('messages')
-            .select('*')
-            .order('created_at', { ascending: false })
-        if (data) setMessages(data)
+        const token = localStorage.getItem(AUTH_TOKEN_KEY)
+        if (token) fetchMessagesDirectly(token)
     }
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault()
-        if (password === 'admin123') {
+        setLoading(true)
+        setMessage('')
+        try {
+            const response = await fetch(`${API_URL}/api/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await response.json();
+            if (!response.ok || !data.token) {
+                throw new Error(data.message || 'Credenciais inválidas');
+            }
+
             setIsAuthenticated(true)
-            localStorage.setItem('admin_auth', 'true')
-            fetchPosts()
-            fetchMessages()
-        } else {
-            alert('Senha incorreta')
+            localStorage.setItem(AUTH_TOKEN_KEY, data.token)
+            
+            // Fetch initial data
+            fetchPostsDirectly(data.token)
+            fetchMessagesDirectly(data.token)
+        } catch (error) {
+            alert(error.message || 'Erro ao fazer login')
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -67,7 +132,7 @@ export default function Admin() {
             slug: post.slug || '',
             excerpt: post.excerpt,
             content: post.content,
-            tag: post.tag || 'IA',
+            tag: post.category || 'IA', // API uses category, database/form maps it to tag
             apply: post.apply || '',
             image_url: post.image_url || ''
         })
@@ -100,37 +165,48 @@ export default function Admin() {
         setMessage('')
 
         try {
+            const token = localStorage.getItem(AUTH_TOKEN_KEY)
+            if (!token) throw new Error('Sessão expirada')
+
             const postData = {
                 title: formData.title,
-                slug: formData.slug,
-                excerpt: formData.excerpt,
+                category: formData.tag, // API maps to category
                 content: formData.content,
-                tag: formData.tag,
-                category: formData.tag,
-                apply: formData.apply,
-                image_url: formData.image_url
+                imageUrl: formData.image_url,
+                // apply is optional in custom API if stored as metadata or if we map it
+                apply: formData.apply
             }
 
-            let error
+            let response
             if (formData.id) {
                 // Update
-                const result = await supabase
-                    .from('posts')
-                    .update(postData)
-                    .eq('id', formData.id)
-                error = result.error
+                response = await fetch(`${API_URL}/api/posts/${formData.id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(postData)
+                })
             } else {
                 // Insert
-                const result = await supabase
-                    .from('posts')
-                    .insert([{ ...postData, created_at: new Date().toISOString() }])
-                error = result.error
+                response = await fetch(`${API_URL}/api/posts`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(postData)
+                })
             }
 
-            if (error) throw error
+            if (!response.ok) {
+                const errData = await response.json()
+                throw new Error(errData.error || 'Erro ao salvar post')
+            }
 
             setMessage(formData.id ? 'Post atualizado!' : 'Post criado!')
-            fetchPosts()
+            fetchPostsDirectly(token)
             if (!formData.id) {
                 setFormData({ ...formData, title: '' }) // Clear some fields
             }
@@ -146,9 +222,22 @@ export default function Admin() {
     const handleDelete = async (id) => {
         if (!confirm('Tem certeza que deseja excluir este post?')) return
         try {
-            const { error } = await supabase.from('posts').delete().eq('id', id)
-            if (error) throw error
-            fetchPosts()
+            const token = localStorage.getItem(AUTH_TOKEN_KEY)
+            if (!token) throw new Error('Sessão expirada')
+
+            const response = await fetch(`${API_URL}/api/posts/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+
+            if (!response.ok) {
+                const errData = await response.json()
+                throw new Error(errData.error || 'Erro ao excluir post')
+            }
+
+            fetchPostsDirectly(token)
         } catch (error) {
             alert('Erro ao excluir: ' + error.message)
         }
@@ -157,9 +246,22 @@ export default function Admin() {
     const handleDeleteMessage = async (id) => {
         if (!confirm('Tem certeza que deseja excluir esta mensagem?')) return
         try {
-            const { error } = await supabase.from('messages').delete().eq('id', id)
-            if (error) throw error
-            fetchMessages()
+            const token = localStorage.getItem(AUTH_TOKEN_KEY)
+            if (!token) throw new Error('Sessão expirada')
+
+            const response = await fetch(`${API_URL}/api/messages/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+
+            if (!response.ok) {
+                const errData = await response.json()
+                throw new Error(errData.error || 'Erro ao excluir mensagem')
+            }
+
+            fetchMessagesDirectly(token)
         } catch (error) {
             alert('Erro ao excluir: ' + error.message)
         }
@@ -168,16 +270,33 @@ export default function Admin() {
     if (!isAuthenticated) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-100">
-                <form onSubmit={handleLogin} className="bg-white p-8 rounded shadow-md">
-                    <h1 className="text-2xl font-bold mb-4">Admin Login</h1>
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Senha"
-                        className="border p-2 rounded w-full mb-4"
-                    />
-                    <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded w-full">Entrar</button>
+                <form onSubmit={handleLogin} className="bg-white p-8 rounded shadow-md w-96">
+                    <h1 className="text-2xl font-bold mb-4 text-center">Admin Login</h1>
+                    <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-bold mb-2">E-mail</label>
+                        <input
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="E-mail"
+                            className="border p-2 rounded w-full"
+                            required
+                        />
+                    </div>
+                    <div className="mb-6">
+                        <label className="block text-gray-700 text-sm font-bold mb-2">Senha</label>
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Senha"
+                            className="border p-2 rounded w-full"
+                            required
+                        />
+                    </div>
+                    <button type="submit" disabled={loading} className="bg-blue-600 text-white px-4 py-2 rounded w-full font-bold hover:bg-blue-700 disabled:opacity-50">
+                        {loading ? 'Entrando...' : 'Entrar'}
+                    </button>
                 </form>
             </div>
         )
