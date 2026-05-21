@@ -10,9 +10,12 @@ export default function AdSense({ slot, style = { display: 'block' }, format = '
     }, []);
 
     return (
-        <div className="adsense-container my-8 text-center">
+        <div className="adsense-container my-10 text-center">
+            <span className="block text-[10px] tracking-widest text-gray-400 uppercase font-medium mb-2">
+                Publicidade
+            </span>
             <ins
-                className="adsbygoogle"
+                className="adsbygoogle mx-auto"
                 style={style}
                 data-ad-client="ca-pub-7782077901383981"
                 data-ad-slot={slot}
