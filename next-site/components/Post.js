@@ -5,6 +5,7 @@ import AdSense from './AdSense'
 import { parseMarkdown } from '../lib/markdown'
 
 function readingTime(text) {
+  if (!text) return 0
   const words = text.split(/\s+/).length
   return Math.ceil(words / 200)
 }

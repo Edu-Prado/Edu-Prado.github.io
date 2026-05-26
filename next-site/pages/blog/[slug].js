@@ -51,11 +51,14 @@ export async function getStaticPaths() {
 
     if (error) throw error
 
-    const paths = (posts || [])
+    // Deduplicate slugs programmatically to guarantee Next.js build never crashes due to database anomalies
+    const uniqueSlugs = Array.from(new Set((posts || [])
       .filter(post => post.slug)
-      .map(post => ({
-        params: { slug: post.slug }
-      }))
+      .map(post => post.slug.trim())))
+
+    const paths = uniqueSlugs.map(slug => ({
+      params: { slug }
+    }))
 
     return {
       paths,
@@ -72,13 +75,15 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }) {
   try {
-    const { data: post, error } = await supabase
+    const { data: posts, error } = await supabase
       .from('posts')
       .select('*')
       .eq('slug', params.slug)
-      .single()
+      .limit(1)
 
     if (error) throw error
+
+    const post = posts && posts.length > 0 ? posts[0] : null
 
     return {
       props: {

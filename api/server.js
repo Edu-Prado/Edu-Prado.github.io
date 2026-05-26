@@ -221,6 +221,8 @@ const generateExcerpt = (content) => {
         .replace(/\s+/g, ' ')
         .trim();
     return cleanText.slice(0, 180) + (cleanText.length > 180 ? '...' : '');
+};
+
 // Função para disparar o rebuild no GitHub Actions quando houver alteração nos posts
 const triggerGithubRebuild = async () => {
     const githubToken = process.env.GITHUB_PAT || process.env.GITHUB_TOKEN;
