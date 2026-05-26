@@ -1,4 +1,5 @@
 import Head from 'next/head'
+import Link from 'next/link'
 import { useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import Navbar from '../components/Navbar'
