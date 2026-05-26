@@ -284,7 +284,7 @@ export default function Home() {
                 </div>
               ))}
               {featuredPosts.length === 0 && (
-                // Safe Fallbacks in case Supabase is empty
+                /* Safe Fallbacks in case Supabase is empty */
                 [1, 2, 3].map(i => (
                   <div key={i} className="border border-slate-100 rounded-2xl overflow-hidden bg-white p-6">
                     <span className="text-[10px] font-bold text-blue-600 uppercase bg-blue-50 px-2.5 py-1 rounded-full w-max mb-3 tracking-wider">

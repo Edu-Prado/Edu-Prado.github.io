@@ -54,7 +54,7 @@ export async function getStaticPaths() {
     // Deduplicate slugs programmatically to guarantee Next.js build never crashes due to database anomalies
     const uniqueSlugs = Array.from(new Set((posts || [])
       .filter(post => post.slug)
-      .map(post => post.slug.trim())))
+      .map(post => String(post.slug).trim())))
 
     const paths = uniqueSlugs.map(slug => ({
       params: { slug }
