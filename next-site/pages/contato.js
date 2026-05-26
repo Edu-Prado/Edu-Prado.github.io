@@ -206,18 +206,12 @@ export default function Contato() {
                 <h4 className="font-extrabold text-slate-800 text-sm uppercase tracking-wider mb-4">Canais Diretos</h4>
                 <div className="space-y-4">
                   <a 
-                    href="https://www.linkedin.com/in/eduardopradojunior/" 
+                    href="https://www.linkedin.com/in/eduardo-prado-bb5174123/" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="flex items-center gap-3 p-3 bg-slate-50 hover:bg-blue-50 rounded-xl border border-slate-100 hover:border-blue-200/50 text-slate-700 hover:text-blue-700 text-sm font-bold transition duration-200"
                   >
                     <span className="text-xs">LinkedIn Profissional</span>
-                  </a>
-                  <a 
-                    href="mailto:epradojunior@hotmail.com"
-                    className="flex items-center gap-3 p-3 bg-slate-50 hover:bg-blue-50 rounded-xl border border-slate-100 hover:border-blue-200/50 text-slate-700 hover:text-blue-700 text-sm font-bold transition duration-200"
-                  >
-                    <span className="text-xs">epradojunior@hotmail.com</span>
                   </a>
                   <Link 
                     href="/#newsletter"

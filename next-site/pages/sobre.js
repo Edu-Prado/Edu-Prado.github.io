@@ -36,7 +36,7 @@ export default function Sobre() {
               },
               "description": "Profissional com mais de 20 anos de experiência no setor financeiro, atuando com liderança, dados, Open Finance, inteligência artificial aplicada e transformação digital.",
               "sameAs": [
-                "https://www.linkedin.com/in/eduardopradojunior/"
+                "https://www.linkedin.com/in/eduardo-prado-bb5174123/"
               ]
             })
           }}

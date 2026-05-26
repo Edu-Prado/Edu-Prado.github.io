@@ -35,7 +35,7 @@ export default function Footer() {
                     <div>
                         <h4 className="text-sm font-bold uppercase tracking-wider text-slate-200 mb-5">Conectar</h4>
                         <div className="flex flex-col space-y-3 text-[14px] text-slate-400 font-medium">
-                            <a href="https://www.linkedin.com/in/eduardopradojunior/" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition duration-200 flex items-center gap-1.5">
+                            <a href="https://www.linkedin.com/in/eduardo-prado-bb5174123/" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition duration-200 flex items-center gap-1.5">
                                 LinkedIn ➔
                             </a>
                             <a href="https://eduprado.me/blog" className="hover:text-blue-400 transition duration-200 flex items-center gap-1.5">

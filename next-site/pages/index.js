@@ -85,7 +85,7 @@ export default function Home() {
               "image": "https://eduprado.me/images/profile.jpg",
               "jobTitle": "Executivo de IA, Dados e Inovação Financeira",
               "sameAs": [
-                "https://www.linkedin.com/in/eduardopradojunior/"
+                "https://www.linkedin.com/in/eduardo-prado-bb5174123/"
               ]
             })
           }}
