@@ -55,10 +55,10 @@ export default function Projetos() {
               Portfólio de Soluções
             </span>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-4">
-              Projetos & Iniciativas
+              Projetos e iniciativas
             </h1>
-            <p className="text-base sm:text-lg text-slate-650 leading-relaxed font-light">
-              Mapeamento de projetos práticos e frentes de estudo desenvolvidas com foco em resultados mensuráveis de negócios, engenharia de dados e cultura de inteligência artificial.
+            <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-light">
+              Alguns dos temas, experimentos e iniciativas que ajudam a traduzir inteligência artificial, dados e transformação digital para contextos reais.
             </p>
           </div>
 

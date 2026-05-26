@@ -10,27 +10,42 @@ const API_URL = typeof window !== 'undefined' && window.location.hostname === 'l
     : 'https://eduprado-backend.onrender.com';
 
 export default function Home() {
-  const [featuredPosts, setFeaturedPosts] = useState([])
+  const [allPosts, setAllPosts] = useState([])
   const [newsletterData, setNewsletterData] = useState({ nome: '', email: '' })
   const [newsletterStatus, setNewsletterStatus] = useState('') // '', 'loading', 'success', 'error'
 
   useEffect(() => {
-    fetchFeaturedPosts()
+    fetchPosts()
   }, [])
 
-  async function fetchFeaturedPosts() {
+  async function fetchPosts() {
     try {
       const { data } = await supabase
         .from('posts')
         .select('*')
         .order('created_at', { ascending: false })
-        .limit(3)
+        .limit(25)
 
-      if (data) setFeaturedPosts(data)
+      if (data) setAllPosts(data)
     } catch (error) {
       console.error('Erro ao buscar posts:', error)
     }
   }
+
+  const pilarSlugs = [
+    'por-que-tantos-projetos-de-ia-falham-antes-mesmo-de-comecar',
+    'como-identificar-bons-casos-de-uso-de-ia',
+    'ia-para-profissionais-nao-tecnicos-por-onde-comecar',
+    'nem-todo-problema-precisa-de-ia-e-isso-e-uma-boa-noticia'
+  ];
+
+  const pillarPosts = pilarSlugs
+    .map(slug => allPosts.find(p => p.slug === slug))
+    .filter(Boolean);
+
+  const latestPosts = allPosts
+    .filter(p => !pilarSlugs.includes(p.slug))
+    .slice(0, 3);
 
   const handleNewsletterSubmit = async (e) => {
     e.preventDefault()
@@ -195,7 +210,7 @@ export default function Home() {
                 O que você encontra aqui?
               </h2>
               <p className="text-lg text-slate-600 font-light max-w-2xl mx-auto">
-                Navegue pelas nossas principais frentes editoriais.
+                Navegue pelos principais temas que organizo por aqui.
               </p>
             </div>
 
@@ -233,76 +248,100 @@ export default function Home() {
                 </div>
                 <div>
                   <h3 className="font-bold text-slate-800 text-xl mb-2">Conteúdo sem hype</h3>
-                  <p className="text-slate-600 text-sm leading-relaxed">Uma postura analítica e extremamente crítica sobre o real potencial de softwares, erros clássicos e os limites éticos da Inteligência Artificial.</p>
+                  <p className="text-slate-600 text-sm leading-relaxed">Uma visão prática, com senso crítico e foco em valor real sobre o real potencial de softwares, erros clássicos e limites da Inteligência Artificial.</p>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Dynamic "Artigos em Destaque" Section */}
-        <section className="py-20 bg-white">
-          <div className="container mx-auto px-4 sm:px-6 max-w-5xl">
-            <div className="flex flex-col sm:flex-row justify-between items-center mb-12">
-              <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">Artigos em Destaque</h2>
-              <Link href="/blog" className="mt-4 sm:mt-0 inline-flex items-center gap-1.5 text-sm font-bold text-blue-600 hover:text-blue-700 transition">
-                Ver todos os artigos ➔
-              </Link>
-            </div>
+        {/* Curated "Comece por aqui" Section */}
+        {pillarPosts.length > 0 && (
+          <section className="py-20 bg-slate-50/50 border-y border-slate-100">
+            <div className="container mx-auto px-4 sm:px-6 max-w-5xl">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight mb-4">Comece por aqui</h2>
+                <p className="text-slate-600 leading-relaxed font-light max-w-2xl mx-auto text-sm sm:text-base">
+                  Uma seleção de textos essenciais para entender a proposta do EduPrado.me: IA aplicada, dados e transformação digital explicados de forma prática e sem tech-ês.
+                </p>
+              </div>
 
-            <div className="grid gap-8 md:grid-cols-3">
-              {featuredPosts.map(post => (
-                <div key={post.id} className="border border-slate-100 rounded-2xl overflow-hidden hover:shadow-lg transition duration-300 flex flex-col bg-white">
-                  {post.image_url && (
-                    <div className="h-44 overflow-hidden relative">
-                      <img
-                        src={post.image_url}
-                        alt={post.title}
-                        className="w-full h-full object-cover hover:scale-102 transition duration-500"
-                        onError={(e) => { e.target.onerror = null; e.target.style.display = 'none' }}
-                      />
+              <div className="grid gap-8 md:grid-cols-2">
+                {pillarPosts.map(post => {
+                  const words = post.content ? post.content.split(/\s+/).length : 0;
+                  const minutes = Math.max(1, Math.ceil(words / 200));
+                  return (
+                    <div key={post.id} className="border border-slate-200/60 rounded-3xl overflow-hidden hover:shadow-lg transition duration-300 flex flex-col bg-white p-6 sm:p-8">
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="text-[10px] font-bold text-blue-600 uppercase bg-blue-50 px-2.5 py-1 rounded-full tracking-wider">
+                          {post.category || post.tag || 'IA'}
+                        </span>
+                        <span className="text-slate-400 text-xs font-normal">{minutes} min de leitura</span>
+                      </div>
+                      <h3 className="text-xl font-bold text-slate-900 mb-3 leading-snug hover:text-blue-600 transition">
+                        <Link href={`/blog/${post.slug}`}>{post.title}</Link>
+                      </h3>
+                      <p className="text-slate-650 text-sm leading-relaxed mb-6 line-clamp-3 font-light">
+                        {post.excerpt}
+                      </p>
+                      <Link href={`/blog/${post.slug}`} className="inline-flex items-center gap-1 text-sm font-bold text-blue-600 hover:underline mt-auto">
+                        Ler artigo ➔
+                      </Link>
                     </div>
-                  )}
-                  <div className="p-5 flex-1 flex flex-col">
-                    <span className="text-[10px] font-bold text-blue-600 uppercase bg-blue-50 px-2.5 py-1 rounded-full w-max mb-3 tracking-wider">
-                      {post.category || post.tag || 'IA'}
-                    </span>
-                    <h3 className="text-[17px] font-bold text-slate-800 mb-3 leading-snug hover:text-blue-600 transition">
-                      <Link href={`/blog/${post.slug}`}>{post.title}</Link>
-                    </h3>
-                    <p className="text-slate-500 text-xs mb-4">
-                      {new Date(post.created_at).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })}
-                    </p>
-                    <p className="text-slate-600 text-sm leading-relaxed mb-5 line-clamp-3 font-light">
-                      {post.excerpt}
-                    </p>
-                    <Link href={`/blog/${post.slug}`} className="inline-flex items-center gap-1 text-sm font-bold text-blue-600 hover:underline mt-auto">
-                      Ler artigo
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-                    </Link>
-                  </div>
-                </div>
-              ))}
-              {featuredPosts.length === 0 && (
-                /* Safe Fallbacks in case Supabase is empty */
-                [1, 2, 3].map(i => (
-                  <div key={i} className="border border-slate-100 rounded-2xl overflow-hidden bg-white p-6">
-                    <span className="text-[10px] font-bold text-blue-600 uppercase bg-blue-50 px-2.5 py-1 rounded-full w-max mb-3 tracking-wider">
-                      Placeholder
-                    </span>
-                    <h3 className="text-lg font-bold text-slate-800 mb-3">
-                      Aguardando sincronização de artigos
-                    </h3>
-                    <p className="text-slate-500 text-sm mb-4">Artigo de rascunho</p>
-                    <p className="text-slate-600 text-sm leading-relaxed mb-5 font-light">
-                      Os artigos estratégicos iniciais podem ser semeados a qualquer momento pelo painel administrativo da plataforma.
-                    </p>
-                  </div>
-                ))
-              )}
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
+
+        {/* Dynamic "Últimos artigos" Section */}
+        {latestPosts.length > 0 && (
+          <section className="py-20 bg-white">
+            <div className="container mx-auto px-4 sm:px-6 max-w-5xl">
+              <div className="flex flex-col sm:flex-row justify-between items-center mb-12">
+                <div className="text-left mb-6 sm:mb-0 max-w-xl">
+                  <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">Últimos artigos</h2>
+                  <p className="text-slate-500 leading-relaxed font-light text-xs sm:text-sm">
+                    As publicações mais recentes do blog, com reflexões sobre IA, dados, tecnologia, carreira e futuro do trabalho.
+                  </p>
+                </div>
+                <Link href="/blog" className="shrink-0 inline-flex items-center gap-1.5 text-sm font-bold text-blue-600 hover:text-blue-700 transition">
+                  Ver todos os artigos ➔
+                </Link>
+              </div>
+
+              <div className="grid gap-8 md:grid-cols-3">
+                {latestPosts.map(post => {
+                  const words = post.content ? post.content.split(/\s+/).length : 0;
+                  const minutes = Math.max(1, Math.ceil(words / 200));
+                  return (
+                    <div key={post.id} className="border border-slate-100 rounded-3xl overflow-hidden hover:shadow-lg transition duration-300 flex flex-col bg-white p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="text-[10px] font-bold text-blue-600 uppercase bg-blue-50 px-2.5 py-1 rounded-full tracking-wider">
+                          {post.category || post.tag || 'IA'}
+                        </span>
+                        <span className="text-slate-400 text-xs font-normal">{minutes} min</span>
+                      </div>
+                      <h3 className="text-[16px] font-bold text-slate-800 mb-3 leading-snug hover:text-blue-600 transition line-clamp-2">
+                        <Link href={`/blog/${post.slug}`}>{post.title}</Link>
+                      </h3>
+                      <p className="text-slate-400 text-[11px] mb-3">
+                        {new Date(post.created_at).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                      </p>
+                      <p className="text-slate-650 text-sm leading-relaxed mb-6 line-clamp-3 font-light">
+                        {post.excerpt}
+                      </p>
+                      <Link href={`/blog/${post.slug}`} className="inline-flex items-center gap-1 text-sm font-bold text-blue-600 hover:underline mt-auto">
+                        Ler artigo ➔
+                      </Link>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Corporate Services Block (Consultive Tone) */}
         <section className="py-20 bg-slate-950 text-white relative overflow-hidden">
@@ -347,10 +386,10 @@ export default function Home() {
               <div className="absolute top-0 right-0 w-48 h-48 bg-blue-100/30 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
 
               <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight mb-4">
-                Receba ideias práticas sobre IA, dados e tecnologia.
+                Receba uma curadoria prática sobre IA, dados e tecnologia
               </h2>
               <p className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-xl mx-auto mb-8 font-light">
-                Sem hype, sem complicação e sem promessas mágicas. Apenas reflexões úteis para entender melhor o impacto da inteligência artificial no trabalho, nos negócios e na vida cotidiana.
+                Uma newsletter para entender o que realmente importa em IA aplicada — sem hype, sem complicação e sem promessas mágicas.
               </p>
 
               {newsletterStatus === 'success' ? (
@@ -382,7 +421,7 @@ export default function Home() {
                     disabled={newsletterStatus === 'loading'}
                     className="w-full px-6 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition shadow-sm disabled:opacity-50 text-sm"
                   >
-                    {newsletterStatus === 'loading' ? 'Inscrevendo...' : 'Quero receber'}
+                    {newsletterStatus === 'loading' ? 'Inscrevendo...' : 'Quero receber os próximos textos'}
                   </button>
                 </form>
               )}

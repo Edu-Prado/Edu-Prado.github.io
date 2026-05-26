@@ -104,7 +104,7 @@ export default function Sobre() {
               <div className="absolute top-0 right-0 w-32 h-32 bg-blue-200/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
               <h3 className="text-blue-900/40 text-5xl font-serif absolute top-3 left-4 select-none">“</h3>
               <p className="text-blue-950 font-medium text-lg leading-relaxed relative z-10 pl-6 italic">
-                Acredito que a inteligência artificial não deve ser assunto restrito a engenheiros ou especialistas em dados. Ela precisa ser compreendida por líderes de negócios, profissionais de todas as áreas, criadores e qualquer pessoa que queira participar ativamente das decisões do presente e do futuro.
+                Acredito que a inteligência artificial não deve ser assunto restrito a especialistas. Ela precisa ser entendida por líderes, profissionais, estudantes, criadores e qualquer pessoa que queira participar melhor das decisões do presente e do futuro.
               </p>
             </section>
 

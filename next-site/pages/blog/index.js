@@ -15,7 +15,7 @@ export default function Blog() {
     const categories = [
         'Todos',
         'IA na prática',
-        'IA e Negócios',
+        'IA e negócios',
         'Dados e Open Finance',
         'Ferramentas de IA',
         'Carreira e futuro do trabalho',
@@ -121,7 +121,7 @@ export default function Blog() {
                             Artigos sobre IA, dados e transformação digital
                         </h1>
                         <p className="text-base sm:text-lg text-slate-650 leading-relaxed font-light mb-8 max-w-xl mx-auto">
-                            Reflexões práticas, análises críticas e conteúdos acessíveis sobre inteligência artificial, tecnologia, carreira, negócios e o futuro do trabalho.
+                            Reflexões práticas, críticas e acessíveis sobre inteligência artificial, tecnologia, carreira, negócios e o futuro do trabalho.
                         </p>
 
                         {/* Search Bar */}

@@ -50,7 +50,7 @@ export default function Footer() {
 
                 <div className="border-t border-slate-900 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 text-xs">
                     <p>&copy; {new Date().getFullYear()} EduPrado.me. Todos os direitos reservados.</p>
-                    <p className="font-light">IA aplicada, dados e inovação financeira sem complicações.</p>
+                    <p className="font-light">IA, dados e transformação digital sem tech-ês.</p>
                 </div>
             </div>
         </footer>
