@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { createClient } = require('@supabase/supabase-js');
+const { draftArticles } = require('./draft_posts');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -481,6 +482,44 @@ app.delete('/api/messages/:id', requireAdminAuth, async (req, res) => {
     } catch (err) {
         console.error('Erro ao deletar mensagem:', err);
         res.status(500).json({ error: 'Erro ao deletar mensagem' });
+    }
+});
+
+// Importar artigos iniciais de rascunho - Apenas admin
+app.post('/api/posts/seed', requireAdminAuth, async (req, res) => {
+    console.log('[Seed] Iniciando importação de artigos rascunhos estratégicos...');
+
+    try {
+        const slugs = draftArticles.map(p => p.slug);
+        
+        // 1. Limpar rascunhos anteriores para evitar duplicidade
+        const { error: deleteError } = await supabase
+            .from('posts')
+            .delete()
+            .in('slug', slugs);
+
+        if (deleteError) {
+            console.error('[Seed] Erro ao deletar rascunhos antigos:', deleteError);
+            throw deleteError;
+        }
+
+        // 2. Inserir os novos artigos de rascunho
+        const { data, error: insertError } = await supabase
+            .from('posts')
+            .insert(draftArticles)
+            .select();
+
+        if (insertError) {
+            console.error('[Seed] Erro ao inserir novos rascunhos:', insertError);
+            throw insertError;
+        }
+
+        console.log('[Seed] Artigos importados com sucesso:', data.length);
+        triggerGithubRebuild(); // Dispara o rebuild em background para gerar as novas páginas estáticas
+        res.json({ message: 'Os 6 artigos iniciais foram importados com sucesso no banco de dados e o build foi disparado!' });
+    } catch (err) {
+        console.error('[Seed] Falha crítica ao semear artigos:', err);
+        res.status(500).json({ error: 'Falha crítica ao semear artigos no banco de dados' });
     }
 });
 

@@ -244,6 +244,37 @@ export default function Admin() {
         }
     }
 
+    const handleSeedDrafts = async () => {
+        if (!confirm('Deseja realmente importar os 6 artigos estratégicos iniciais de rascunho? Isso irá sobrescrever artigos anteriores com os mesmos slugs.')) {
+            return;
+        }
+        setLoading(true)
+        setMessage('')
+        try {
+            const token = localStorage.getItem(AUTH_TOKEN_KEY)
+            if (!token) throw new Error('Sessão expirada')
+
+            const response = await fetch(`${API_URL}/api/posts/seed`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+
+            const data = await response.json()
+            if (response.ok) {
+                alert('Os 6 artigos iniciais foram importados e o rebuild automático do site foi acionado!')
+                fetchPostsDirectly(token)
+            } else {
+                throw new Error(data.error || 'Erro ao importar artigos')
+            }
+        } catch (error) {
+            alert(error.message || 'Erro ao importar artigos')
+        } finally {
+            setLoading(false)
+        }
+    }
+
     const handleDeleteMessage = async (id) => {
         if (!confirm('Tem certeza que deseja excluir esta mensagem?')) return
         try {
@@ -323,9 +354,14 @@ export default function Admin() {
                             Mensagens
                         </button>
                         {view === 'list' && (
-                            <button onClick={handleNew} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 ml-4">
-                                + Novo Artigo
-                            </button>
+                            <>
+                                <button onClick={handleSeedDrafts} className="bg-amber-600 text-white px-4 py-2 rounded hover:bg-amber-700 ml-4">
+                                    Importar Artigos Iniciais
+                                </button>
+                                <button onClick={handleNew} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 ml-4">
+                                    + Novo Artigo
+                                </button>
+                            </>
                         )}
                     </div>
                 </div>

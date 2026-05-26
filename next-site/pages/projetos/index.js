@@ -1,4 +1,6 @@
 import Head from 'next/head'
+import Navbar from '../../components/Navbar'
+import Footer from '../../components/Footer'
 import ProjectCard from '../../components/ProjectCard'
 import { projects } from '../../data/projects'
 
@@ -7,18 +9,70 @@ export default function Projetos() {
     <>
       <Head>
         <title>Projetos | Edu Prado</title>
-        <meta name="description" content="Estudos de caso com resultados e aprendizados." />
+        <meta name="description" content="Conheça projetos e iniciativas de Eduardo Prado envolvendo IA generativa, conteúdo, dados, Open Finance e transformação digital." />
         <meta property="og:title" content="Projetos | Edu Prado" />
-        <meta property="og:description" content="Estudos de caso com resultados e aprendizados." />
+        <meta property="og:description" content="Conheça projetos e iniciativas de Eduardo Prado envolvendo IA generativa, conteúdo, dados, Open Finance e transformação digital." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://eduprado.me/projetos/" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Projetos | Edu Prado" />
+        <meta name="twitter:description" content="Conheça projetos e iniciativas de Eduardo Prado envolvendo IA generativa, conteúdo, dados, Open Finance e transformação digital." />
+
+        {/* Breadcrumb List Schema Markup */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://eduprado.me/"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "Projetos",
+                  "item": "https://eduprado.me/projetos/"
+                }
+              ]
+            })
+          }}
+        />
       </Head>
-      <main className="container mx-auto px-4 py-12">
-        <h1 className="text-3xl font-bold mb-6">Projetos</h1>
-        <div className="grid gap-6 md:grid-cols-3">
-          {projects.map(p => (
-            <ProjectCard key={p.slug} {...p} />
-          ))}
+
+      <Navbar />
+
+      <main className="pt-24 pb-16 bg-slate-50/50 min-h-screen">
+        <div className="container mx-auto px-4 sm:px-6">
+          
+          {/* Header section */}
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <span className="px-3.5 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block">
+              Portfólio de Soluções
+            </span>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-4">
+              Projetos & Iniciativas
+            </h1>
+            <p className="text-base sm:text-lg text-slate-650 leading-relaxed font-light">
+              Mapeamento de projetos práticos e frentes de estudo desenvolvidas com foco em resultados mensuráveis de negócios, engenharia de dados e cultura de inteligência artificial.
+            </p>
+          </div>
+
+          {/* Projects Card Grid */}
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-2 max-w-4xl mx-auto">
+            {projects.map(p => (
+              <ProjectCard key={p.slug} {...p} />
+            ))}
+          </div>
+
         </div>
       </main>
+
+      <Footer />
     </>
   )
 }
