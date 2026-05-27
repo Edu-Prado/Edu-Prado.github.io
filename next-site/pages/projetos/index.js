@@ -52,7 +52,7 @@ export default function Projetos() {
           {/* Header section */}
           <div className="text-center max-w-2xl mx-auto mb-16">
             <span className="px-3.5 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block">
-              Portfólio de Soluções
+              Iniciativas e temas em desenvolvimento
             </span>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-4">
               Projetos e iniciativas

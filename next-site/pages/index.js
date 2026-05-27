@@ -350,27 +350,27 @@ export default function Home() {
           </div>
           <div className="container mx-auto px-4 sm:px-6 max-w-4xl text-center relative z-10">
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-6">
-              Palestras, workshops e conversas sobre IA aplicada
+              Conversas e apresentações sobre IA aplicada
             </h2>
             <p className="text-lg sm:text-xl text-slate-300 font-light leading-relaxed mb-10 max-w-2xl mx-auto">
-              Ajudo lideranças, profissionais e equipes corporativas a saírem do hype publicitário e identificarem valor estratégico real e prático na inteligência artificial aplicada.
+              Levo uma visão prática, crítica e acessível sobre IA, dados e transformação digital para eventos, equipes e conversas corporativas.
             </p>
             <div className="grid sm:grid-cols-2 gap-4 text-left max-w-2xl mx-auto mb-10 text-slate-300 text-sm">
               <div className="flex items-start gap-2">
                 <svg className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                <span>Palestras desmistificadoras sobre inteligência de dados.</span>
+                <span>Apresentações para públicos não técnicos.</span>
               </div>
               <div className="flex items-start gap-2">
                 <svg className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                <span>Workshops imersivos de produtividade com IA generativa.</span>
+                <span>Conversas sobre IA aplicada ao trabalho.</span>
               </div>
               <div className="flex items-start gap-2">
                 <svg className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                <span>Mentorias executivas personalizadas de inovação.</span>
+                <span>Workshops sob demanda.</span>
               </div>
               <div className="flex items-start gap-2">
                 <svg className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                <span>Projetos e consultoria estratégica em Open Finance.</span>
+                <span>Discussões sobre dados, Open Finance e transformação digital.</span>
               </div>
             </div>
             <Link href="/contato" className="inline-block px-8 py-4 bg-white text-slate-950 hover:bg-blue-50 rounded-xl font-bold transition shadow-lg">

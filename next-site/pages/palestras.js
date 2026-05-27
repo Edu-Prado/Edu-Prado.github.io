@@ -51,13 +51,13 @@ export default function Palestras() {
         {/* Page Hero */}
         <section className="py-16 text-center max-w-4xl mx-auto px-4 sm:px-6">
           <span className="px-4 py-1.5 bg-blue-50 text-blue-600 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block">
-            Serviços Corporativos & Educação
+            Conversas & Prática
           </span>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-6 leading-tight">
             Palestras, workshops e conversas sobre IA aplicada
           </h1>
-          <p className="text-lg sm:text-xl text-slate-600 leading-relaxed font-light max-w-2xl mx-auto">
-            Ajudo profissionais, equipes e organizações a entenderem a inteligência artificial com clareza, senso crítico e foco em aplicações reais.
+          <p className="text-lg sm:text-xl text-slate-600 leading-relaxed font-light max-w-3xl mx-auto">
+            Uso minha experiência em liderança, dados, Open Finance e transformação digital para construir conversas práticas sobre inteligência artificial, especialmente para públicos não técnicos.
           </p>
           <div className="mt-8 flex justify-center">
             <Link href="/contato" className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg shadow-blue-600/10 transition">
@@ -73,10 +73,10 @@ export default function Palestras() {
             <div className="absolute top-0 left-0 w-2 h-full bg-blue-600"></div>
             <div className="mb-10">
               <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight mb-3">
-                1. Palestras Corporativas
+                1. Temas para palestras e conversas
               </h2>
               <p className="text-slate-600 leading-relaxed font-light">
-                Apresentações inspiradoras e realistas, desenhadas para desmistificar a tecnologia e capacitar equipes não técnicas sobre os cenários analíticos e o futuro operacional.
+                Temas que posso desenvolver em apresentações, rodas de conversa, eventos internos ou encontros com equipes.
               </p>
             </div>
 
@@ -109,38 +109,36 @@ export default function Palestras() {
             <div className="absolute top-0 left-0 w-2 h-full bg-purple-600"></div>
             <div className="mb-10">
               <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight mb-3">
-                2. Workshops Corporativos Imersivos
+                2. Workshops sob demanda
               </h2>
-              <p className="text-slate-600 leading-relaxed font-light">
-                Treinamentos práticos e de imersão ("mão na massa") projetados para capacitar seus colaboradores na prática, saindo com ideias e fluxogramas prontos para execução.
+              <p className="text-slate-600 leading-relaxed font-light mb-4">
+                Formatos práticos, desenhados conforme a necessidade de cada equipe, para transformar conceitos de IA, dados e produtividade em discussões aplicáveis.
+              </p>
+              <p className="text-sm text-slate-500 font-normal italic bg-slate-50 border border-slate-100 p-4 rounded-xl inline-block">
+                <strong>Possíveis entregáveis, conforme o formato combinado:</strong> matriz de oportunidades, roteiro de experimentação, guia de prompts, mapa de riscos e próximos passos.
               </p>
             </div>
 
             <div className="space-y-6">
               <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-white hover:shadow-sm transition">
                 <h4 className="font-bold text-slate-800 text-lg mb-2">Como identificar bons casos de uso de IA</h4>
-                <p className="text-slate-650 text-sm leading-relaxed font-light mb-3">Treinamento prático focado em capacitar gestores a aplicarem matrizes de priorização (Impacto vs. Viabilidade) em seus próprios setores de atuação.</p>
-                <span className="inline-block text-xs font-bold text-purple-600 uppercase bg-purple-50 px-2.5 py-1 rounded-md">Entregável: Matriz de backlog de prioridades</span>
+                <p className="text-slate-650 text-sm leading-relaxed font-light">Treinamento prático focado em capacitar gestores a aplicarem matrizes de priorização (Impacto vs. Viabilidade) em seus próprios setores de atuação.</p>
               </div>
               <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-white hover:shadow-sm transition">
                 <h4 className="font-bold text-slate-800 text-lg mb-2">Como usar IA para produtividade pessoal e profissional</h4>
-                <p className="text-slate-650 text-sm leading-relaxed font-light mb-3">Capacitação focada no uso cotidiano de IA Generativa. Seus colaboradores aprenderão engenharia de prompts avançada, técnicas de síntese de documentos e automação de fluxos de trabalho.</p>
-                <span className="inline-block text-xs font-bold text-purple-600 uppercase bg-purple-50 px-2.5 py-1 rounded-md">Entregável: Biblioteca de Prompts e Guias Internos</span>
+                <p className="text-slate-650 text-sm leading-relaxed font-light">Capacitação focada no uso cotidiano de IA Generativa. Seus colaboradores aprenderão engenharia de prompts avançada, técnicas de síntese de documentos e automação de fluxos de trabalho.</p>
               </div>
               <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-white hover:shadow-sm transition">
                 <h4 className="font-bold text-slate-800 text-lg mb-2">Como estruturar um backlog de oportunidades com IA</h4>
-                <p className="text-slate-650 text-sm leading-relaxed font-light mb-3">Mapeamento estruturado de frentes operacionais que podem ser otimizadas com inteligência analítica, desenhando uma esteira ágil de prototipação e testes.</p>
-                <span className="inline-block text-xs font-bold text-purple-600 uppercase bg-purple-50 px-2.5 py-1 rounded-md">Entregável: Pipeline de protótipos de IA</span>
+                <p className="text-slate-650 text-sm leading-relaxed font-light">Mapeamento estruturado de frentes operacionais que podem ser otimizadas com inteligência analítica, desenhando uma esteira ágil de prototipação e testes.</p>
               </div>
               <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-white hover:shadow-sm transition">
                 <h4 className="font-bold text-slate-800 text-lg mb-2">IA aplicada a áreas de negócio</h4>
-                <p className="text-slate-650 text-sm leading-relaxed font-light mb-3">Alinhamento tático de frentes operacionais (vendas, marketing, finanças, RH ou jurídico) para a utilização segura e orientada a resultados de novas ferramentas analíticas.</p>
-                <span className="inline-block text-xs font-bold text-purple-600 uppercase bg-purple-50 px-2.5 py-1 rounded-md">Entregável: Playbook prático por setor</span>
+                <p className="text-slate-650 text-sm leading-relaxed font-light">Alinhamento tático de frentes operacionais (vendas, marketing, finanças, RH ou jurídico) para a utilização segura e orientada a resultados de novas ferramentas analíticas.</p>
               </div>
               <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-white hover:shadow-sm transition">
                 <h4 className="font-bold text-slate-800 text-lg mb-2">Dados como base para inovação</h4>
-                <p className="text-slate-650 text-sm leading-relaxed font-light mb-3">Como arrumar a casa dos dados, estruturar barramentos inteligentes e preparar a infraestrutura corporativa antes de iniciar projetos analíticos complexos.</p>
-                <span className="inline-block text-xs font-bold text-purple-600 uppercase bg-purple-50 px-2.5 py-1 rounded-md">Entregável: Roadmap de Maturidade de Dados</span>
+                <p className="text-slate-650 text-sm leading-relaxed font-light">Como arrumar a casa dos dados, estruturar barramentos inteligentes e preparar a infraestrutura corporativa antes de iniciar projetos analíticos complexos.</p>
               </div>
             </div>
           </section>
@@ -151,13 +149,10 @@ export default function Palestras() {
             <div className="flex flex-col md:flex-row gap-8 items-center">
               <div className="flex-1">
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight mb-3">
-                  3. Mentorias & Conversas Estratégicas
+                  3. Conversas estratégicas individuais
                 </h2>
-                <p className="text-slate-600 leading-relaxed font-light mb-4 text-sm sm:text-base">
-                  Também realizo conversas individuais ou em pequenos grupos para profissionais que querem entender como aplicar IA em sua carreira, rotina, liderança ou projetos.
-                </p>
                 <p className="text-slate-600 leading-relaxed font-light text-sm sm:text-base">
-                  Ideal para executivos e profissionais que buscam direcionamento pragmático sem rodeios, desmistificando o hype técnico para focar em oportunidades reais.
+                  Conversas individuais ou em pequenos grupos para profissionais que querem discutir IA, carreira, produtividade, liderança, dados ou transformação digital com uma visão prática e sem jargões.
                 </p>
               </div>
               <div className="w-full md:w-max shrink-0 bg-slate-50 border border-slate-100 p-6 rounded-2xl text-center">
@@ -181,25 +176,25 @@ export default function Palestras() {
                 <div className="space-y-4">
                   <div className="flex items-start gap-2.5">
                     <svg className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    <span><strong>Mais de 20 anos de experiência</strong> no setor financeiro liderando equipes de ponta.</span>
+                    <span>Mais de 20 anos de experiência no setor financeiro.</span>
                   </div>
                   <div className="flex items-start gap-2.5">
                     <svg className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    <span>Atuação estratégica real em <strong>dados, Open Finance, IA aplicada e transformação digital</strong>.</span>
+                    <span>Vivência em liderança, crédito, dados, Open Finance, integração de sistemas e transformação digital.</span>
                   </div>
                   <div className="flex items-start gap-2.5">
                     <svg className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    <span>Sólida experiência em <strong>liderança corporativa em ambientes regulados e complexos</strong>.</span>
+                    <span>Experiência em ambientes corporativos regulados e complexos.</span>
                   </div>
                 </div>
                 <div className="space-y-4">
                   <div className="flex items-start gap-2.5">
                     <svg className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    <span>Extrema capacidade de <strong>traduzir tecnologia complexa para valor real de negócios</strong>.</span>
+                    <span>Capacidade de traduzir temas técnicos para decisões de negócio.</span>
                   </div>
                   <div className="flex items-start gap-2.5">
                     <svg className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    <span><strong>Foco inabalável em aplicação prática</strong>, livre de jargões técnicos excessivos ("tech-ês") e hype publicitário.</span>
+                    <span>Foco em aplicação prática, linguagem clara e senso crítico.</span>
                   </div>
                 </div>
               </div>
@@ -217,8 +212,8 @@ export default function Palestras() {
               <div className="bg-white p-6 rounded-2xl border border-slate-100 hover:border-slate-200/80 hover:shadow-md transition flex flex-col justify-between">
                 <div>
                   <span className="text-[10px] font-bold text-blue-600 uppercase bg-blue-50 px-2.5 py-1 rounded-full block w-max mb-4">Palestra</span>
-                  <h3 className="font-bold text-slate-800 text-lg mb-2">Palestra Executiva</h3>
-                  <p className="text-slate-500 text-xs font-light leading-relaxed mb-6">Ideal para eventos corporativos, kickoff de projetos ou alinhamentos anuais. Foco inspirador e prático.</p>
+                  <h3 className="font-bold text-slate-800 text-lg mb-2">Apresentação</h3>
+                  <p className="text-slate-500 text-xs font-light leading-relaxed mb-6">Ideal para eventos corporativos, encontros de equipes ou alinhamentos internos. Foco inspirador e prático.</p>
                 </div>
                 <div className="text-xs font-bold text-slate-400 pt-4 border-t border-slate-50">Duração: 45 a 60 min</div>
               </div>
@@ -226,28 +221,28 @@ export default function Palestras() {
               <div className="bg-white p-6 rounded-2xl border border-slate-100 hover:border-slate-200/80 hover:shadow-md transition flex flex-col justify-between">
                 <div>
                   <span className="text-[10px] font-bold text-purple-600 uppercase bg-purple-50 px-2.5 py-1 rounded-full block w-max mb-4">Workshop</span>
-                  <h3 className="font-bold text-slate-800 text-lg mb-2">Workshop Prático</h3>
-                  <p className="text-slate-500 text-xs font-light leading-relaxed mb-6">Formato "mão na massa" para capacitar equipes a desenharem fluxos reais com ferramentas e frameworks analíticos.</p>
+                  <h3 className="font-bold text-slate-800 text-lg mb-2">Workshop sob demanda</h3>
+                  <p className="text-slate-500 text-xs font-light leading-relaxed mb-6">Formato prático para capacitar equipes a debaterem e estruturarem fluxos reais com ferramentas e frameworks analíticos.</p>
                 </div>
                 <div className="text-xs font-bold text-slate-400 pt-4 border-t border-slate-50">Duração: 2h a 4h</div>
               </div>
 
               <div className="bg-white p-6 rounded-2xl border border-slate-100 hover:border-slate-200/80 hover:shadow-md transition flex flex-col justify-between">
                 <div>
-                  <span className="text-[10px] font-bold text-green-600 uppercase bg-green-50 px-2.5 py-1 rounded-full block w-max mb-4">Mentoria</span>
-                  <h3 className="font-bold text-slate-800 text-lg mb-2">Mentoria Estratégica</h3>
-                  <p className="text-slate-500 text-xs font-light leading-relaxed mb-6">Sessão individual dedicada para aceleração profissional de lideranças, alinhamento de carreira ou projetos.</p>
+                  <span className="text-[10px] font-bold text-green-600 uppercase bg-green-50 px-2.5 py-1 rounded-full block w-max mb-4">Conversa</span>
+                  <h3 className="font-bold text-slate-800 text-lg mb-2">Conversa Individual</h3>
+                  <p className="text-slate-500 text-xs font-light leading-relaxed mb-6">Discussão focada para alinhar caminhos, discutir carreira, produtividade, dados ou transformação digital de forma prática.</p>
                 </div>
                 <div className="text-xs font-bold text-slate-400 pt-4 border-t border-slate-50">Formato: Individual</div>
               </div>
 
               <div className="bg-white p-6 rounded-2xl border border-slate-100 hover:border-slate-200/80 hover:shadow-md transition flex flex-col justify-between">
                 <div>
-                  <span className="text-[10px] font-bold text-amber-600 uppercase bg-amber-50 px-2.5 py-1 rounded-full block w-max mb-4">Diagnóstico</span>
-                  <h3 className="font-bold text-slate-800 text-lg mb-2">Conversa Inicial</h3>
-                  <p className="text-slate-500 text-xs font-light leading-relaxed mb-6">Alinhamento consultivo inicial para mapear as dores e oportunidades da sua organização antes da customização.</p>
+                  <span className="text-[10px] font-bold text-amber-600 uppercase bg-amber-50 px-2.5 py-1 rounded-full block w-max mb-4">Alinhamento</span>
+                  <h3 className="font-bold text-slate-800 text-lg mb-2">Bate-papo Inicial</h3>
+                  <p className="text-slate-500 text-xs font-light leading-relaxed mb-6">Alinhamento inicial rápido para entender o contexto e alinhar as expectativas da equipe ou organização.</p>
                 </div>
-                <div className="text-xs font-bold text-slate-400 pt-4 border-t border-slate-50">Formato: Diagnóstico</div>
+                <div className="text-xs font-bold text-slate-400 pt-4 border-t border-slate-50">Formato: Alinhamento</div>
               </div>
             </div>
 

@@ -82,7 +82,7 @@ export default function Sobre() {
                 Sou um profissional do setor financeiro com **mais de 20 anos de experiência corporativa**. Ao longo da minha carreira, atuei em ambientes dinâmicos e altamente regulados, liderando frentes de **dados, Open Finance, integração de sistemas complexos, inteligência artificial aplicada e transformação digital**.
               </p>
               <p>
-                Minha jornada é marcada por conectar pontas: tecnologia, estratégia de negócios, regulação e pessoas. Vivi de perto a transição de arquiteturas legadas para ecossistemas financeiros abertos e sei exatamente o abismo que costuma existir entre o que a publicidade de tecnologia promete e o que a operação real de uma empresa consegue de fato entregar.
+                Minha jornada é marcada por conectar pontas: tecnologia, estratégia de negócios, regulação e pessoas. Vivi de perto a transição de arquiteturas legadas para ecossistemas financeiros abertos e conheço bem o abismo que costuma existir entre o que a tecnologia promete e o que a operação real consegue entregar.
               </p>
             </section>
 
@@ -149,7 +149,7 @@ export default function Sobre() {
             <div className="text-center bg-blue-900 text-white rounded-3xl p-8 shadow-md">
               <h3 className="text-xl font-bold mb-3 text-white">Quer trazer esse debate para o seu time ou organização?</h3>
               <p className="text-blue-100 text-sm leading-relaxed mb-6 max-w-xl mx-auto font-light">
-                Realizo palestras focadas, workshops operacionais práticos e conversas de conselho analítico para guiar sua empresa.
+                Realizo palestras, workshops e conversas para apoiar seu time ou organização nessa jornada.
               </p>
               <div className="flex flex-col sm:flex-row justify-center items-center gap-3">
                 <Link href="/palestras" className="w-full sm:w-auto px-6 py-3 bg-white text-blue-900 font-bold rounded-xl transition hover:bg-blue-50 text-sm text-center">

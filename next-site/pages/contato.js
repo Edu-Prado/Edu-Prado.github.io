@@ -204,23 +204,9 @@ export default function Contato() {
             <div className="space-y-6">
               <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
                 <h4 className="font-extrabold text-slate-800 text-xs uppercase tracking-wider mb-4">Como posso ajudar</h4>
-                <p className="text-slate-600 text-xs leading-relaxed font-light mb-4">
-                  Estou disponível para palestras desmistificadoras sobre inteligência analítica, workshops práticos corporativos ("mão na massa"), mentorias de carreira na era digital ou diagnósticos de inovação de dados.
+                <p className="text-slate-650 text-xs leading-relaxed font-light mb-4">
+                  Estou disponível para conversas, apresentações, parcerias de conteúdo e discussões sobre IA aplicada, dados, Open Finance, carreira e transformação digital.
                 </p>
-                <div className="border-t border-slate-50 pt-4 space-y-3">
-                  <div className="flex items-center gap-2 text-slate-500 text-xs font-medium">
-                    <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
-                    <span>Projetos & Parcerias</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-slate-500 text-xs font-medium">
-                    <span className="w-1.5 h-1.5 bg-purple-600 rounded-full"></span>
-                    <span>Palestras & Treinamentos</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-slate-500 text-xs font-medium">
-                    <span className="w-1.5 h-1.5 bg-green-600 rounded-full"></span>
-                    <span>Mentorias Executivas</span>
-                  </div>
-                </div>
               </div>
 
               <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
@@ -246,7 +232,7 @@ export default function Contato() {
               <div className="bg-gradient-to-br from-blue-50 to-indigo-50/50 p-6 rounded-3xl border border-blue-100">
                 <h4 className="font-extrabold text-blue-900 text-xs uppercase tracking-wider mb-2">Compromisso Pragmático</h4>
                 <p className="text-blue-950 text-xs leading-relaxed font-light">
-                  A tecnologia deve estar a serviço dos resultados, sem jargões. Responderei à sua solicitação em até 24 horas úteis para combinarmos um bate-papo objetivo.
+                  A tecnologia deve estar a serviço dos resultados, sem jargões. Sempre que possível, respondo em alguns dias úteis para combinarmos um bate-papo objetivo.
                 </p>
               </div>
             </div>
