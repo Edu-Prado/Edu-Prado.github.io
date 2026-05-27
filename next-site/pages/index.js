@@ -36,7 +36,7 @@ export default function Home() {
     'por-que-tantos-projetos-de-ia-falham-antes-mesmo-de-comecar',
     'como-identificar-bons-casos-de-uso-de-ia',
     'ia-para-profissionais-nao-tecnicos-por-onde-comecar',
-    'nem-todo-problema-precisa-de-ia-e-isso-e-uma-boa-noticia'
+    'nem-todo-problema-precisa-de-ia'
   ];
 
   const pillarPosts = pilarSlugs
