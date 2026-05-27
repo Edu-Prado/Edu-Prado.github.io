@@ -14,7 +14,8 @@ app.use(cors({
     credentials: true
 }));
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // Inicializa o cliente Supabase
 const supabase = createClient(
@@ -75,7 +76,7 @@ const validatePostPayload = (req, res, next) => {
         return res.status(400).json({ error: 'Título/categoria inválidos' });
     }
 
-    if (typeof content !== 'string' || content.length > 50000) {
+    if (typeof content !== 'string' || content.length > 500000) {
         return res.status(400).json({ error: 'Conteúdo inválido' });
     }
 
