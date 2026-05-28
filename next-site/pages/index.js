@@ -353,7 +353,7 @@ export default function Home() {
               Conversas e apresentações sobre IA aplicada
             </h2>
             <p className="text-lg sm:text-xl text-slate-300 font-light leading-relaxed mb-10 max-w-2xl mx-auto">
-              Levo uma visão prática, crítica e acessível sobre IA, dados e transformação digital para eventos, equipes e conversas corporativas.
+              Levo uma visão prática, crítica e acessível sobre IA, dados e transformação digital para eventos, equipes e encontros corporativos.
             </p>
             <div className="grid sm:grid-cols-2 gap-4 text-left max-w-2xl mx-auto mb-10 text-slate-300 text-sm">
               <div className="flex items-start gap-2">

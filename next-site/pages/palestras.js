@@ -67,7 +67,6 @@ export default function Palestras() {
         </section>
 
         <div className="container mx-auto px-4 sm:px-6 max-w-5xl space-y-20">
-          
           {/* Section: Palestras */}
           <section className="bg-white p-8 sm:p-12 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden">
             <div className="absolute top-0 left-0 w-2 h-full bg-blue-600"></div>
@@ -83,23 +82,23 @@ export default function Palestras() {
             <div className="grid gap-6 md:grid-cols-2">
               <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-white hover:shadow-sm transition">
                 <h3 className="font-bold text-slate-800 text-lg mb-2">IA sem hype: como separar valor real de modinha</h3>
-                <p className="text-slate-600 text-sm leading-relaxed font-light">Uma análise honesta e focada em resultados sobre onde a IA realmente brilha e como as empresas podem evitar armadilhas de investimentos publicitários.</p>
+                <p className="text-slate-600 text-sm leading-relaxed font-light">Uma análise honesta e focada em resultados sobre onde a IA realmente brilha e como as empresas podem evitar armadilhas de investimentos guiados por hype, pressão de mercado ou modismo tecnológico.</p>
               </div>
               <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-white hover:shadow-sm transition">
                 <h3 className="font-bold text-slate-800 text-lg mb-2">IA para profissionais não técnicos</h3>
-                <p className="text-slate-600 text-sm leading-relaxed font-light">Como gerentes de negócios, advogados, analistas financeiros e administrativos podem adotar ferramentas de IA generativa para turbinar sua rotina produtiva sem programar.</p>
+                <p className="text-slate-600 text-sm leading-relaxed font-light">Como gerentes de negócios, advogados, analistas financeiros, administrativos e outros profissionais podem usar IA generativa para melhorar sua rotina de trabalho com mais clareza, velocidade e qualidade, sem precisar programar.</p>
               </div>
               <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-white hover:shadow-sm transition">
                 <h3 className="font-bold text-slate-800 text-lg mb-2">Como líderes podem tomar melhores decisões sobre IA</h3>
-                <p className="text-slate-600 text-sm leading-relaxed font-light">Um guia prático para diretores e executivos definirem backlogs de oportunidades, gerenciarem custos de infraestrutura e organizarem bases sólidas.</p>
+                <p className="text-slate-600 text-sm leading-relaxed font-light">Um guia prático para líderes e executivos priorizarem oportunidades reais de aplicação de IA, gerenciarem custos, riscos e expectativas, e prepararem bases sólidas para adoção.</p>
               </div>
               <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-white hover:shadow-sm transition">
                 <h3 className="font-bold text-slate-800 text-lg mb-2">O futuro do trabalho na era da IA</h3>
-                <p className="text-slate-600 text-sm leading-relaxed font-light">As novas competências exigidas pelo mercado de trabalho contemporâneo, com foco em pensamento analítico, curadoria crítica e prompting de negócios.</p>
+                <p className="text-slate-600 text-sm leading-relaxed font-light">As novas competências exigidas pelo mercado de trabalho contemporâneo, com foco em pensamento analítico, curadoria crítica e prompting de negócios — a capacidade de formular boas perguntas, contextos e instruções para usar IA melhor.</p>
               </div>
               <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-white hover:shadow-sm transition md:col-span-2">
                 <h3 className="font-bold text-slate-800 text-lg mb-2">Dados, Open Finance e transformação digital</h3>
-                <p className="text-slate-600 text-sm leading-relaxed font-light">Entenda o ecossistema financeiro aberto nacional (Open Finance) e como a centralização, estruturação e leitura estratégica de dados compartilhados transformam produtos de fintechs e bancos.</p>
+                <p className="text-slate-600 text-sm leading-relaxed font-light">Uma conversa sobre como dados compartilhados, Open Finance e leitura estratégica da informação podem transformar produtos, jornadas e decisões no setor financeiro.</p>
               </div>
             </div>
           </section>
@@ -126,19 +125,19 @@ export default function Palestras() {
               </div>
               <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-white hover:shadow-sm transition">
                 <h4 className="font-bold text-slate-800 text-lg mb-2">Como usar IA para produtividade pessoal e profissional</h4>
-                <p className="text-slate-650 text-sm leading-relaxed font-light">Capacitação focada no uso cotidiano de IA Generativa. Seus colaboradores aprenderão engenharia de prompts avançada, técnicas de síntese de documentos e automação de fluxos de trabalho.</p>
+                <p className="text-slate-650 text-sm leading-relaxed font-light">Capacitação focada no uso cotidiano de IA generativa. Os participantes aprendem técnicas práticas de prompts, síntese de documentos e automação de fluxos simples de trabalho.</p>
               </div>
               <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-white hover:shadow-sm transition">
                 <h4 className="font-bold text-slate-800 text-lg mb-2">Como estruturar um backlog de oportunidades com IA</h4>
-                <p className="text-slate-650 text-sm leading-relaxed font-light">Mapeamento estruturado de frentes operacionais que podem ser otimizadas com inteligência analítica, desenhando uma esteira ágil de prototipação e testes.</p>
+                <p className="text-slate-650 text-sm leading-relaxed font-light">Mapeamento estruturado de frentes operacionais que podem ser otimizadas com inteligência analítica, desenhando um caminho prático para prototipar, testar e aprender com menor risco.</p>
               </div>
               <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-white hover:shadow-sm transition">
                 <h4 className="font-bold text-slate-800 text-lg mb-2">IA aplicada a áreas de negócio</h4>
-                <p className="text-slate-650 text-sm leading-relaxed font-light">Alinhamento tático de frentes operacionais (vendas, marketing, finanças, RH ou jurídico) para a utilização segura e orientada a resultados de novas ferramentas analíticas.</p>
+                <p className="text-slate-650 text-sm leading-relaxed font-light">Discussão prática sobre como áreas como vendas, marketing, finanças, RH ou jurídico podem usar IA de forma segura, útil e orientada a resultados.</p>
               </div>
               <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-white hover:shadow-sm transition">
                 <h4 className="font-bold text-slate-800 text-lg mb-2">Dados como base para inovação</h4>
-                <p className="text-slate-650 text-sm leading-relaxed font-light">Como arrumar a casa dos dados, estruturar barramentos inteligentes e preparar a infraestrutura corporativa antes de iniciar projetos analíticos complexos.</p>
+                <p className="text-slate-650 text-sm leading-relaxed font-light">Como arrumar a casa dos dados, organizar fluxos de dados, integrações e bases confiáveis antes de iniciar projetos analíticos complexos.</p>
               </div>
             </div>
           </section>
@@ -222,7 +221,7 @@ export default function Palestras() {
                 <div>
                   <span className="text-[10px] font-bold text-purple-600 uppercase bg-purple-50 px-2.5 py-1 rounded-full block w-max mb-4">Workshop</span>
                   <h3 className="font-bold text-slate-800 text-lg mb-2">Workshop sob demanda</h3>
-                  <p className="text-slate-500 text-xs font-light leading-relaxed mb-6">Formato prático para capacitar equipes a debaterem e estruturarem fluxos reais com ferramentas e frameworks analíticos.</p>
+                  <p className="text-slate-500 text-xs font-light leading-relaxed mb-6">Formato prático para capacitar equipes a discutirem problemas reais, priorizarem oportunidades e estruturarem próximos passos com IA e dados.</p>
                 </div>
                 <div className="text-xs font-bold text-slate-400 pt-4 border-t border-slate-50">Duração: 2h a 4h</div>
               </div>
