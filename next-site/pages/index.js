@@ -51,19 +51,23 @@ export default function Home() {
     e.preventDefault()
     setNewsletterStatus('loading')
     try {
-      // Reuse the messages infrastructure securely
-      const { error } = await supabase
-        .from('messages')
-        .insert([
-          {
-            name: newsletterData.nome,
-            email: newsletterData.email,
-            organization: 'Inscrição Newsletter',
-            message: 'Inscrição efetuada através do formulário da página inicial.'
-          }
-        ])
+      // Reuse the messages infrastructure securely via backend to bypass RLS
+      const response = await fetch(`${API_URL}/api/messages`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: newsletterData.nome,
+          email: newsletterData.email,
+          organization: 'Inscrição Newsletter',
+          message: 'Inscrição efetuada através do formulário da página inicial.'
+        })
+      });
 
-      if (error) throw error
+      if (!response.ok) {
+        throw new Error('Erro ao enviar mensagem');
+      }
 
       setNewsletterStatus('success')
       setNewsletterData({ nome: '', email: '' })
@@ -76,16 +80,16 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Edu Prado | IA aplicada, dados e transformação digital sem tech-ês</title>
-        <meta name="description" content="Conteúdos, reflexões e ferramentas sobre inteligência artificial aplicada, dados, Open Finance e transformação digital — explicados de forma prática, leve e sem tech-ês." />
-        <meta property="og:title" content="Edu Prado | IA aplicada, dados e transformação digital sem tech-ês" />
-        <meta property="og:description" content="Conteúdos, reflexões e ferramentas sobre inteligência artificial aplicada, dados, Open Finance e transformação digital — explicados de forma prática, leve e sem tech-ês." />
+        <title>Eduardo Prado | Aprenda sobre Inteligência Artificial Aplicada sem tech-ês</title>
+        <meta name="description" content="Aprenda sobre Inteligência Artificial, dados, Open Finance e transformação digital com Eduardo Prado. Conteúdos práticos, reflexões e ferramentas explicadas sem tech-ês." />
+        <meta property="og:title" content="Eduardo Prado | Aprenda sobre Inteligência Artificial Aplicada sem tech-ês" />
+        <meta property="og:description" content="Aprenda sobre Inteligência Artificial, dados, Open Finance e transformação digital com Eduardo Prado. Conteúdos práticos, reflexões e ferramentas explicadas sem tech-ês." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://eduprado.me/" />
         <meta property="og:image" content="https://eduprado.me/images/header-bg.png" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Edu Prado | IA aplicada, dados e transformação digital sem tech-ês" />
-        <meta name="twitter:description" content="Conteúdos, reflexões e ferramentas sobre inteligência artificial aplicada, dados, Open Finance e transformação digital — explicados de forma prática, leve e sem tech-ês." />
+        <meta name="twitter:title" content="Eduardo Prado | Aprenda sobre Inteligência Artificial Aplicada sem tech-ês" />
+        <meta name="twitter:description" content="Aprenda sobre Inteligência Artificial, dados, Open Finance e transformação digital com Eduardo Prado. Conteúdos práticos, reflexões e ferramentas explicadas sem tech-ês." />
         <meta name="twitter:image" content="https://eduprado.me/images/header-bg.png" />
         
         {/* Person Schema Markup */}

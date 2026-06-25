@@ -7,16 +7,16 @@ export default function Palestras() {
   return (
     <>
       <Head>
-        <title>Palestras e Workshops sobre IA aplicada | Edu Prado</title>
-        <meta name="description" content="Palestras, workshops e conversas estratégicas sobre inteligência artificial aplicada, dados, produtividade e transformação digital para profissionais e organizações." />
-        <meta property="og:title" content="Palestras e Workshops sobre IA aplicada | Edu Prado" />
-        <meta property="og:description" content="Palestras, workshops e conversas estratégicas sobre inteligência artificial aplicada, dados, produtividade e transformação digital para profissionais e organizações." />
+        <title>Eduardo Prado | Palestras e Workshops para Aprender Inteligência Artificial</title>
+        <meta name="description" content="Aprenda Inteligência Artificial aplicada, dados, produtividade e transformação digital com Eduardo Prado através de palestras, workshops e mentorias para profissionais e organizações." />
+        <meta property="og:title" content="Eduardo Prado | Palestras e Workshops para Aprender Inteligência Artificial" />
+        <meta property="og:description" content="Aprenda Inteligência Artificial aplicada, dados, produtividade e transformação digital com Eduardo Prado através de palestras, workshops e mentorias para profissionais e organizações." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://eduprado.me/palestras/" />
         <meta property="og:image" content="https://eduprado.me/images/profile.jpg" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Palestras e Workshops sobre IA aplicada | Edu Prado" />
-        <meta name="twitter:description" content="Palestras, workshops e conversas estratégicas sobre inteligência artificial aplicada, dados, produtividade e transformação digital para profissionais e organizações." />
+        <meta name="twitter:title" content="Eduardo Prado | Palestras e Workshops para Aprender Inteligência Artificial" />
+        <meta name="twitter:description" content="Aprenda Inteligência Artificial aplicada, dados, produtividade e transformação digital com Eduardo Prado através de palestras, workshops e mentorias para profissionais e organizações." />
         <meta name="twitter:image" content="https://eduprado.me/images/profile.jpg" />
 
         {/* Breadcrumb List Schema Markup */}

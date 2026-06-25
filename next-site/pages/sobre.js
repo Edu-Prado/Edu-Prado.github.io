@@ -7,16 +7,16 @@ export default function Sobre() {
   return (
     <>
       <Head>
-        <title>Sobre Eduardo Prado | IA, dados e transformação digital</title>
-        <meta name="description" content="Conheça Eduardo Prado, profissional com mais de 20 anos de experiência no setor financeiro, liderança, dados, Open Finance e inteligência artificial aplicada." />
-        <meta property="og:title" content="Sobre Eduardo Prado | IA, dados e transformação digital" />
-        <meta property="og:description" content="Conheça Eduardo Prado, profissional com mais de 20 anos de experiência no setor financeiro, liderança, dados, Open Finance e inteligência artificial aplicada." />
-        <meta property="og:type" content="profile" />
+        <title>Sobre Eduardo Prado | Especialista em Inteligência Artificial e Transformação Digital</title>
+        <meta name="description" content="Conheça Eduardo Prado, especialista com mais de 20 anos de experiência. Aprenda como aplicar Inteligência Artificial, dados e Open Finance aos negócios de forma prática e sem tech-ês." />
+        <meta property="og:title" content="Sobre Eduardo Prado | Especialista em Inteligência Artificial e Transformação Digital" />
+        <meta property="og:description" content="Conheça Eduardo Prado, especialista com mais de 20 anos de experiência. Aprenda como aplicar Inteligência Artificial, dados e Open Finance aos negócios de forma prática e sem tech-ês." />
+        <meta property="og:type" content="website" />
         <meta property="og:url" content="https://eduprado.me/sobre/" />
         <meta property="og:image" content="https://eduprado.me/images/profile.jpg" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Sobre Eduardo Prado | IA, dados e transformação digital" />
-        <meta name="twitter:description" content="Conheça Eduardo Prado, profissional com mais de 20 anos de experiência no setor financeiro, liderança, dados, Open Finance e inteligência artificial aplicada." />
+        <meta name="twitter:title" content="Sobre Eduardo Prado | Especialista em Inteligência Artificial e Transformação Digital" />
+        <meta name="twitter:description" content="Conheça Eduardo Prado, especialista com mais de 20 anos de experiência. Aprenda como aplicar Inteligência Artificial, dados e Open Finance aos negócios de forma prática e sem tech-ês." />
         <meta name="twitter:image" content="https://eduprado.me/images/profile.jpg" />
 
         {/* Person Schema Markup */}

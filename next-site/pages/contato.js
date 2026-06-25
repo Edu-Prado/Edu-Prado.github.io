@@ -1,9 +1,12 @@
 import Head from 'next/head'
 import Link from 'next/link'
 import { useState } from 'react'
-import { supabase } from '../lib/supabaseClient'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+
+const API_URL = typeof window !== 'undefined' && window.location.hostname === 'localhost'
+    ? 'http://localhost:3000'
+    : 'https://eduprado-backend.onrender.com';
 
 export default function Contato() {
   const [formData, setFormData] = useState({
@@ -27,18 +30,22 @@ export default function Contato() {
     const formattedMessage = `[Interesse: ${formData.interesse}]\n\n${formData.mensagem}`
 
     try {
-      const { error } = await supabase
-        .from('messages')
-        .insert([
-          {
-            name: formData.nome,
-            email: formData.email,
-            organization: formData.org || 'Individual',
-            message: formattedMessage
-          }
-        ])
+      const response = await fetch(`${API_URL}/api/messages`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: formData.nome,
+          email: formData.email,
+          organization: formData.org || 'Individual',
+          message: formattedMessage
+        })
+      });
 
-      if (error) throw error
+      if (!response.ok) {
+        throw new Error('Erro ao enviar mensagem');
+      }
 
       setStatus('success')
       setFormData({ nome: '', email: '', org: '', interesse: 'Palestra', mensagem: '' })
@@ -51,15 +58,15 @@ export default function Contato() {
   return (
     <>
       <Head>
-        <title>Contato | Edu Prado</title>
-        <meta name="description" content="Entre em contato com Eduardo Prado para palestras, workshops, mentorias, parcerias, projetos de IA aplicada e conversas sobre tecnologia." />
-        <meta property="og:title" content="Contato | Edu Prado" />
-        <meta property="og:description" content="Entre em contato com Eduardo Prado para palestras, workshops, mentorias, parcerias, projetos de IA aplicada e conversas sobre tecnologia." />
+        <title>Contato com Eduardo Prado | Aprenda Inteligência Artificial</title>
+        <meta name="description" content="Entre em contato com Eduardo Prado para palestras, workshops, mentorias, parcerias, projetos de IA aplicada e para aprender Inteligência Artificial na prática." />
+        <meta property="og:title" content="Contato com Eduardo Prado | Aprenda Inteligência Artificial" />
+        <meta property="og:description" content="Entre em contato com Eduardo Prado para palestras, workshops, mentorias, parcerias, projetos de IA aplicada e para aprender Inteligência Artificial na prática." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://eduprado.me/contato/" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Contato | Edu Prado" />
-        <meta name="twitter:description" content="Entre em contato com Eduardo Prado para palestras, workshops, mentorias, parcerias, projetos de IA aplicada e conversas sobre tecnologia." />
+        <meta name="twitter:title" content="Contato com Eduardo Prado | Aprenda Inteligência Artificial" />
+        <meta name="twitter:description" content="Entre em contato com Eduardo Prado para palestras, workshops, mentorias, parcerias, projetos de IA aplicada e para aprender Inteligência Artificial na prática." />
 
         {/* Breadcrumb List Schema Markup */}
         <script

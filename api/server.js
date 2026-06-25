@@ -488,6 +488,32 @@ app.delete('/api/messages/:id', requireAdminAuth, async (req, res) => {
     }
 });
 
+// Enviar mensagem (Contato / Newsletter) - Público
+app.post('/api/messages', async (req, res) => {
+    try {
+        const { name, email, organization, message } = req.body;
+        
+        if (!name || !email) {
+            return res.status(400).json({ error: 'Nome e email são obrigatórios' });
+        }
+
+        const { data, error } = await supabase
+            .from('messages')
+            .insert([{ name, email, organization, message }])
+            .select();
+
+        if (error) {
+            console.error('Erro ao inserir mensagem:', error);
+            throw error;
+        }
+
+        res.status(201).json({ success: true, message: 'Mensagem enviada com sucesso', data });
+    } catch (err) {
+        console.error('Erro ao enviar mensagem:', err);
+        res.status(500).json({ error: 'Erro interno do servidor ao enviar mensagem' });
+    }
+});
+
 // Importar artigos iniciais de rascunho - Apenas admin
 app.post('/api/posts/seed', requireAdminAuth, async (req, res) => {
     console.log('[Seed] Iniciando importação de artigos rascunhos estratégicos...');
