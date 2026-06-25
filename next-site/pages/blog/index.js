@@ -5,10 +5,10 @@ import { supabase } from '../../lib/supabaseClient'
 import Navbar from '../../components/Navbar'
 import Footer from '../../components/Footer'
 
-export default function Blog() {
-    const [posts, setPosts] = useState([])
-    const [filteredPosts, setFilteredPosts] = useState([])
-    const [loading, setLoading] = useState(true)
+export default function Blog({ allPosts }) {
+    const [posts, setPosts] = useState(allPosts || [])
+    const [filteredPosts, setFilteredPosts] = useState(allPosts || [])
+    const [loading, setLoading] = useState(false)
     const [searchTerm, setSearchTerm] = useState('')
     const [selectedCategory, setSelectedCategory] = useState('Todos')
 
@@ -21,10 +21,6 @@ export default function Blog() {
         'Carreira e futuro do trabalho',
         'Opinião e tendências'
     ]
-
-    useEffect(() => {
-        fetchPosts()
-    }, [])
 
     useEffect(() => {
         let filtered = posts;
@@ -50,23 +46,6 @@ export default function Blog() {
 
         setFilteredPosts(filtered)
     }, [searchTerm, selectedCategory, posts])
-
-    async function fetchPosts() {
-        try {
-            const { data, error } = await supabase
-                .from('posts')
-                .select('*')
-                .order('created_at', { ascending: false })
-
-            if (error) throw error
-            setPosts(data || [])
-            setFilteredPosts(data || [])
-        } catch (error) {
-            console.error('Erro ao buscar posts:', error)
-        } finally {
-            setLoading(false)
-        }
-    }
 
     return (
         <>
@@ -227,4 +206,30 @@ export default function Blog() {
             <Footer />
         </>
     )
+}
+
+export async function getStaticProps() {
+    try {
+        const { supabase } = await import('../../lib/supabaseClient');
+        
+        const { data: posts, error } = await supabase
+            .from('posts')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        return {
+            props: {
+                allPosts: posts || []
+            }
+        };
+    } catch (error) {
+        console.error('Error in getStaticProps for blog index:', error);
+        return {
+            props: {
+                allPosts: []
+            }
+        };
+    }
 }

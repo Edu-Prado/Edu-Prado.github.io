@@ -9,28 +9,9 @@ const API_URL = typeof window !== 'undefined' && window.location.hostname === 'l
     ? 'http://localhost:3000'
     : 'https://eduprado-backend.onrender.com';
 
-export default function Home() {
-  const [allPosts, setAllPosts] = useState([])
+export default function Home({ allPosts }) {
   const [newsletterData, setNewsletterData] = useState({ nome: '', email: '' })
   const [newsletterStatus, setNewsletterStatus] = useState('') // '', 'loading', 'success', 'error'
-
-  useEffect(() => {
-    fetchPosts()
-  }, [])
-
-  async function fetchPosts() {
-    try {
-      const { data } = await supabase
-        .from('posts')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(25)
-
-      if (data) setAllPosts(data)
-    } catch (error) {
-      console.error('Erro ao buscar posts:', error)
-    }
-  }
 
   const pilarSlugs = [
     'por-que-tantos-projetos-de-ia-falham-antes-mesmo-de-comecar',
@@ -441,4 +422,31 @@ export default function Home() {
       <Footer />
     </>
   )
+}
+
+export async function getStaticProps() {
+  try {
+    const { supabase } = await import('../lib/supabaseClient');
+    
+    const { data: posts, error } = await supabase
+      .from('posts')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(25);
+
+    if (error) throw error;
+
+    return {
+      props: {
+        allPosts: posts || []
+      }
+    };
+  } catch (error) {
+    console.error('Error in getStaticProps for home:', error);
+    return {
+      props: {
+        allPosts: []
+      }
+    };
+  }
 }
