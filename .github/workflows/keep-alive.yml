@@ -6,6 +6,9 @@ on:
     - cron: '0 12 * * 1,3,5'
   workflow_dispatch: # Allows manual trigger from GitHub UI
 
+permissions:
+  contents: write
+
 jobs:
   ping:
     runs-on: ubuntu-latest
@@ -15,3 +18,9 @@ jobs:
           echo "Pinging backend API..."
           curl -sS https://eduprado-backend.onrender.com/api/posts > /dev/null
           echo "Ping completed."
+          
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        
+      - name: Prevent workflow from being disabled
+        uses: gautamkrishnar/keepalive-workflow@v2
