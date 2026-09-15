@@ -46,7 +46,7 @@ export default function Projetos() {
 
       <Navbar />
 
-      <main className="pt-24 pb-16 bg-slate-50/50 min-h-screen">
+      <main id="conteudo" className="pt-24 pb-16 bg-slate-50/50 min-h-screen">
         <div className="container mx-auto px-4 sm:px-6">
           
           {/* Header section */}

@@ -1,78 +1,104 @@
-import Head from 'next/head'
-import Link from 'next/link'
-import { useEffect, useState } from 'react'
-import { supabase } from '../lib/supabaseClient'
-import Navbar from '../components/Navbar'
-import Footer from '../components/Footer'
+import Head from "next/head";
+import Link from "next/link";
+import { useState } from "react";
+import ArticleCard from "../components/ArticleCard";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
-const API_URL = typeof window !== 'undefined' && window.location.hostname === 'localhost'
-    ? 'http://localhost:3000'
-    : 'https://eduprado-backend.onrender.com';
+const API_URL =
+  typeof window !== "undefined" && window.location.hostname === "localhost"
+    ? "http://localhost:3000"
+    : "https://eduprado-backend.onrender.com";
 
-export default function Home({ allPosts }) {
-  const [newsletterData, setNewsletterData] = useState({ nome: '', email: '' })
-  const [newsletterStatus, setNewsletterStatus] = useState('') // '', 'loading', 'success', 'error'
+export default function Home({ allPosts = [] }) {
+  const [newsletterData, setNewsletterData] = useState({ nome: "", email: "" });
+  const [newsletterStatus, setNewsletterStatus] = useState(""); // '', 'loading', 'success', 'error'
 
   const pilarSlugs = [
-    'por-que-tantos-projetos-de-ia-falham-antes-mesmo-de-comecar',
-    'como-identificar-bons-casos-de-uso-de-ia',
-    'ia-para-profissionais-nao-tecnicos-por-onde-comecar',
-    'nem-todo-problema-precisa-de-ia'
+    "por-que-tantos-projetos-de-ia-falham-antes-mesmo-de-comecar",
+    "como-identificar-bons-casos-de-uso-de-ia",
+    "ia-para-profissionais-nao-tecnicos-por-onde-comecar",
+    "nem-todo-problema-precisa-de-ia",
   ];
 
   const pillarPosts = pilarSlugs
-    .map(slug => allPosts.find(p => p.slug === slug))
+    .map((slug) => allPosts.find((p) => p.slug === slug))
     .filter(Boolean);
 
   const latestPosts = allPosts
-    .filter(p => !pilarSlugs.includes(p.slug))
+    .filter((p) => !pilarSlugs.includes(p.slug))
     .slice(0, 3);
 
   const handleNewsletterSubmit = async (e) => {
-    e.preventDefault()
-    setNewsletterStatus('loading')
+    e.preventDefault();
+    setNewsletterStatus("loading");
     try {
       // Reuse the messages infrastructure securely via backend to bypass RLS
       const response = await fetch(`${API_URL}/api/messages`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           name: newsletterData.nome,
           email: newsletterData.email,
-          organization: 'Inscrição Newsletter',
-          message: 'Inscrição efetuada através do formulário da página inicial.'
-        })
+          organization: "Inscrição Newsletter",
+          message:
+            "Inscrição efetuada através do formulário da página inicial.",
+        }),
       });
 
       if (!response.ok) {
-        throw new Error('Erro ao enviar mensagem');
+        throw new Error("Erro ao enviar mensagem");
       }
 
-      setNewsletterStatus('success')
-      setNewsletterData({ nome: '', email: '' })
+      setNewsletterStatus("success");
+      setNewsletterData({ nome: "", email: "" });
     } catch (err) {
-      console.error('Erro na inscrição da newsletter:', err)
-      setNewsletterStatus('error')
+      console.error("Erro na inscrição da newsletter:", err);
+      setNewsletterStatus("error");
     }
-  }
+  };
 
   return (
     <>
       <Head>
-        <title>Eduardo Prado | Aprenda sobre Inteligência Artificial Aplicada sem tech-ês</title>
-        <meta name="description" content="Aprenda sobre Inteligência Artificial, dados, Open Finance e transformação digital com Eduardo Prado. Conteúdos práticos, reflexões e ferramentas explicadas sem tech-ês." />
-        <meta property="og:title" content="Eduardo Prado | Aprenda sobre Inteligência Artificial Aplicada sem tech-ês" />
-        <meta property="og:description" content="Aprenda sobre Inteligência Artificial, dados, Open Finance e transformação digital com Eduardo Prado. Conteúdos práticos, reflexões e ferramentas explicadas sem tech-ês." />
+        <title>
+          Eduardo Prado | Aprenda sobre Inteligência Artificial Aplicada sem
+          tech-ês
+        </title>
+        <meta
+          name="description"
+          content="Aprenda sobre Inteligência Artificial, dados, Open Finance e transformação digital com Eduardo Prado. Conteúdos práticos, reflexões e ferramentas explicadas sem tech-ês."
+        />
+        <meta
+          property="og:title"
+          content="Eduardo Prado | Aprenda sobre Inteligência Artificial Aplicada sem tech-ês"
+        />
+        <meta
+          property="og:description"
+          content="Aprenda sobre Inteligência Artificial, dados, Open Finance e transformação digital com Eduardo Prado. Conteúdos práticos, reflexões e ferramentas explicadas sem tech-ês."
+        />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://eduprado.me/" />
-        <meta property="og:image" content="https://eduprado.me/images/header-bg.png" />
+        <meta
+          property="og:image"
+          content="https://eduprado.me/images/header-bg.png"
+        />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Eduardo Prado | Aprenda sobre Inteligência Artificial Aplicada sem tech-ês" />
-        <meta name="twitter:description" content="Aprenda sobre Inteligência Artificial, dados, Open Finance e transformação digital com Eduardo Prado. Conteúdos práticos, reflexões e ferramentas explicadas sem tech-ês." />
-        <meta name="twitter:image" content="https://eduprado.me/images/header-bg.png" />
-        
+        <meta
+          name="twitter:title"
+          content="Eduardo Prado | Aprenda sobre Inteligência Artificial Aplicada sem tech-ês"
+        />
+        <meta
+          name="twitter:description"
+          content="Aprenda sobre Inteligência Artificial, dados, Open Finance e transformação digital com Eduardo Prado. Conteúdos práticos, reflexões e ferramentas explicadas sem tech-ês."
+        />
+        <meta
+          name="twitter:image"
+          content="https://eduprado.me/images/header-bg.png"
+        />
+
         {/* Person Schema Markup */}
         <script
           type="application/ld+json"
@@ -80,14 +106,12 @@ export default function Home({ allPosts }) {
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Person",
-              "name": "Eduardo Prado",
-              "url": "https://eduprado.me",
-              "image": "https://eduprado.me/images/profile.jpg",
-              "jobTitle": "Executivo de IA, Dados e Inovação Financeira",
-              "sameAs": [
-                "https://www.linkedin.com/in/eduardo-prado-bb5174123/"
-              ]
-            })
+              name: "Eduardo Prado",
+              url: "https://eduprado.me",
+              image: "https://eduprado.me/images/profile.jpg",
+              jobTitle: "Executivo de IA, Dados e Inovação Financeira",
+              sameAs: ["https://www.linkedin.com/in/eduardo-prado-bb5174123/"],
+            }),
           }}
         />
 
@@ -98,321 +122,247 @@ export default function Home({ allPosts }) {
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebSite",
-              "name": "EduPrado.me",
-              "url": "https://eduprado.me",
-              "description": "IA aplicada, dados e transformação digital sem tech-ês."
-            })
+              name: "EduPrado.me",
+              url: "https://eduprado.me",
+              description:
+                "IA aplicada, dados e transformação digital sem tech-ês.",
+            }),
           }}
         />
       </Head>
 
       <Navbar />
 
-      <main className="pt-16">
-        {/* Hero Section */}
-        <section className="relative bg-slate-950 text-white overflow-hidden py-24 sm:py-32">
-          {/* Subtle background graphic */}
-          <div className="absolute inset-0 z-0 opacity-20">
-            <img 
-              src="/images/header-bg.png" 
-              alt="Edu Prado Banner" 
-              className="w-full h-full object-cover" 
-            />
-          </div>
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950 to-slate-950 z-0"></div>
-
-          <div className="container mx-auto px-4 sm:px-6 relative z-10 text-center max-w-4xl">
-            <span className="px-4 py-1.5 bg-blue-500/10 text-blue-400 rounded-full text-xs font-bold uppercase tracking-widest border border-blue-500/20 mb-6 inline-block">
-              Inteligência Artificial Aplicada
-            </span>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black mb-6 text-white leading-tight tracking-tight">
-              IA, dados e transformação digital <span className="text-blue-500">sem tech-ês.</span>
+      <main id="conteudo" className="home-main">
+        <section className="editorial-hero page-width">
+          <div className="hero-copy">
+            <p className="eyebrow">EDUARDO PRADO · IA APLICADA A NEGÓCIOS</p>
+            <h1>
+              O futuro é complexo.
+              <br />A conversa <span>não precisa ser.</span>
             </h1>
-            <p className="text-lg sm:text-xl md:text-2xl mb-10 text-slate-300 font-light leading-relaxed max-w-3xl mx-auto">
-              Conteúdos, reflexões e ferramentas para quem quer entender e aplicar inteligência artificial no trabalho, nos negócios e no dia a dia — sem precisar virar programador para participar da conversa.
+            <p className="hero-description">
+              IA, dados e transformação digital sem tech-ês. Ideias e
+              ferramentas para entender o que muda — e aplicar o que faz
+              sentido.
             </p>
-            <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-              <Link href="/blog" className="w-full sm:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition shadow-lg shadow-blue-600/20 text-center">
-                Ler artigos
+            <div className="hero-actions">
+              <Link href="/blog" className="button-primary">
+                Explorar os artigos <span aria-hidden="true">↗</span>
               </Link>
-              <Link href="#newsletter" className="w-full sm:w-auto px-8 py-4 bg-slate-900 hover:bg-slate-850 text-white border border-slate-800 rounded-xl font-bold transition text-center">
-                Assinar newsletter
-              </Link>
-              <Link href="/contato" className="w-full sm:w-auto px-8 py-4 bg-transparent hover:bg-slate-900/50 text-slate-300 hover:text-white rounded-xl font-bold transition text-center">
-                Falar comigo ➔
+              <Link href="/sobre" className="text-link">
+                Conheça minha trajetória
               </Link>
             </div>
+            <p className="hero-note">
+              Para quem quer tomar melhores decisões, sem precisar virar
+              programador.
+            </p>
           </div>
-        </section>
-
-        {/* "Para quem é este site" Section */}
-        <section className="py-20 bg-white">
-          <div className="container mx-auto px-4 sm:px-6 max-w-5xl">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-4">
-                Para quem é este site?
-              </h2>
-              <p className="text-lg text-slate-600 font-light max-w-2xl mx-auto">
-                Descomplicamos o universo tecnológico para dar autonomia a quem toma decisões.
+          <figure className="hero-portrait">
+            <img
+              src="/images/profile.jpg"
+              alt="Eduardo Prado"
+              width="819"
+              height="1024"
+              fetchpriority="high"
+            />
+            <figcaption>
+              <span>TECNOLOGIA COM CONTEXTO</span>
+              <strong>Eduardo Prado</strong>
+              <p>
+                Mais de 20 anos conectando
+                <br />
+                negócios, dados e pessoas.
               </p>
-            </div>
-
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              <div className="p-6 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-white hover:shadow-md transition duration-300">
-                <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold mb-5">01</div>
-                <h3 className="font-bold text-slate-800 text-lg mb-2">Profissionais de Negócios</h3>
-                <p className="text-slate-600 text-sm leading-relaxed">Que querem entender o impacto da IA no seu fluxo de trabalho, sem linguagem técnica exagerada.</p>
-              </div>
-              <div className="p-6 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-white hover:shadow-md transition duration-300">
-                <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold mb-5">02</div>
-                <h3 className="font-bold text-slate-800 text-lg mb-2">Líderes e Executivos</h3>
-                <p className="text-slate-600 text-sm leading-relaxed">Que precisam tomar melhores decisões de investimentos corporativos em novas tecnologias.</p>
-              </div>
-              <div className="p-6 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-white hover:shadow-md transition duration-300">
-                <div className="w-10 h-10 rounded-xl bg-green-50 text-green-600 flex items-center justify-center font-bold mb-5">03</div>
-                <h3 className="font-bold text-slate-800 text-lg mb-2">Focados em Carreira</h3>
-                <p className="text-slate-600 text-sm leading-relaxed">Interessados em alavancar produtividade pessoal e planejar o crescimento na era digital.</p>
-              </div>
-              <div className="p-6 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-white hover:shadow-md transition duration-300">
-                <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold mb-5">04</div>
-                <h3 className="font-bold text-slate-800 text-lg mb-2">Curiosos Digitais</h3>
-                <p className="text-slate-600 text-sm leading-relaxed">Que desejam utilizar inteligência artificial generativa de forma prática no dia a dia.</p>
-              </div>
-              <div className="p-6 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-white hover:shadow-md transition duration-300 md:col-span-2 lg:col-span-2">
-                <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold mb-5">05</div>
-                <h3 className="font-bold text-slate-800 text-lg mb-2">Equipes & Organizações</h3>
-                <p className="text-slate-600 text-sm leading-relaxed">Empresas prontas para sair das buzzwords ("hype") e descobrir o valor econômico real e prático da inteligência de dados aplicada.</p>
-              </div>
-            </div>
-          </div>
+            </figcaption>
+          </figure>
         </section>
-
-        {/* "O que você encontra aqui" Section */}
-        <section className="py-20 bg-slate-50">
-          <div className="container mx-auto px-4 sm:px-6 max-w-5xl">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-4">
-                O que você encontra aqui?
-              </h2>
-              <p className="text-lg text-slate-600 font-light max-w-2xl mx-auto">
-                Navegue pelos principais temas que organizo por aqui.
-              </p>
-            </div>
-
-            <div className="grid gap-8 md:grid-cols-2">
-              <div className="p-8 rounded-3xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition flex gap-5">
-                <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
-                </div>
-                <div>
-                  <h3 className="font-bold text-slate-800 text-xl mb-2">IA na Prática</h3>
-                  <p className="text-slate-600 text-sm leading-relaxed">Casos de uso reais, análise de ferramentas inovadoras, guias de prompts eficientes, exemplos e aplicações úteis no cotidiano.</p>
-                </div>
-              </div>
-              <div className="p-8 rounded-3xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition flex gap-5">
-                <div className="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                </div>
-                <div>
-                  <h3 className="font-bold text-slate-800 text-xl mb-2">Dados e Open Finance</h3>
-                  <p className="text-slate-600 text-sm leading-relaxed">Reflexões profundas sobre modelagem de dados, inteligência de negócios, Open Banking, mercado financeiro nacional e automação digital.</p>
-                </div>
-              </div>
-              <div className="p-8 rounded-3xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition flex gap-5">
-                <div className="w-12 h-12 rounded-2xl bg-green-50 text-green-600 flex items-center justify-center shrink-0">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                </div>
-                <div>
-                  <h3 className="font-bold text-slate-800 text-xl mb-2">Carreira e Liderança na era da IA</h3>
-                  <p className="text-slate-600 text-sm leading-relaxed">Como líderes e profissionais podem se posicionar estrategicamente, aprender a gerenciar processos digitais e tomar decisões baseadas em fatos.</p>
-                </div>
-              </div>
-              <div className="p-8 rounded-3xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition flex gap-5">
-                <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                </div>
-                <div>
-                  <h3 className="font-bold text-slate-800 text-xl mb-2">Conteúdo sem hype</h3>
-                  <p className="text-slate-600 text-sm leading-relaxed">Uma visão prática, com senso crítico e foco em valor real sobre o real potencial de softwares, erros clássicos e limites da Inteligência Artificial.</p>
-                </div>
-              </div>
-            </div>
+        <div className="topic-strip">
+          <div className="page-width">
+            <span>IA na prática</span>
+            <span>Dados & Open Finance</span>
+            <span>Carreira & liderança</span>
+            <span>Conteúdo sem hype</span>
           </div>
-        </section>
-
-        {/* Curated "Comece por aqui" Section */}
+        </div>
+        {latestPosts.length > 0 && (
+          <section
+            className="section-space page-width"
+            aria-labelledby="recentes"
+          >
+            <div className="section-heading">
+              <div>
+                <p className="eyebrow">NO RADAR</p>
+                <h2 id="recentes">Ideias para levar adiante.</h2>
+              </div>
+              <Link href="/blog" className="text-link">
+                Todos os artigos ↗
+              </Link>
+            </div>
+            <div className="latest-grid">
+              {latestPosts.map((post, i) => (
+                <ArticleCard key={post.id} post={post} featured={i === 0} />
+              ))}
+            </div>
+          </section>
+        )}
         {pillarPosts.length > 0 && (
-          <section className="py-20 bg-slate-50/50 border-y border-slate-100">
-            <div className="container mx-auto px-4 sm:px-6 max-w-5xl">
-              <div className="text-center mb-12">
-                <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight mb-4">Comece por aqui</h2>
-                <p className="text-slate-600 leading-relaxed font-light max-w-2xl mx-auto text-sm sm:text-base">
-                  Uma seleção de textos essenciais para entender a proposta do EduPrado.me: IA aplicada, dados e transformação digital explicados de forma prática e sem tech-ês.
+          <section className="start-section section-space">
+            <div className="page-width start-layout">
+              <div>
+                <p className="eyebrow">COMECE POR AQUI</p>
+                <h2>
+                  Menos ruído.
+                  <br />
+                  Mais clareza.
+                </h2>
+                <p>
+                  Quatro leituras para sair das promessas e começar pelas
+                  perguntas certas.
                 </p>
               </div>
-
-              <div className="grid gap-8 md:grid-cols-2">
-                {pillarPosts.map(post => {
-                  const words = post.content ? post.content.split(/\s+/).length : 0;
-                  const minutes = Math.max(1, Math.ceil(words / 200));
-                  return (
-                    <div key={post.id} className="border border-slate-200/60 rounded-3xl overflow-hidden hover:shadow-lg transition duration-300 flex flex-col bg-white p-6 sm:p-8">
-                      <div className="flex items-center justify-between mb-4">
-                        <span className="text-[10px] font-bold text-blue-600 uppercase bg-blue-50 px-2.5 py-1 rounded-full tracking-wider">
-                          {post.category || post.tag || 'IA'}
-                        </span>
-                        <span className="text-slate-400 text-xs font-normal">{minutes} min de leitura</span>
-                      </div>
-                      <h3 className="text-xl font-bold text-slate-900 mb-3 leading-snug hover:text-blue-600 transition">
+              <div className="reading-list">
+                {pillarPosts.map((post, i) => (
+                  <article key={post.id}>
+                    <span className="reading-number">0{i + 1}</span>
+                    <div>
+                      <p className="article-meta">
+                        {post.category || post.tag || "IA aplicada"} ·{" "}
+                        {post.readingMinutes || Math.max(
+                          1,
+                          Math.ceil(
+                            (post.content || "").split(/\s+/).length / 200,
+                          ),
+                        )}{" "}
+                        min
+                      </p>
+                      <h3>
                         <Link href={`/blog/${post.slug}`}>{post.title}</Link>
                       </h3>
-                      <p className="text-slate-650 text-sm leading-relaxed mb-6 line-clamp-3 font-light">
-                        {post.excerpt}
-                      </p>
-                      <Link href={`/blog/${post.slug}`} className="inline-flex items-center gap-1 text-sm font-bold text-blue-600 hover:underline mt-auto">
-                        Ler artigo ➔
-                      </Link>
                     </div>
-                  );
-                })}
+                    <span className="reading-arrow" aria-hidden="true">
+                      ↗
+                    </span>
+                  </article>
+                ))}
               </div>
             </div>
           </section>
         )}
-
-        {/* Dynamic "Últimos artigos" Section */}
-        {latestPosts.length > 0 && (
-          <section className="py-20 bg-white">
-            <div className="container mx-auto px-4 sm:px-6 max-w-5xl">
-              <div className="flex flex-col sm:flex-row justify-between items-center mb-12">
-                <div className="text-left mb-6 sm:mb-0 max-w-xl">
-                  <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">Últimos artigos</h2>
-                  <p className="text-slate-500 leading-relaxed font-light text-xs sm:text-sm">
-                    As publicações mais recentes do blog, com reflexões sobre IA, dados, tecnologia, carreira e futuro do trabalho.
-                  </p>
-                </div>
-                <Link href="/blog" className="shrink-0 inline-flex items-center gap-1.5 text-sm font-bold text-blue-600 hover:text-blue-700 transition">
-                  Ver todos os artigos ➔
-                </Link>
-              </div>
-
-              <div className="grid gap-8 md:grid-cols-3">
-                {latestPosts.map(post => {
-                  const words = post.content ? post.content.split(/\s+/).length : 0;
-                  const minutes = Math.max(1, Math.ceil(words / 200));
-                  return (
-                    <div key={post.id} className="border border-slate-100 rounded-3xl overflow-hidden hover:shadow-lg transition duration-300 flex flex-col bg-white p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <span className="text-[10px] font-bold text-blue-600 uppercase bg-blue-50 px-2.5 py-1 rounded-full tracking-wider">
-                          {post.category || post.tag || 'IA'}
-                        </span>
-                        <span className="text-slate-400 text-xs font-normal">{minutes} min</span>
-                      </div>
-                      <h3 className="text-[16px] font-bold text-slate-800 mb-3 leading-snug hover:text-blue-600 transition line-clamp-2">
-                        <Link href={`/blog/${post.slug}`}>{post.title}</Link>
-                      </h3>
-                      <p className="text-slate-400 text-[11px] mb-3">
-                        {new Date(post.created_at).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })}
-                      </p>
-                      <p className="text-slate-650 text-sm leading-relaxed mb-6 line-clamp-3 font-light">
-                        {post.excerpt}
-                      </p>
-                      <Link href={`/blog/${post.slug}`} className="inline-flex items-center gap-1 text-sm font-bold text-blue-600 hover:underline mt-auto">
-                        Ler artigo ➔
-                      </Link>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* Corporate Services Block (Consultive Tone) */}
-        <section className="py-20 bg-slate-950 text-white relative overflow-hidden">
-          <div className="absolute inset-0 opacity-10 pointer-events-none">
-            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500 rounded-full blur-3xl"></div>
-          </div>
-          <div className="container mx-auto px-4 sm:px-6 max-w-4xl text-center relative z-10">
-            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-6">
-              Conversas e apresentações sobre IA aplicada
+        <section className="section-space page-width services-section">
+          <div>
+            <p className="eyebrow">PARA EQUIPES E ORGANIZAÇÕES</p>
+            <h2>
+              Vamos trazer essa
+              <br />
+              conversa para o seu time?
             </h2>
-            <p className="text-lg sm:text-xl text-slate-300 font-light leading-relaxed mb-10 max-w-2xl mx-auto">
-              Levo uma visão prática, crítica e acessível sobre IA, dados e transformação digital para eventos, equipes e encontros corporativos.
+            <p>
+              Palestras, workshops e conversas sobre IA aplicada, dados e
+              transformação digital. Com experiência de quem vive os desafios do
+              mundo corporativo.
             </p>
-            <div className="grid sm:grid-cols-2 gap-4 text-left max-w-2xl mx-auto mb-10 text-slate-300 text-sm">
-              <div className="flex items-start gap-2">
-                <svg className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                <span>Apresentações para públicos não técnicos.</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <svg className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                <span>Conversas sobre IA aplicada ao trabalho.</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <svg className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                <span>Workshops sob demanda.</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <svg className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                <span>Discussões sobre dados, Open Finance e transformação digital.</span>
-              </div>
+            <Link href="/palestras" className="button-primary">
+              Conhecer os formatos ↗
+            </Link>
+          </div>
+          <div className="service-list">
+            <div>
+              <span>01</span>
+              <h3>Palestras</h3>
+              <p>Uma visão acessível para ampliar o debate.</p>
             </div>
-            <Link href="/contato" className="inline-block px-8 py-4 bg-white text-slate-950 hover:bg-blue-50 rounded-xl font-bold transition shadow-lg">
-              Vamos conversar
+            <div>
+              <span>02</span>
+              <h3>Workshops</h3>
+              <p>Problemas reais e próximos passos para sua equipe.</p>
+            </div>
+            <div>
+              <span>03</span>
+              <h3>Conversas estratégicas</h3>
+              <p>Contexto para decidir com mais confiança.</p>
+            </div>
+            <Link href="/contato" className="text-link">
+              Falar comigo ↗
             </Link>
           </div>
         </section>
-
-        {/* Newsletter Section */}
-        <section className="py-20 bg-slate-50 border-t border-slate-100" id="newsletter">
-          <div className="container mx-auto px-4 sm:px-6 max-w-3xl">
-            <div className="p-8 sm:p-12 rounded-3xl bg-white border border-slate-200/60 shadow-sm relative overflow-hidden text-center">
-              <div className="absolute top-0 right-0 w-48 h-48 bg-blue-100/30 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
-
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight mb-4">
-                Receba uma curadoria prática sobre IA, dados e tecnologia
+        <section className="newsletter-section" id="newsletter">
+          <div className="page-width newsletter-layout">
+            <div>
+              <p className="eyebrow">CONTINUE A CONVERSA</p>
+              <h2>
+                Boas ideias.
+                <br />
+                Direto no seu e-mail.
               </h2>
-              <p className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-xl mx-auto mb-8 font-light">
-                Uma newsletter para entender o que realmente importa em IA aplicada — sem hype, sem complicação e sem promessas mágicas.
+              <p>
+                Receba os próximos textos e uma curadoria sobre IA, dados e
+                tecnologia, com foco em aplicação prática.
               </p>
-
-              {newsletterStatus === 'success' ? (
-                <div className="bg-green-50 border border-green-200 text-green-700 px-6 py-4 rounded-xl text-center max-w-md mx-auto mb-4">
-                  <span className="font-bold">Inscrição efetuada!</span> Bem-vindo à nossa lista exclusiva de insights práticos.
+            </div>
+            <div>
+              {newsletterStatus === "success" ? (
+                <div className="form-success" role="status">
+                  <strong>Solicitação recebida!</strong>
+                  <p>
+                    Seu interesse em receber os próximos textos foi registrado.
+                  </p>
                 </div>
               ) : (
-                <form onSubmit={handleNewsletterSubmit} className="flex flex-col gap-3 max-w-md mx-auto">
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <input
-                      required
-                      type="text"
-                      placeholder="Seu nome"
-                      value={newsletterData.nome}
-                      onChange={(e) => setNewsletterData({ ...newsletterData, nome: e.target.value })}
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-850 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
-                    />
-                    <input
-                      required
-                      type="email"
-                      placeholder="Seu e-mail principal"
-                      value={newsletterData.email}
-                      onChange={(e) => setNewsletterData({ ...newsletterData, email: e.target.value })}
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-850 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
-                    />
-                  </div>
+                <form
+                  onSubmit={handleNewsletterSubmit}
+                  className="newsletter-form"
+                  aria-busy={newsletterStatus === "loading"}
+                >
+                  <label htmlFor="newsletter-name">Seu nome</label>
+                  <input
+                    id="newsletter-name"
+                    name="name"
+                    autoComplete="name"
+                    required
+                    value={newsletterData.nome}
+                    onChange={(e) =>
+                      setNewsletterData({
+                        ...newsletterData,
+                        nome: e.target.value,
+                      })
+                    }
+                    placeholder="Como você prefere ser chamado?"
+                  />
+                  <label htmlFor="newsletter-email">Seu e-mail</label>
+                  <input
+                    id="newsletter-email"
+                    name="email"
+                    autoComplete="email"
+                    type="email"
+                    required
+                    value={newsletterData.email}
+                    onChange={(e) =>
+                      setNewsletterData({
+                        ...newsletterData,
+                        email: e.target.value,
+                      })
+                    }
+                    placeholder="voce@exemplo.com"
+                  />
                   <button
                     type="submit"
-                    disabled={newsletterStatus === 'loading'}
-                    className="w-full px-6 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition shadow-sm disabled:opacity-50 text-sm"
+                    className="button-primary"
+                    disabled={newsletterStatus === "loading"}
                   >
-                    {newsletterStatus === 'loading' ? 'Inscrevendo...' : 'Quero receber os próximos textos'}
+                    {newsletterStatus === "loading"
+                      ? "Enviando..."
+                      : "Quero receber os próximos textos"}
                   </button>
                 </form>
               )}
-
-              {newsletterStatus === 'error' && (
-                <p className="text-red-600 text-xs mt-3">Erro ao inscrever. Por favor, tente novamente.</p>
+              {newsletterStatus === "error" && (
+                <p className="form-error" role="alert">
+                  Não foi possível enviar. Tente novamente ou fale comigo pelo
+                  LinkedIn.
+                </p>
               )}
             </div>
           </div>
@@ -421,32 +371,12 @@ export default function Home({ allPosts }) {
 
       <Footer />
     </>
-  )
+  );
 }
 
 export async function getStaticProps() {
-  try {
-    const { supabase } = await import('../lib/supabaseClient');
-    
-    const { data: posts, error } = await supabase
-      .from('posts')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(25);
-
-    if (error) throw error;
-
-    return {
-      props: {
-        allPosts: posts || []
-      }
-    };
-  } catch (error) {
-    console.error('Error in getStaticProps for home:', error);
-    return {
-      props: {
-        allPosts: []
-      }
-    };
-  }
+  const { getPublishedPosts } = await import("../lib/posts.server");
+  const posts = await getPublishedPosts();
+  const { postSummary } = await import("../lib/posts.server");
+  return { props: { allPosts: posts.map(postSummary) } };
 }

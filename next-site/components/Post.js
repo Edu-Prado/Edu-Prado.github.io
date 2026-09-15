@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import AdSense from './AdSense'
 import { parseMarkdown } from '../lib/markdown'
+import { advertisingEnabled } from '../lib/advertising'
 
 function readingTime(text) {
   if (!text) return 0
@@ -46,7 +47,7 @@ export default function Post({ post }) {
         {post.image_url && <meta name="twitter:image" content={post.image_url} />}
       </Head>
 
-      <article className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
+      <article className="article-page">
         {/* Category & Reading Time */}
         <div className="flex items-center justify-center gap-2 mb-6">
           <span className="px-4 py-1.5 bg-blue-50 text-blue-600 rounded-full text-xs font-bold uppercase tracking-wider">
@@ -71,7 +72,6 @@ export default function Post({ post }) {
               src="/images/profile.jpg" 
               alt="Edu Prado" 
               className="w-12 h-12 rounded-full object-cover ring-4 ring-blue-50 shadow-sm"
-              onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=250' }}
             />
             <div className="text-left">
               <div className="font-bold text-slate-800 text-[15px]">Eduardo Prado</div>
@@ -94,12 +94,11 @@ export default function Post({ post }) {
         </header>
 
         {/* AdSense Slot - Top of Article wrapped in clean editorial format */}
-        <div className="my-10 p-4 bg-slate-50/50 rounded-2xl border border-slate-100/85 flex flex-col items-center">
-          <span className="text-[10px] font-bold text-slate-400 tracking-widest uppercase mb-3">Publicidade</span>
+        {advertisingEnabled && <div className="my-10 p-4 bg-slate-50/50 rounded-2xl border border-slate-100/85 flex flex-col items-center">
           <div className="w-full min-h-[90px] flex justify-center items-center">
             <AdSense slot="2887166563" />
           </div>
-        </div>
+        </div>}
 
         {/* Main Content Body */}
         <div className="prose prose-base sm:prose-lg prose-slate mx-auto text-slate-800 leading-relaxed font-normal
@@ -110,7 +109,7 @@ export default function Post({ post }) {
           prose-strong:text-slate-900 prose-strong:font-bold
           prose-ul:my-6 prose-li:my-2
           prose-img:rounded-2xl prose-img:shadow-md">
-          <div dangerouslySetInnerHTML={{ __html: parseMarkdown(post.content) }} />
+          <div dangerouslySetInnerHTML={{ __html: parseMarkdown(post.content, { title: post.title }) }} />
         </div>
 
         {/* Practical Application Box (High Contrast Glow Treatment) */}
@@ -193,7 +192,6 @@ export default function Post({ post }) {
             src="/images/profile.jpg" 
             alt="Edu Prado" 
             className="w-20 h-20 rounded-2xl object-cover ring-4 ring-white shadow-md shrink-0"
-            onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=250' }}
           />
           <div>
             <h4 className="font-extrabold text-lg text-slate-800 mb-2">Eduardo Prado</h4>
@@ -209,12 +207,11 @@ export default function Post({ post }) {
         </div>
 
         {/* AdSense Slot - Bottom of Article wrapped in clean editorial format */}
-        <div className="my-10 p-4 bg-slate-50/50 rounded-2xl border border-slate-100/85 flex flex-col items-center">
-          <span className="text-[10px] font-bold text-slate-400 tracking-widest uppercase mb-3">Publicidade</span>
+        {advertisingEnabled && <div className="my-10 p-4 bg-slate-50/50 rounded-2xl border border-slate-100/85 flex flex-col items-center">
           <div className="w-full min-h-[90px] flex justify-center items-center">
             <AdSense slot="2887166563" />
           </div>
-        </div>
+        </div>}
 
         {/* Back to Blog footer link */}
         <div className="text-center mt-12">

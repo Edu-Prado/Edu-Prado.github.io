@@ -47,7 +47,7 @@ export default function Palestras() {
 
       <Navbar />
 
-      <main className="pt-24 pb-16 bg-slate-50/50 min-h-screen">
+      <main id="conteudo" className="pt-24 pb-16 bg-slate-50/50 min-h-screen">
         {/* Page Hero */}
         <section className="py-16 text-center max-w-4xl mx-auto px-4 sm:px-6">
           <span className="px-4 py-1.5 bg-blue-50 text-blue-600 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block">

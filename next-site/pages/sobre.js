@@ -45,7 +45,7 @@ export default function Sobre() {
 
       <Navbar />
 
-      <main className="pt-24 pb-16 bg-slate-50/50 min-h-screen">
+      <main id="conteudo" className="pt-24 pb-16 bg-slate-50/50 min-h-screen">
         <div className="container mx-auto px-4 sm:px-6 max-w-4xl">
           {/* Header Section */}
           <div className="flex flex-col md:flex-row items-center gap-10 mb-16 pb-12 border-b border-slate-100">
@@ -54,7 +54,6 @@ export default function Sobre() {
                 src="/images/profile.jpg" 
                 alt="Eduardo Prado" 
                 className="w-40 h-40 sm:w-48 sm:h-48 rounded-3xl object-cover ring-8 ring-white shadow-lg"
-                onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=250' }}
               />
             </div>
             <div className="text-center md:text-left">

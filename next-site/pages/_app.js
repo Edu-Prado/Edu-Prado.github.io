@@ -1,4 +1,5 @@
 import '../styles/globals.css'
+import '../styles/editorial.css'
 import Script from 'next/script'
 
 export default function MyApp({ Component, pageProps }) {
