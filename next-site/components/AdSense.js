@@ -1,27 +1,47 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react'
 
-export default function AdSense({ slot, style = { display: 'block' }, format = 'auto', responsive = 'true' }) {
-    useEffect(() => {
-        try {
-            (window.adsbygoogle = window.adsbygoogle || []).push({});
-        } catch (err) {
-            console.error('AdSense error:', err);
-        }
-    }, []);
+let loader
+function loadAdSense() {
+  if (!loader) loader = new Promise((resolve, reject) => {
+    const script = document.createElement('script')
+    script.async = true
+    script.crossOrigin = 'anonymous'
+    script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7782077901383981'
+    script.onload = resolve
+    script.onerror = reject
+    document.head.appendChild(script)
+  })
+  return loader
+}
 
-    return (
-        <div className="adsense-container my-10 text-center">
-            <span className="block text-[10px] tracking-widest text-gray-400 uppercase font-medium mb-2">
-                Publicidade
-            </span>
-            <ins
-                className="adsbygoogle mx-auto"
-                style={style}
-                data-ad-client="ca-pub-7782077901383981"
-                data-ad-slot={slot}
-                data-ad-format={format}
-                data-ad-full-width-responsive={responsive}
-            />
-        </div>
-    );
+export default function AdSense({ slot }) {
+  const element = useRef(null)
+  const requested = useRef(false)
+  useEffect(() => {
+    // Local previews never request live ads.
+    if (!['eduprado.me', 'www.eduprado.me'].includes(window.location.hostname)) return
+    let cancelled = false
+    const observer = new IntersectionObserver(async ([entry]) => {
+      if (!entry.isIntersecting || requested.current) return
+      try {
+        await loadAdSense()
+        if (cancelled || requested.current || !element.current?.offsetWidth) return
+        requested.current = true
+        observer.disconnect()
+        ;(window.adsbygoogle = window.adsbygoogle || []).push({})
+      } catch {
+        // Ad blockers and unavailable inventory must not interrupt reading.
+      }
+    }, { rootMargin: '200px' })
+    observer.observe(element.current)
+    return () => { cancelled = true; observer.disconnect() }
+  }, [])
+  return (
+    <aside className="editorial-ad" aria-label="Publicidade">
+      <span className="editorial-ad-label">Publicidade</span>
+      <ins ref={element} className="adsbygoogle" style={{ display: 'block' }}
+        data-ad-client="ca-pub-7782077901383981" data-ad-slot={slot}
+        data-ad-format="horizontal" data-ad-full-width-responsive="false" />
+    </aside>
+  )
 }

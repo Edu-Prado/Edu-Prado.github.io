@@ -4,6 +4,8 @@ import { useState } from "react";
 import ArticleCard from "../components/ArticleCard";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import AdSense from "../components/AdSense";
+import { advertisingEnabled } from "../lib/advertising";
 
 const API_URL =
   typeof window !== "undefined" && window.location.hostname === "localhost"
@@ -207,6 +209,7 @@ export default function Home({ allPosts = [] }) {
             </div>
           </section>
         )}
+        {advertisingEnabled && <div className="page-width"><AdSense slot="2887166563" /></div>}
         {pillarPosts.length > 0 && (
           <section className="start-section section-space">
             <div className="page-width start-layout">
