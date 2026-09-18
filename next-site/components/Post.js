@@ -93,12 +93,8 @@ export default function Post({ post }) {
           )}
         </header>
 
-        {/* AdSense Slot - Top of Article wrapped in clean editorial format */}
-        {advertisingEnabled && <div className="my-10 p-4 bg-slate-50/50 rounded-2xl border border-slate-100/85 flex flex-col items-center">
-          <div className="w-full min-h-[90px] flex justify-center items-center">
-            <AdSense slot="2887166563" />
-          </div>
-        </div>}
+        {/* A second placement is reserved for articles of at least five minutes. */}
+        {advertisingEnabled && minutes >= 5 && <AdSense key={`${post.slug}-top`} slot="8139493248" />}
 
         {/* Main Content Body */}
         <div className="prose prose-base sm:prose-lg prose-slate mx-auto text-slate-800 leading-relaxed font-normal
@@ -206,12 +202,7 @@ export default function Post({ post }) {
           </div>
         </div>
 
-        {/* AdSense Slot - Bottom of Article wrapped in clean editorial format */}
-        {advertisingEnabled && <div className="my-10 p-4 bg-slate-50/50 rounded-2xl border border-slate-100/85 flex flex-col items-center">
-          <div className="w-full min-h-[90px] flex justify-center items-center">
-            <AdSense slot="2887166563" />
-          </div>
-        </div>}
+        {advertisingEnabled && <AdSense key={`${post.slug}-end`} slot="8920423574" />}
 
         {/* Back to Blog footer link */}
         <div className="text-center mt-12">
