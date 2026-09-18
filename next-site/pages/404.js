@@ -14,7 +14,7 @@ export default function Custom404() {
 
       <Navbar />
 
-      <main className="pt-24 pb-16 bg-slate-50/50 min-h-screen flex items-center justify-center">
+      <main id="conteudo" className="pt-24 pb-16 bg-slate-50/50 min-h-screen flex items-center justify-center">
         <div className="container mx-auto px-4 sm:px-6 text-center max-w-xl">
           <span className="px-3.5 py-1 bg-red-50 text-red-600 rounded-full text-xs font-bold uppercase tracking-wider mb-6 inline-block">
             Erro 404

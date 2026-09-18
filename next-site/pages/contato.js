@@ -96,7 +96,7 @@ export default function Contato() {
 
       <Navbar />
 
-      <main className="pt-24 pb-16 bg-slate-50/50 min-h-screen">
+      <main id="conteudo" className="pt-24 pb-16 bg-slate-50/50 min-h-screen">
         <div className="container mx-auto px-4 sm:px-6 max-w-4xl">
           
           {/* Header Section */}
@@ -126,7 +126,7 @@ export default function Contato() {
               {status === 'error' && (
                 <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3.5 rounded-xl text-sm mb-6" role="alert">
                   <strong className="font-bold">Erro no envio.</strong>
-                  <span className="block sm:inline"> Ocorreu um problem. Se preferir, me acione diretamente via LinkedIn.</span>
+                  <span className="block sm:inline"> Ocorreu um problema. Se preferir, me acione diretamente via LinkedIn.</span>
                 </div>
               )}
 

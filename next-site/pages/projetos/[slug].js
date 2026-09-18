@@ -11,7 +11,7 @@ export default function Projeto({ project }) {
     return (
       <>
         <Navbar />
-        <main className="container mx-auto px-4 py-24 text-center">
+        <main id="conteudo" className="container mx-auto px-4 py-24 text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
         </main>
         <Footer />
@@ -23,7 +23,7 @@ export default function Projeto({ project }) {
     return (
       <>
         <Navbar />
-        <main className="container mx-auto px-4 py-24 text-center">
+        <main id="conteudo" className="container mx-auto px-4 py-24 text-center">
           <h1 className="text-2xl font-bold text-gray-700">Projeto não encontrado</h1>
         </main>
         <Footer />
@@ -40,7 +40,7 @@ export default function Projeto({ project }) {
         <meta property="og:description" content={project.excerpt} />
       </Head>
       <Navbar />
-      <main className="container mx-auto px-4 py-24 min-h-screen">
+      <main id="conteudo" className="container mx-auto px-4 py-24 min-h-screen">
         <h1 className="text-3xl font-bold mb-4">{project.title}</h1>
         <p className="mb-6 text-gray-600 text-lg">{project.excerpt}</p>
         <div className="space-y-6">

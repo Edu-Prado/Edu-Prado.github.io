@@ -1,5 +1,12 @@
-export function parseMarkdown(text) {
+export function parseMarkdown(text, { title } = {}) {
     if (!text) return '';
+
+    text = text.replace(/\r\n/g, '\n');
+    const firstHeading = text.match(/^\s*#\s+([^\n]+)\n?/);
+    if (title && firstHeading && firstHeading[1].trim() === title.trim()) {
+        text = text.slice(firstHeading[0].length);
+    }
+    text = renderTables(text);
 
     // Pre-process text to ensure headers are on their own lines
     // This handles cases where user writes "Previous line\n## Header" without double newline
@@ -25,7 +32,7 @@ export function parseMarkdown(text) {
         }
         // Header 1 (# Title) - though usually title is separate
         if (trimmed.startsWith('# ')) {
-            return `<h1 class="text-3xl font-bold mt-8 mb-4 text-gray-900">${parseInline(trimmed.substring(2))}</h1>`;
+            return `<h2 class="text-3xl font-bold mt-8 mb-4 text-gray-900">${parseInline(trimmed.substring(2))}</h2>`;
         }
         // Header 3 (### Title)
         if (trimmed.startsWith('### ')) {
@@ -74,6 +81,35 @@ export function parseMarkdown(text) {
     });
 
     return processedBlocks.join('\n');
+}
+
+function tableCells(line) {
+    return line.trim().replace(/^\|/, '').replace(/\|$/, '').split(/(?<!\\)\|/).map(cell => cell.trim().replace(/\\\|/g, '|'));
+}
+
+function renderTables(text) {
+    const lines = text.split('\n');
+    const result = [];
+    for (let i = 0; i < lines.length; i++) {
+        const header = tableCells(lines[i]);
+        const separator = i + 1 < lines.length ? tableCells(lines[i + 1]) : [];
+        if (header.length < 2 || header.length !== separator.length || !separator.every(cell => /^:?-{3,}:?$/.test(cell))) {
+            result.push(lines[i]);
+            continue;
+        }
+        const rows = [];
+        i += 2;
+        while (i < lines.length && lines[i].includes('|') && tableCells(lines[i]).length === header.length) {
+            rows.push(tableCells(lines[i]));
+            i++;
+        }
+        i--;
+        const alignment = separator.map(cell => cell.startsWith(':') && cell.endsWith(':') ? 'center' : cell.endsWith(':') ? 'right' : 'left');
+        const head = header.map((cell, j) => `<th scope="col" style="text-align:${alignment[j]}">${parseInline(cell)}</th>`).join('');
+        const body = rows.map(row => `<tr>${row.map((cell, j) => `<td style="text-align:${alignment[j]}">${parseInline(cell)}</td>`).join('')}</tr>`).join('');
+        result.push(`\n<div class="markdown-table" role="region" aria-label="Tabela do artigo" tabindex="0"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>\n`);
+    }
+    return result.join('\n');
 }
 
 function parseInline(text) {
