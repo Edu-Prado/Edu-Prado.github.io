@@ -12,13 +12,14 @@ Advertising is paused by default in this revision to prevent overlays from cover
 
 ## Content outage and preview
 
-On 2026-09-15 the article source returned HTTP 521. Production builds now stop on a failed or empty article fetch instead of publishing an empty archive. Restore the content source before merging and publishing.
+On 2026-09-15 the article source returned HTTP 521. Production builds now stop on a failed or empty article fetch instead of publishing an empty archive. On 2026-09-18 the source returned HTTP 200 and a production build with live data completed successfully, exporting all 24 articles.
 
 For an explicitly offline preview, set `EDUPRADO_PREVIEW_POSTS_FILE` to an absolute path containing the public post array. The reviewed snapshot contains 24 articles extracted from the already published blog on 2026-09-15. This snapshot is local and is not committed or used automatically in production.
 
 ## Validation
 
 - `node scripts/check-editorial.mjs [optional-snapshot-path]` checks legacy categories, accent-insensitive search, tables, and repeated title handling.
-- `npm run build` produces the GitHub Pages static export. A preview using the explicit snapshot is not a live content-service validation.
+- Production build verified on 2026-09-18 with live article data, without the preview snapshot override: 37 generated pages including all 24 article routes.
+- Export checks verified article routes, internal links, one H1 per article, the repaired table, advertising pause, and lightweight listing summaries.
 - Form submissions and newsletter delivery must be verified separately; no test messages were sent.
 - Existing dependency versions and hosting architecture are retained. The dependency audit reports existing vulnerabilities that need a separate upgrade review.
