@@ -208,9 +208,9 @@ export default function Contato() {
             {/* Quick Links & Info Column */}
             <div className="space-y-6">
               <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-                <h4 className="font-extrabold text-slate-800 text-xs uppercase tracking-wider mb-4">Como posso ajudar</h4>
+                <h4 className="font-extrabold text-slate-800 text-xs uppercase tracking-wider mb-4">Oportunidades e conexões</h4>
                 <p className="text-slate-650 text-xs leading-relaxed font-light mb-4">
-                  Estou disponível para conversas, apresentações, parcerias de conteúdo e discussões sobre IA aplicada, dados, Open Finance, carreira e transformação digital.
+                  Vamos trocar experiências e conversar sobre oportunidades profissionais em IA aplicada, dados, Open Finance e transformação digital.
                 </p>
               </div>
 
