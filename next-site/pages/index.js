@@ -255,40 +255,15 @@ export default function Home({ allPosts = [] }) {
         )}
         <section className="section-space page-width services-section">
           <div>
-            <p className="eyebrow">PARA EQUIPES E ORGANIZAÇÕES</p>
-            <h2>
-              Vamos trazer essa
-              <br />
-              conversa para o seu time?
-            </h2>
-            <p>
-              Palestras, workshops e conversas sobre IA aplicada, dados e
-              transformação digital. Com experiência de quem vive os desafios do
-              mundo corporativo.
-            </p>
-            <Link href="/palestras" className="button-primary">
-              Conhecer os formatos ↗
-            </Link>
+            <p className="eyebrow">OPORTUNIDADES E CONEXÕES</p>
+            <h2>Boas conversas abrem<br />novos caminhos.</h2>
+            <p>Minha trajetória conecta negócios, dados e transformação digital. Se esses temas também fazem parte do seu trabalho, vamos conversar sobre experiências e oportunidades profissionais.</p>
+            <Link href="/contato" className="button-primary">Vamos conversar ↗</Link>
           </div>
           <div className="service-list">
-            <div>
-              <span>01</span>
-              <h3>Palestras</h3>
-              <p>Uma visão acessível para ampliar o debate.</p>
-            </div>
-            <div>
-              <span>02</span>
-              <h3>Workshops</h3>
-              <p>Problemas reais e próximos passos para sua equipe.</p>
-            </div>
-            <div>
-              <span>03</span>
-              <h3>Conversas estratégicas</h3>
-              <p>Contexto para decidir com mais confiança.</p>
-            </div>
-            <Link href="/contato" className="text-link">
-              Falar comigo ↗
-            </Link>
+            <div><span>01</span><h3>Trajetória</h3><p>Conheça minha experiência e os temas que me movem.</p><Link href="/sobre" className="text-link">Sobre mim ↗</Link></div>
+            <div><span>02</span><h3>Projetos</h3><p>Explore iniciativas que conectam tecnologia e aplicação prática.</p><Link href="/projetos" className="text-link">Explorar projetos ↗</Link></div>
+            <div><span>03</span><h3>Conexões profissionais</h3><p>Um espaço para trocar perspectivas e conversar sobre próximos passos.</p><Link href="/contato" className="text-link">Entrar em contato ↗</Link></div>
           </div>
         </section>
         <section className="newsletter-section" id="newsletter">

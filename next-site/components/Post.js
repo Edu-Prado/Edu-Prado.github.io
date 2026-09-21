@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import AdSense from './AdSense'
 import { parseMarkdown } from '../lib/markdown'
 import { advertisingEnabled } from '../lib/advertising'
+import { articleMetadata, safeJson } from '../lib/seo'
 
 function readingTime(text) {
   if (!text) return 0
@@ -13,6 +14,7 @@ function readingTime(text) {
 
 export default function Post({ post }) {
   const minutes = readingTime(post.content)
+  const metadata = articleMetadata(post)
   const [copied, setCopied] = useState(false)
   const [shareUrl, setShareUrl] = useState('')
 
@@ -40,11 +42,12 @@ export default function Post({ post }) {
         <meta property="og:description" content={post.excerpt} />
         <meta property="og:type" content="article" />
         <meta property="og:url" content={`https://eduprado.me/blog/${post.slug}/`} />
-        {post.image_url && <meta property="og:image" content={post.image_url} />}
+        {post.image_url && <meta property="og:image" content={metadata.image} />}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={post.title} />
         <meta name="twitter:description" content={post.excerpt} />
-        {post.image_url && <meta name="twitter:image" content={post.image_url} />}
+        {post.image_url && <meta name="twitter:image" content={metadata.image} />}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJson(metadata.schema) }} />
       </Head>
 
       <article className="article-page">
@@ -196,7 +199,7 @@ export default function Post({ post }) {
             </p>
             <div className="flex justify-center sm:justify-start">
               <Link href="/contato" className="text-sm font-bold text-blue-600 hover:text-blue-700 transition flex items-center gap-1">
-                Agendar uma mentoria ou bate-papo ➔
+                Conversar sobre oportunidades e conexões ➔
               </Link>
             </div>
           </div>

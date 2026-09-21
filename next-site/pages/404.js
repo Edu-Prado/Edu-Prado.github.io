@@ -9,7 +9,7 @@ export default function Custom404() {
       <Head>
         <title>Página não encontrada | Edu Prado</title>
         <meta name="description" content="A página que você está procurando não existe ou foi movida." />
-        <meta name="robots" content="noindex, follow" />
+        <meta name="robots" content="noindex, follow" key="robots" />
       </Head>
 
       <Navbar />

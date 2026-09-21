@@ -138,21 +138,21 @@ export default function Sobre() {
                   <div className="text-xs text-slate-500 font-light">Tomada de decisão baseada em fatos e direção analítica de equipes.</div>
                 </div>
                 <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
-                  <div className="font-bold text-slate-800 mb-1">Conteúdo e Educação Corporativa</div>
-                  <div className="text-xs text-slate-500 font-light">Como capacitar equipes não técnicas para navegar pelas novas ferramentas.</div>
+                  <div className="font-bold text-slate-800 mb-1">Conteúdo e Aprendizado</div>
+                  <div className="text-xs text-slate-500 font-light">Conhecimento acessível para entender e aplicar novas ferramentas.</div>
                 </div>
               </div>
             </section>
 
             {/* Call to action */}
             <div className="text-center bg-blue-900 text-white rounded-3xl p-8 shadow-md">
-              <h3 className="text-xl font-bold mb-3 text-white">Quer trazer esse debate para o seu time ou organização?</h3>
+              <h3 className="text-xl font-bold mb-3 text-white">Vamos conectar experiências e oportunidades?</h3>
               <p className="text-blue-100 text-sm leading-relaxed mb-6 max-w-xl mx-auto font-light">
-                Realizo palestras, workshops e conversas para apoiar seu time ou organização nessa jornada.
+                Este espaço também é um ponto de encontro para conversas sobre oportunidades profissionais e conexões em IA, dados e transformação digital.
               </p>
               <div className="flex flex-col sm:flex-row justify-center items-center gap-3">
-                <Link href="/palestras" className="w-full sm:w-auto px-6 py-3 bg-white text-blue-900 font-bold rounded-xl transition hover:bg-blue-50 text-sm text-center">
-                  Ver temas de palestras
+                <Link href="/projetos" className="w-full sm:w-auto px-6 py-3 bg-white text-blue-900 font-bold rounded-xl transition hover:bg-blue-50 text-sm text-center">
+                  Conhecer meus projetos
                 </Link>
                 <Link href="/contato" className="w-full sm:w-auto px-6 py-3 bg-blue-800 text-white font-bold rounded-xl border border-blue-700 transition hover:bg-blue-850 text-sm text-center">
                   Falar comigo agora ➔
