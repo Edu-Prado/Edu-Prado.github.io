@@ -13,7 +13,7 @@ export default function Contato() {
     nome: '',
     email: '',
     org: '',
-    interesse: 'Palestra',
+    interesse: 'Oportunidades profissionais',
     mensagem: ''
   })
   const [status, setStatus] = useState('') // '', 'loading', 'success', 'error'
@@ -48,7 +48,7 @@ export default function Contato() {
       }
 
       setStatus('success')
-      setFormData({ nome: '', email: '', org: '', interesse: 'Palestra', mensagem: '' })
+      setFormData({ nome: '', email: '', org: '', interesse: 'Oportunidades profissionais', mensagem: '' })
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error)
       setStatus('error')
@@ -58,15 +58,15 @@ export default function Contato() {
   return (
     <>
       <Head>
-        <title>Contato com Eduardo Prado | Aprenda Inteligência Artificial</title>
-        <meta name="description" content="Entre em contato com Eduardo Prado para palestras, workshops, mentorias, parcerias, projetos de IA aplicada e para aprender Inteligência Artificial na prática." />
-        <meta property="og:title" content="Contato com Eduardo Prado | Aprenda Inteligência Artificial" />
-        <meta property="og:description" content="Entre em contato com Eduardo Prado para palestras, workshops, mentorias, parcerias, projetos de IA aplicada e para aprender Inteligência Artificial na prática." />
+        <title>Contato com Eduardo Prado | Oportunidades e conexões</title>
+        <meta name="description" content="Converse com Eduardo Prado sobre oportunidades profissionais e conexões em inteligência artificial, dados e transformação digital." />
+        <meta property="og:title" content="Contato com Eduardo Prado | Oportunidades e conexões" />
+        <meta property="og:description" content="Converse com Eduardo Prado sobre oportunidades profissionais e conexões em inteligência artificial, dados e transformação digital." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://eduprado.me/contato/" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Contato com Eduardo Prado | Aprenda Inteligência Artificial" />
-        <meta name="twitter:description" content="Entre em contato com Eduardo Prado para palestras, workshops, mentorias, parcerias, projetos de IA aplicada e para aprender Inteligência Artificial na prática." />
+        <meta name="twitter:title" content="Contato com Eduardo Prado | Oportunidades e conexões" />
+        <meta name="twitter:description" content="Converse com Eduardo Prado sobre oportunidades profissionais e conexões em inteligência artificial, dados e transformação digital." />
 
         {/* Breadcrumb List Schema Markup */}
         <script
@@ -108,7 +108,7 @@ export default function Contato() {
               Vamos conversar?
             </h1>
             <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-light">
-              Se você quer falar sobre palestras, workshops, mentorias, projetos de IA, conteúdo ou simplesmente trocar ideias sobre tecnologia aplicada, envie uma mensagem.
+              Quer conversar sobre oportunidades profissionais ou criar conexões em IA, dados e transformação digital? Envie uma mensagem e conte um pouco sobre o contexto.
             </p>
           </div>
 
@@ -176,11 +176,9 @@ export default function Contato() {
                     onChange={handleChange}
                     className="w-full bg-slate-50/50 border border-slate-200 px-4 py-3.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white text-sm text-slate-800 transition cursor-pointer"
                   >
-                    <option value="Palestra">Palestra</option>
-                    <option value="Workshop">Workshop</option>
-                    <option value="Mentoria">Mentoria</option>
-                    <option value="Consultoria/conversa estratégica">Consultoria/conversa estratégica</option>
-                    <option value="Conteúdo/parceria">Conteúdo/parceria</option>
+                    <option value="Oportunidades profissionais">Oportunidades profissionais</option>
+                    <option value="Conexões profissionais">Conexões profissionais</option>
+                    <option value="Troca de experiências">Troca de experiências</option>
                     <option value="Outro assunto">Outro assunto</option>
                   </select>
                 </div>

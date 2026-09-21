@@ -5,7 +5,6 @@ const links = [
   ["/", "Início"],
   ["/sobre", "Sobre"],
   ["/blog", "Artigos"],
-  ["/palestras", "Palestras & workshops"],
   ["/projetos", "Projetos"],
   ["/contato", "Vamos conversar"],
 ];

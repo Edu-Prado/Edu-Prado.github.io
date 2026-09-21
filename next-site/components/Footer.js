@@ -22,9 +22,6 @@ export default function Footer() {
                 <Link href="/blog">Artigos</Link>
               </li>
               <li>
-                <Link href="/palestras">Palestras & workshops</Link>
-              </li>
-              <li>
                 <Link href="/projetos">Projetos</Link>
               </li>
             </ul>
