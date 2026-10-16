@@ -1,26 +1,26 @@
-name: Keep Supabase and Render Alive
+name: Check backend availability
 
 on:
   schedule:
-    # Runs at 12:00 PM UTC every Monday, Wednesday, and Friday
     - cron: '0 12 * * 1,3,5'
-  workflow_dispatch: # Allows manual trigger from GitHub UI
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  ping:
+  check:
     runs-on: ubuntu-latest
+    timeout-minutes: 6
     steps:
-      - name: Ping API to wake up Render and keep Supabase active
+      - name: Check published posts API
         run: |
-          echo "Pinging backend API..."
-          curl -sS https://eduprado-backend.onrender.com/api/posts > /dev/null
-          echo "Ping completed."
-          
-      - name: Checkout repo
-        uses: actions/checkout@v4
-        
-      - name: Prevent workflow from being disabled
-        uses: gautamkrishnar/keepalive-workflow@v2
+          curl --fail --silent --show-error --retry 2 --retry-delay 15 --connect-timeout 20 --max-time 90 https://eduprado-backend.onrender.com/api/posts --output /tmp/posts.json
+          python3 - <<'PY'
+          import json
+          with open('/tmp/posts.json') as response:
+              posts = json.load(response)
+          if not isinstance(posts, list) or not posts:
+              raise SystemExit('Posts API did not return a non-empty list.')
+          print(f'Posts API healthy: {len(posts)} published posts.')
+          PY
